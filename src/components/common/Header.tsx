@@ -162,7 +162,7 @@ export const Header: React.FC = () => {
   const activeNavList = navItems.filter(item => item.isActive).sort((a, b) => a.order - b.order);
 
   return (
-    <header className="sticky top-0 z-40 w-full flex flex-col bg-[#08152F]/95 backdrop-blur-xl border-b border-[#26334A] shadow-2xl">
+    <header className="storefront-header sticky top-0 z-40 w-full flex flex-col bg-[#08152F]/95 backdrop-blur-xl border-b border-[#8993a3]/40 shadow-2xl">
       {/* 1. ANNOUNCEMENT BAR */}
       {content.announcementBar.enabled && (
         <div className="storefront-announcement w-full bg-[#070B14] border-b border-[#26334A]/80 py-1 px-4 text-xs text-slate-300 font-medium">
@@ -222,7 +222,7 @@ export const Header: React.FC = () => {
           <div className="relative hidden md:block">
             <button
               onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
-              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs uppercase tracking-widest font-bold transition-all ${
+              className={`nav-silver-button flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs uppercase tracking-widest font-bold transition-all ${
                 isMegaMenuOpen
                   ? 'bg-[#1769FF]/20 text-[#287BFF] border border-[#1769FF]/40 font-bold shadow-sm'
                   : 'btn-glossy btn-glossy-dark btn-glossy-sm'
@@ -464,7 +464,16 @@ export const Header: React.FC = () => {
             </span>
           </button>
 
-          {/* USER ACCOUNT BUTTON */}
+          {/* USER ACCOUNT BUTTON — guests see sign-up, members see their profile */}
+          {currentUser.id === 'guest' ? (
+            <button
+              onClick={() => { setAuthMode('signup'); setIsAuthModalOpen(true); }}
+              className="hidden sm:inline-flex items-center gap-2 rounded-xl border border-[#FFC928]/40 bg-[#FFC928]/10 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-[#FFD75A] transition-all hover:-translate-y-0.5 hover:bg-[#FFC928]/20"
+            >
+              <User className="w-3.5 h-3.5" />
+              Create Account
+            </button>
+          ) : (
           <div className="header-profile relative">
             <button
               onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
@@ -550,6 +559,7 @@ export const Header: React.FC = () => {
               )}
             </AnimatePresence>
           </div>
+          )}
 
           {/* Admin Console button removed from storefront — accessible only via /admin URL */}
 
@@ -565,7 +575,7 @@ export const Header: React.FC = () => {
       </div>
 
       {/* 5. QUICK NAVIGATION BAR — directly below the main header */}
-      <div className="storefront-subnav storefront-subnav-promos hidden md:block w-full border-t border-[#26334A] bg-[#070B14] px-4 sm:px-6">
+      <div className="storefront-subnav storefront-subnav-promos nav-silver-gradient hidden md:block w-full border-t border-[#aeb7c5]/40 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto flex items-center justify-between overflow-x-auto no-scrollbar py-1 text-xs uppercase tracking-wider">
           <div className="flex items-center gap-3 text-xs text-slate-300 font-medium">
             <button
@@ -628,7 +638,7 @@ export const Header: React.FC = () => {
       </div>
 
       {/* 5b. CATEGORY NAV BAR — directly below the quick navigation bar */}
-      <div className="storefront-subnav storefront-subnav-categories hidden md:block w-full border-t border-[#26334A] bg-[#050810] px-4 sm:px-6">
+      <div className="storefront-subnav storefront-subnav-categories nav-silver-gradient nav-silver-gradient-dark hidden md:block w-full border-t border-[#aeb7c5]/30 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-2 py-1 overflow-x-auto no-scrollbar">
           {/* Left: category buttons */}
           <div className="flex items-center gap-1">
@@ -700,6 +710,13 @@ export const Header: React.FC = () => {
 
               <button
                 onClick={() => {
+                  if (currentUser.id === 'guest') {
+                    setAuthMode('signup');
+                    setIsAuthModalOpen(true);
+                    setIsMobileNavOpen(false);
+                    addToast('info', 'Create an Account', 'Please sign up to access your orders and digital key vault.');
+                    return;
+                  }
                   setIsCustomerPortalOpen(true);
                   setIsMobileNavOpen(false);
                 }}

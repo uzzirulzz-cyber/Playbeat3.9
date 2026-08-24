@@ -14,13 +14,8 @@
   min-width: 0;
 }
 
-.storefront-announcement {
-  order: 1 !important;
-}
-
-.storefront-main-nav {
-  order: 4 !important;
-}
+.storefront-announcement { order: 0 !important; }
+.storefront-main-nav { order: 1 !important; }
 
 .storefront-subnav {
   flex-shrink: 0;
@@ -32,6 +27,43 @@
 
 .storefront-subnav-categories {
   order: 3 !important;
+}
+
+/* Three-level storefront navigation: header first, then two silver utility bars. */
+.storefront-header {
+  background: linear-gradient(180deg, rgba(226, 232, 240, .16) 0%, rgba(148, 163, 184, .08) 18%, rgba(8, 21, 47, .97) 78%);
+}
+
+.nav-silver-gradient {
+  background: linear-gradient(180deg, rgba(226, 232, 240, .18) 0%, rgba(148, 163, 184, .1) 48%, rgba(30, 41, 59, .92) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), inset 0 -1px 0 rgba(15, 23, 42, .7);
+}
+
+.nav-silver-gradient-dark {
+  background: linear-gradient(180deg, rgba(148, 163, 184, .14) 0%, rgba(71, 85, 105, .12) 48%, rgba(5, 8, 16, .98) 100%);
+}
+
+.nav-silver-gradient button,
+.nav-silver-gradient a {
+  color: #e2e8f0;
+}
+
+.nav-silver-gradient button:hover,
+.nav-silver-gradient a:hover {
+  color: #ffffff;
+  text-shadow: 0 0 12px rgba(226, 232, 240, .45);
+}
+
+.nav-silver-button {
+  background: linear-gradient(145deg, rgba(226, 232, 240, .22), rgba(71, 85, 105, .22));
+  border: 1px solid rgba(203, 213, 225, .35);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .3), 0 6px 18px rgba(2, 6, 23, .25);
+}
+
+.nav-silver-button:hover {
+  border-color: rgba(241, 245, 249, .7);
+  background: linear-gradient(145deg, rgba(241, 245, 249, .3), rgba(100, 116, 139, .3));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5), 0 8px 22px rgba(2, 6, 23, .36);
 }
 
 .footer-admin-profile {
