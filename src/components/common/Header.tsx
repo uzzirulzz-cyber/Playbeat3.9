@@ -446,95 +446,6 @@ export const Header: React.FC = () => {
             </span>
           </button>
 
-          {/* USER ACCOUNT BUTTON — guests see sign-up, members see their profile */}
-          {currentUser.id !== 'guest' && (
-          <div className="header-profile relative">
-            <button
-              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-              className="flex items-center gap-2 p-1 text-slate-400 hover:text-white transition-colors"
-            >
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1769FF]/40 to-[#10182A] border border-[#26334A] flex items-center justify-center text-xs text-white font-bold shadow-md">
-                {currentUser.name.charAt(0).toUpperCase()}
-              </div>
-            </button>
-
-            <AnimatePresence>
-              {isUserMenuOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 8, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                  className="absolute right-0 top-full mt-2 w-56 rounded-2xl modern-card shadow-2xl p-2 z-50"
-                >
-                  <div className="px-3 py-2.5 border-b border-[#26334A]">
-                    <div className="text-xs font-semibold text-white truncate">{currentUser.name}</div>
-                    <div className="text-[10px] text-slate-400 font-mono truncate">{currentUser.email}</div>
-                    <div className="mt-1">
-                      <span className="px-2 py-0.5 rounded-md bg-[#1769FF]/15 text-[#287BFF] text-[9px] font-bold uppercase tracking-wider font-mono border border-[#1769FF]/30">
-                        {currentUser.role.replace('_', ' ')}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="py-1 space-y-1">
-                    <button
-                      onClick={() => {
-                        setIsCustomerPortalOpen(true);
-                        setIsUserMenuOpen(false);
-                      }}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-slate-200 hover:text-white hover:bg-[#121C30] rounded-xl transition-colors"
-                    >
-                      <User className="w-3.5 h-3.5 text-slate-400" />
-                      Orders & Key Vault
-                    </button>
-
-                    {/* Admin Console access removed from storefront — accessible only via /admin URL */}
-
-                    {/* Sign In / Sign Up */}
-                    <button
-                      onClick={() => {
-                        setIsAuthModalOpen(true);
-                        setIsUserMenuOpen(false);
-                      }}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-slate-400 hover:text-slate-200 hover:bg-white/5 rounded-xl transition-colors"
-                    >
-                      <Shield className="w-3.5 h-3.5" />
-                      Sign In / Sign Up
-                    </button>
-
-                    {/* Logout button — calls Zustand auth store logout */}
-                    <button
-                      onClick={() => {
-                        useAuthStore.getState().logout();
-                        // Also clear the legacy StoreContext user
-                        setCurrentUser({
-                          id: 'guest',
-                          name: 'Guest',
-                          email: 'guest@playbeat.digital',
-                          role: 'customer',
-                          twoFactorEnabled: false,
-                          addresses: [],
-                          totalSpent: 0,
-                          ordersCount: 0,
-                          wishlist: [],
-                          status: 'active',
-                          createdAt: new Date().toISOString(),
-                        });
-                        addToast('info', 'Signed Out', 'You have been logged out.');
-                        setIsUserMenuOpen(false);
-                      }}
-                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 rounded-xl transition-colors"
-                    >
-                      <LogOut className="w-3.5 h-3.5" />
-                      Sign Out
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-          )}
-
           {/* Admin Console button removed from storefront — accessible only via /admin URL */}
 
           {/* MOBILE MENU TOGGLE */}
@@ -655,6 +566,53 @@ export const Header: React.FC = () => {
               );
             })}
           </div>
+
+          {/* Account control belongs to the third navigation bar. */}
+          {currentUser.id === 'guest' ? (
+            <button
+              onClick={() => { setAuthMode('signup'); setIsAuthModalOpen(true); }}
+              className="hidden lg:inline-flex items-center gap-2 rounded-xl border border-[#FFC928]/50 bg-[#FFC928]/15 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider text-[#FFE08A] transition-all hover:-translate-y-0.5 hover:bg-[#FFC928]/25"
+            >
+              <User className="w-3.5 h-3.5" />
+              Sign Up
+            </button>
+          ) : (
+            <div className="header-profile relative hidden lg:block">
+              <button
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className="flex items-center gap-2 rounded-xl border border-white/20 bg-black/15 px-2 py-1 text-slate-200 transition-colors hover:border-white/50 hover:bg-white/10"
+                aria-label={`Open profile for ${currentUser.name}`}
+              >
+                <span className="w-6 h-6 rounded-full bg-gradient-to-br from-[#1769FF]/50 to-[#10182A] border border-[#CBD5E1]/40 flex items-center justify-center text-[10px] text-white font-bold">
+                  {currentUser.name.charAt(0).toUpperCase()}
+                </span>
+                <span className="max-w-[120px] truncate text-[10px] font-bold normal-case tracking-normal">{currentUser.name}</span>
+                <ChevronDown className={`w-3 h-3 transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              <AnimatePresence>
+                {isUserMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                    className="absolute right-0 top-full mt-2 w-56 rounded-2xl modern-card shadow-2xl p-2 z-50"
+                  >
+                    <div className="px-3 py-2.5 border-b border-[#26334A]">
+                      <div className="text-xs font-semibold text-white truncate">{currentUser.name}</div>
+                      <div className="text-[10px] text-slate-400 font-mono truncate">{currentUser.email}</div>
+                      <div className="mt-1"><span className="px-2 py-0.5 rounded-md bg-[#1769FF]/15 text-[#287BFF] text-[9px] font-bold uppercase tracking-wider font-mono border border-[#1769FF]/30">{currentUser.role.replace('_', ' ')}</span></div>
+                    </div>
+                    <div className="py-1 space-y-1">
+                      <button onClick={() => { setIsCustomerPortalOpen(true); setIsUserMenuOpen(false); }} className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-slate-200 hover:text-white hover:bg-[#121C30] rounded-xl transition-colors"><User className="w-3.5 h-3.5 text-slate-400" />Orders & Key Vault</button>
+                      <button onClick={() => { setIsAuthModalOpen(true); setIsUserMenuOpen(false); }} className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-slate-400 hover:text-slate-200 hover:bg-white/5 rounded-xl transition-colors"><Shield className="w-3.5 h-3.5" />Account Settings</button>
+                      <button onClick={() => { useAuthStore.getState().logout(); setCurrentUser({ id: 'guest', name: 'Guest', email: 'guest@playbeat.digital', role: 'customer', twoFactorEnabled: false, addresses: [], totalSpent: 0, ordersCount: 0, wishlist: [], status: 'active', createdAt: new Date().toISOString() }); addToast('info', 'Signed Out', 'You have been logged out.'); setIsUserMenuOpen(false); }} className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-red-400 hover:bg-red-500/10 rounded-xl transition-colors"><LogOut className="w-3.5 h-3.5" />Sign Out</button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          )}
 
         </div>
       </div>
