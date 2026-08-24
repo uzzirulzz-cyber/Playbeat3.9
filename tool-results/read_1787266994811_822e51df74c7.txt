@@ -1,0 +1,748 @@
+     1→import React, { createContext, useContext, useState, useEffect } from 'react';
+     2→import {
+     3→  Product,
+     4→  Category,
+     5→  User,
+     6→  Order,
+     7→  OrderStatus,
+     8→  ContentSection,
+     9→  Coupon,
+    10→  G2GSupplierConnector,
+    11→  ImportJob,
+    12→  AdminLog,
+    13→  ProductVariation,
+    14→  ProductType,
+    15→  NavItem
+    16→} from '../types';
+    17→import {
+    18→  INITIAL_CATEGORIES,
+    19→  INITIAL_PRODUCTS,
+    20→  INITIAL_USERS,
+    21→  INITIAL_ORDERS,
+    22→  INITIAL_CONTENT,
+    23→  INITIAL_G2G_CONNECTOR,
+    24→  INITIAL_COUPONS,
+    25→  INITIAL_ADMIN_LOGS,
+    26→  INITIAL_NAV_ITEMS
+    27→} from '../data/mockData';
+    28→
+    29→export interface CartItem {
+    30→  productId: string;
+    31→  product: Product;
+    32→  variation?: ProductVariation;
+    33→  quantity: number;
+    34→}
+    35→
+    36→export interface ToastMessage {
+    37→  id: string;
+    38→  type: 'success' | 'error' | 'info' | 'warning';
+    39→  title: string;
+    40→  message: string;
+    41→}
+    42→
+    43→export interface G2GSettingsState {
+    44→  status: 'connected' | 'disconnected' | 'testing';
+    45→  apiKey: string;
+    46→  marginMarkupPercent: number;
+    47→  environment: 'production' | 'sandbox';
+    48→  autoSync: boolean;
+    49→  currency: string;
+    50→  lastSyncedAt: string;
+    51→}
+    52→
+    53→export interface StoreContextType {
+    54→  // Store state
+    55→  products: Product[];
+    56→  categories: Category[];
+    57→  selectedCategory: string;
+    58→  setSelectedCategory: (cat: string) => void;
+    59→  searchQuery: string;
+    60→  setSearchQuery: (q: string) => void;
+    61→  productTypeFilter: 'all' | 'digital' | 'physical_projector';
+    62→  setProductTypeFilter: (t: 'all' | 'digital' | 'physical_projector') => void;
+    63→  
+    64→  // Navigation Customization (Storefront & Admin)
+    65→  navItems: NavItem[];
+    66→  setNavItems: React.Dispatch<React.SetStateAction<NavItem[]>>;
+    67→  addNavItem: (item: Omit<NavItem, 'id'>) => void;
+    68→  updateNavItem: (id: string, updates: Partial<NavItem>) => void;
+    69→  deleteNavItem: (id: string) => void;
+    70→  reorderNavItems: (items: NavItem[]) => void;
+    71→  toggleNavItemActive: (id: string) => void;
+    72→  activePromoFilter: string;
+    73→  setActivePromoFilter: (filter: string) => void;
+    74→  
+    75→  // Modals & Navigation
+    76→  activeView: 'store' | 'admin';
+    77→  setActiveView: (v: 'store' | 'admin') => void;
+    78→  adminTab: string;
+    79→  setAdminTab: (tab: string) => void;
+    80→  selectedProduct: Product | null;
+    81→  setSelectedProduct: (p: Product | null) => void;
+    82→  isCartOpen: boolean;
+    83→  setIsCartOpen: (open: boolean) => void;
+    84→  isWishlistOpen: boolean;
+    85→  setIsWishlistOpen: (open: boolean) => void;
+    86→  isAuthModalOpen: boolean;
+    87→  setIsAuthModalOpen: (open: boolean) => void;
+    88→  isCheckoutOpen: boolean;
+    89→  setIsCheckoutOpen: (open: boolean) => void;
+    90→  isCustomerPortalOpen: boolean;
+    91→  setIsCustomerPortalOpen: (open: boolean) => void;
+    92→  isWhatsAppModalOpen: boolean;
+    93→  setIsWhatsAppModalOpen: (open: boolean) => void;
+    94→  isCompareModalOpen: boolean;
+    95→  setIsCompareModalOpen: (open: boolean) => void;
+    96→  
+    97→  // Cart & Wishlist
+    98→  cart: CartItem[];
+    99→  addToCart: (product: Product, variation?: ProductVariation, quantity?: number) => void;
+   100→  removeFromCart: (productId: string, variationId?: string) => void;
+   101→  updateCartQuantity: (productId: string, variationId: string | undefined, qty: number) => void;
+   102→  clearCart: () => void;
+   103→  cartSubtotal: number;
+   104→  cartCount: number;
+   105→  
+   106→  wishlist: string[];
+   107→  toggleWishlist: (productId: string) => void;
+   108→  
+   109→  // Projector Comparison
+   110→  compareList: Product[];
+   111→  toggleCompare: (product: Product) => void;
+   112→  clearCompare: () => void;
+   113→  
+   114→  // Auth
+   115→  currentUser: User;
+   116→  switchUserRole: (role: User['role']) => void;
+   117→  setCurrentUser: (u: User) => void;
+   118→  
+   119→  // Orders
+   120→  orders: Order[];
+   121→  createOrder: (orderData: any) => Promise<Order>;
+   122→  updateOrderShipment: (orderId: string, trackingNumber: string, carrier: string, status: string) => void;
+   123→  updateOrderStatus: (orderId: string, status: OrderStatus) => void;
+   124→  
+   125→  // Content & Coupons
+   126→  content: ContentSection;
+   127→  updateContent: (newContent: Partial<ContentSection>) => void;
+   128→  coupons: Coupon[];
+   129→  appliedCoupon: Coupon | null;
+   130→  applyCoupon: (code: string) => { success: boolean; message: string };
+   131→  removeCoupon: () => void;
+   132→  addCoupon: (coupon: Coupon) => void;
+   133→  deleteCoupon: (id: string) => void;
+   134→  
+   135→  // Admin Data & Sourcing
+   136→  g2gConnector: G2GSupplierConnector;
+   137→  g2gSettings: G2GSettingsState;
+   138→  updateG2GConnector: (conn: Partial<G2GSupplierConnector>) => void;
+   139→  updateG2GSettings: (settings: Partial<G2GSettingsState>) => void;
+   140→  syncG2GCatalog: () => Promise<void>;
+   141→  importJobs: ImportJob[];
+   142→  adminLogs: AdminLog[];
+   143→  refreshProducts: () => void;
+   144→  addProduct: (product: Product) => void;
+   145→  updateProduct: (productOrId: Product | string, maybeUpdates?: Partial<Product>) => void;
+   146→  deleteProduct: (id: string) => void;
+   147→  approveProduct: (id: string) => void;
+   148→  cleanAllProductVariations: () => void;
+   149→  
+   150→  // Toasts
+   151→  toasts: ToastMessage[];
+   152→  addToast: (type: ToastMessage['type'], title: string, message: string) => void;
+   153→  removeToast: (id: string) => void;
+   154→  
+   155→  // Currency
+   156→  currency: { code: string; symbol: string; rate: number };
+   157→  setCurrency: (c: { code: string; symbol: string; rate: number }) => void;
+   158→  formatPrice: (usdPrice: number) => string;
+   159→}
+   160→
+   161→const StoreContext = createContext<StoreContextType | undefined>(undefined);
+   162→
+   163→export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+   164→  const [products, setProducts] = useState<Product[]>(INITIAL_PRODUCTS);
+   165→  const [categories] = useState<Category[]>(INITIAL_CATEGORIES);
+   166→  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+   167→  const [searchQuery, setSearchQuery] = useState<string>('');
+   168→  const [productTypeFilter, setProductTypeFilter] = useState<'all' | 'digital' | 'physical_projector'>('all');
+   169→  const [navItems, setNavItems] = useState<NavItem[]>(INITIAL_NAV_ITEMS);
+   170→  const [activePromoFilter, setActivePromoFilter] = useState<string>('all');
+   171→  
+   172→  const [activeView, setActiveView] = useState<'store' | 'admin'>('store');
+   173→  const [adminTab, setAdminTab] = useState<string>('dashboard');
+   174→  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+   175→  
+   176→  const [isCartOpen, setIsCartOpen] = useState(false);
+   177→  const [isWishlistOpen, setIsWishlistOpen] = useState(false);
+   178→  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+   179→  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+   180→  const [isCustomerPortalOpen, setIsCustomerPortalOpen] = useState(false);
+   181→  const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
+   182→  const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
+   183→
+   184→  const [cart, setCart] = useState<CartItem[]>([
+   185→    {
+   186→      productId: INITIAL_PRODUCTS[0].id,
+   187→      product: INITIAL_PRODUCTS[0],
+   188→      variation: INITIAL_PRODUCTS[0].variations[0],
+   189→      quantity: 1
+   190→    }
+   191→  ]);
+   192→  
+   193→  const [wishlist, setWishlist] = useState<string[]>([INITIAL_PRODUCTS[1].id]);
+   194→  const [compareList, setCompareList] = useState<Product[]>([INITIAL_PRODUCTS[0], INITIAL_PRODUCTS[1]]);
+   195→  const [currentUser, setCurrentUser] = useState<User>(INITIAL_USERS[0]); // Default Super Admin for easy testing
+   196→  const [orders, setOrders] = useState<Order[]>(INITIAL_ORDERS);
+   197→  const [content, setContent] = useState<ContentSection>(INITIAL_CONTENT);
+   198→  const [coupons, setCoupons] = useState<Coupon[]>(INITIAL_COUPONS);
+   199→  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+   200→  const [g2gConnector, setG2GConnector] = useState<G2GSupplierConnector>(INITIAL_G2G_CONNECTOR);
+   201→  
+   202→  const [g2gSettings, setG2GSettings] = useState<G2GSettingsState>({
+   203→    status: 'connected',
+   204→    apiKey: 'g2g_live_sec_894208914891',
+   205→    marginMarkupPercent: 18,
+   206→    environment: 'production',
+   207→    autoSync: true,
+   208→    currency: 'USD',
+   209→    lastSyncedAt: new Date().toISOString()
+   210→  });
+   211→
+   212→  const [importJobs, setImportJobs] = useState<ImportJob[]>([]);
+   213→  const [adminLogs, setAdminLogs] = useState<AdminLog[]>(INITIAL_ADMIN_LOGS);
+   214→  const [toasts, setToasts] = useState<ToastMessage[]>([]);
+   215→  
+   216→  const [currency, setCurrency] = useState({ code: 'PKR', symbol: 'Rs ', rate: 1 });
+   217→
+   218→  // Initial fetch from backend if running
+   219→  useEffect(() => {
+   220→    fetch('/api/products')
+   221→      .then(res => res.json())
+   222→      .then(data => {
+   223→        if (data.products && Array.isArray(data.products)) {
+   224→          setProducts(data.products);
+   225→        }
+   226→      })
+   227→      .catch(() => {});
+   228→
+   229→    fetch('/api/orders')
+   230→      .then(res => res.json())
+   231→      .then(data => {
+   232→        if (data.orders && Array.isArray(data.orders)) {
+   233→          setOrders(data.orders);
+   234→        }
+   235→      })
+   236→      .catch(() => {});
+   237→  }, []);
+   238→
+   239→  const addToast = (type: ToastMessage['type'], title: string, message: string) => {
+   240→    const id = `toast-${Date.now()}-${Math.random().toString(36).substring(2, 5)}`;
+   241→    setToasts(prev => [...prev, { id, type, title, message }]);
+   242→    setTimeout(() => {
+   243→      setToasts(prev => prev.filter(t => t.id !== id));
+   244→    }, 4000);
+   245→  };
+   246→
+   247→  const removeToast = (id: string) => {
+   248→    setToasts(prev => prev.filter(t => t.id !== id));
+   249→  };
+   250→
+   251→  const formatPrice = (pkrPrice: number): string => {
+   252→    const safePrice = Number(pkrPrice) || 0;
+   253→    const converted = safePrice * currency.rate;
+   254→    if (currency.code === 'PKR') {
+   255→      return `${currency.symbol}${Math.round(converted).toLocaleString('en-US')}`;
+   256→    }
+   257→    return `${currency.symbol}${converted.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+   258→  };
+   259→
+   260→  const addToCart = (product: Product, variation?: ProductVariation, quantity: number = 1) => {
+   261→    const activeVar = variation || (product.variations && product.variations.length > 0 ? product.variations[0] : undefined);
+   262→    setCart(prev => {
+   263→      const existingIdx = prev.findIndex(item => 
+   264→        item.productId === product.id && 
+   265→        (activeVar ? item.variation?.id === activeVar.id : true)
+   266→      );
+   267→
+   268→      if (existingIdx !== -1) {
+   269→        const copy = [...prev];
+   270→        copy[existingIdx].quantity += quantity;
+   271→        return copy;
+   272→      } else {
+   273→        return [...prev, { productId: product.id, product, variation: activeVar, quantity }];
+   274→      }
+   275→    });
+   276→
+   277→    addToast('success', 'Added to Cart', `${product.title} (${activeVar ? activeVar.value : 'Default'}) added.`);
+   278→  };
+   279→
+   280→  const removeFromCart = (productId: string, variationId?: string) => {
+   281→    setCart(prev => prev.filter(item => !(item.productId === productId && (variationId ? item.variation?.id === variationId : true))));
+   282→    addToast('info', 'Item Removed', 'Product removed from your cart.');
+   283→  };
+   284→
+   285→  const updateCartQuantity = (productId: string, variationId: string | undefined, qty: number) => {
+   286→    if (qty <= 0) {
+   287→      removeFromCart(productId, variationId);
+   288→      return;
+   289→    }
+   290→    setCart(prev => prev.map(item => {
+   291→      if (item.productId === productId && (variationId ? item.variation?.id === variationId : true)) {
+   292→        return { ...item, quantity: qty };
+   293→      }
+   294→      return item;
+   295→    }));
+   296→  };
+   297→
+   298→  const clearCart = () => {
+   299→    setCart([]);
+   300→  };
+   301→
+   302→  const cartSubtotal = cart.reduce((sum, item) => {
+   303→    const price = item.variation ? item.variation.price : item.product.price;
+   304→    return sum + price * item.quantity;
+   305→  }, 0);
+   306→
+   307→  const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+   308→
+   309→  const toggleWishlist = (productId: string) => {
+   310→    setWishlist(prev => {
+   311→      const exists = prev.includes(productId);
+   312→      if (exists) {
+   313→        addToast('info', 'Wishlist Updated', 'Item removed from your wishlist.');
+   314→        return prev.filter(id => id !== productId);
+   315→      } else {
+   316→        addToast('success', 'Wishlist Updated', 'Item saved to your wishlist.');
+   317→        return [...prev, productId];
+   318→      }
+   319→    });
+   320→  };
+   321→
+   322→  const toggleCompare = (product: Product) => {
+   323→    setCompareList(prev => {
+   324→      const exists = prev.some(p => p.id === product.id);
+   325→      if (exists) {
+   326→        addToast('info', 'Comparison List', `Removed ${product.title} from comparison.`);
+   327→        return prev.filter(p => p.id !== product.id);
+   328→      } else {
+   329→        if (prev.length >= 4) {
+   330→          addToast('warning', 'Comparison Limit', 'You can compare up to 4 projectors at once.');
+   331→          return prev;
+   332→        }
+   333→        addToast('success', 'Added to Compare', `${product.title} added for side-by-side comparison.`);
+   334→        return [...prev, product];
+   335→      }
+   336→    });
+   337→  };
+   338→
+   339→  const clearCompare = () => {
+   340→    setCompareList([]);
+   341→  };
+   342→
+   343→  const switchUserRole = (role: User['role']) => {
+   344→    setCurrentUser(prev => ({
+   345→      ...prev,
+   346→      role,
+   347→      name: role === 'super_admin' ? 'PlayBeat Super Admin' : role === 'product_manager' ? 'Product Lead' : 'Valued Customer',
+   348→      email: role === 'super_admin' ? 'admin@playbeat.digital' : 'customer@playbeat.digital'
+   349→    }));
+   350→    addToast('info', 'Role Switched', `Active session switched to ${role.replace('_', ' ').toUpperCase()}`);
+   351→  };
+   352→
+   353→  const applyCoupon = (code: string) => {
+   354→    const found = coupons.find(c => c.code.toUpperCase() === code.trim().toUpperCase() && (c.isActive !== false && c.status !== 'expired'));
+   355→    if (!found) {
+   356→      addToast('error', 'Invalid Coupon', 'The promo code entered does not exist or has expired.');
+   357→      return { success: false, message: 'Invalid or expired promo code.' };
+   358→    }
+   359→    const minP = found.minPurchase || found.minOrderAmount || 0;
+   360→    if (cartSubtotal < minP) {
+   361→      const msg = `Minimum purchase of ${formatPrice(minP)} required for this coupon.`;
+   362→      addToast('warning', 'Coupon Requirement', msg);
+   363→      return { success: false, message: msg };
+   364→    }
+   365→    setAppliedCoupon(found);
+   366→    addToast('success', 'Promo Code Applied', `Coupon "${found.code}" applied successfully!`);
+   367→    return { success: true, message: 'Coupon applied.' };
+   368→  };
+   369→
+   370→  const removeCoupon = () => {
+   371→    setAppliedCoupon(null);
+   372→    addToast('info', 'Coupon Removed', 'Promo discount cleared.');
+   373→  };
+   374→
+   375→  const addCoupon = (newC: Coupon) => {
+   376→    setCoupons(prev => [newC, ...prev]);
+   377→  };
+   378→
+   379→  const deleteCoupon = (id: string) => {
+   380→    setCoupons(prev => prev.filter(c => c.id !== id));
+   381→    addToast('info', 'Coupon Deleted', 'Promo code removed.');
+   382→  };
+   383→
+   384→  const createOrder = async (orderData: any): Promise<Order> => {
+   385→    try {
+   386→      const res = await fetch('/api/checkout', {
+   387→        method: 'POST',
+   388→        headers: { 'Content-Type': 'application/json' },
+   389→        body: JSON.stringify(orderData)
+   390→      });
+   391→      const data = await res.json();
+   392→      if (data.order) {
+   393→        setOrders(prev => [data.order, ...prev]);
+   394→        clearCart();
+   395→        setAppliedCoupon(null);
+   396→        addToast('success', 'Order Confirmed!', `Order #${data.order.orderNumber || data.order.id} successfully processed.`);
+   397→        return data.order;
+   398→      }
+   399→    } catch (e) {
+   400→      console.error('Checkout error:', e);
+   401→    }
+   402→
+   403→    // Fallback in-memory order creation
+   404→    const hasPhysical = cart.some(i => i.product.productType === 'physical_projector');
+   405→    const newOrder: Order = {
+   406→      id: `ord-${Date.now().toString().slice(-6)}`,
+   407→      orderNumber: `PB-2026-${Math.floor(Math.random() * 9000 + 1000)}`,
+   408→      userId: currentUser.id,
+   409→      customerId: currentUser.id,
+   410→      customerName: orderData.customerName || currentUser.name,
+   411→      customerEmail: orderData.customerEmail || currentUser.email,
+   412→      customerPhone: orderData.customerPhone || '+1 (888) 752-9232',
+   413→      shippingAddress: orderData.shippingAddress,
+   414→      items: cart.map(item => ({
+   415→        productId: item.product.id,
+   416→        productTitle: item.product.title,
+   417→        productType: item.product.productType,
+   418→        productImage: item.product.images[0],
+   419→        variationId: item.variation?.id,
+   420→        variationTitle: item.variation?.value,
+   421→        variation: item.variation,
+   422→        quantity: item.quantity,
+   423→        unitPrice: item.variation ? item.variation.price : item.product.price,
+   424→        subtotal: (item.variation ? item.variation.price : item.product.price) * item.quantity,
+   425→        totalPrice: (item.variation ? item.variation.price : item.product.price) * item.quantity,
+   426→        licenseKeys: item.product.productType === 'digital' ? [
+   427→          `PB-ACT-${Math.random().toString(36).substring(2, 8).toUpperCase()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
+   428→        ] : undefined,
+   429→        trackingNumber: item.product.productType === 'physical_projector' ? `DHL-${Math.floor(Math.random() * 90000000 + 10000000)}` : undefined,
+   430→        digitalDelivery: item.product.productType === 'digital' ? {
+   431→          type: item.product.instantDeliveryFormat || 'license_key',
+   432→          content: `PB-ACT-${Math.random().toString(36).substring(2, 8).toUpperCase()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`,
+   433→          instructions: item.product.deliveryInstructions || 'Redeem on client application.',
+   434→          claimed: true
+   435→        } : undefined,
+   436→        shipment: item.product.productType === 'physical_projector' ? {
+   437→          trackingNumber: `DHL-PB-${Math.floor(Math.random() * 90000000 + 10000000)}`,
+   438→          carrier: 'DHL Express Global Insured',
+   439→          status: 'processing',
+   440→          estimatedDelivery: '2026-08-25'
+   441→        } : undefined
+   442→      })),
+   443→      subtotal: cartSubtotal,
+   444→      discount: appliedCoupon ? (appliedCoupon.discountType === 'percentage' ? (cartSubtotal * appliedCoupon.discountValue) / 100 : appliedCoupon.discountValue) : 0,
+   445→      tax: Number((cartSubtotal * 0.05).toFixed(2)),
+   446→      shippingFee: hasPhysical ? 0 : 0,
+   447→      total: Number((cartSubtotal * 1.05).toFixed(2)),
+   448→      paymentMethod: orderData.paymentMethod || 'stripe',
+   449→      paymentGateway: orderData.paymentMethod || 'stripe',
+   450→      paymentStatus: 'paid',
+   451→      paymentTransactionId: `tx_${Math.random().toString(36).substring(2, 10)}`,
+   452→      fulfillmentStatus: hasPhysical ? 'partially_fulfilled' : 'delivered_digital',
+   453→      deliveryStatus: hasPhysical ? 'dispatched' : 'instant_ready',
+   454→      orderStatus: 'completed',
+   455→      couponCode: appliedCoupon?.code,
+   456→      customerNotes: orderData.customerNotes,
+   457→      createdAt: new Date().toISOString(),
+   458→      updatedAt: new Date().toISOString()
+   459→    };
+   460→
+   461→    setOrders(prev => [newOrder, ...prev]);
+   462→    clearCart();
+   463→    setAppliedCoupon(null);
+   464→    addToast('success', 'Order Confirmed!', `Order #${newOrder.orderNumber} successfully processed.`);
+   465→    return newOrder;
+   466→  };
+   467→
+   468→  const updateOrderShipment = (orderId: string, trackingNumber: string, carrier: string, status: string) => {
+   469→    setOrders(prev => prev.map(o => {
+   470→      if (o.id === orderId) {
+   471→        return {
+   472→          ...o,
+   473→          deliveryStatus: status === 'delivered' ? 'delivered' : 'in_transit',
+   474→          fulfillmentStatus: 'shipped_physical',
+   475→          items: o.items.map(item => {
+   476→            if (item.productType === 'physical_projector') {
+   477→              return {
+   478→                ...item,
+   479→                trackingNumber,
+   480→                shipment: {
+   481→                  trackingNumber,
+   482→                  carrier,
+   483→                  status,
+   484→                  estimatedDelivery: '2026-08-25'
+   485→                }
+   486→              };
+   487→            }
+   488→            return item;
+   489→          })
+   490→        };
+   491→      }
+   492→      return o;
+   493→    }));
+   494→    addToast('success', 'Shipment Dispatched', `Tracking ${trackingNumber} updated.`);
+   495→  };
+   496→
+   497→  const updateOrderStatus = (orderId: string, status: OrderStatus) => {
+   498→    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, orderStatus: status } : o));
+   499→    addToast('success', 'Order Status Updated', `Order #${orderId} set to ${status}.`);
+   500→  };
+   501→
+   502→  const updateContent = (newContent: Partial<ContentSection>) => {
+   503→    setContent(prev => ({ ...prev, ...newContent }));
+   504→    fetch('/api/content', {
+   505→      method: 'PUT',
+   506→      headers: { 'Content-Type': 'application/json' },
+   507→      body: JSON.stringify(newContent)
+   508→    }).catch(() => {});
+   509→    addToast('success', 'Storefront Updated', 'Homepage banners and announcements updated.');
+   510→  };
+   511→
+   512→  const updateG2GConnector = (conn: Partial<G2GSupplierConnector>) => {
+   513→    setG2GConnector(prev => ({ ...prev, ...conn }));
+   514→    fetch('/api/import/g2g-connector', {
+   515→      method: 'PUT',
+   516→      headers: { 'Content-Type': 'application/json' },
+   517→      body: JSON.stringify(conn)
+   518→    }).catch(() => {});
+   519→    addToast('success', 'G2G Configuration Saved', 'Supplier markup & category sync settings updated.');
+   520→  };
+   521→
+   522→  const updateG2GSettings = (settings: Partial<G2GSettingsState>) => {
+   523→    setG2GSettings(prev => ({ ...prev, ...settings }));
+   524→    addToast('success', 'Wholesale Settings Saved', 'G2G profit margin and sync frequency updated.');
+   525→  };
+   526→
+   527→  const syncG2GCatalog = async () => {
+   528→    try {
+   529→      const res = await fetch('/api/import/g2g-sync', { method: 'POST' });
+   530→      const data = await res.json();
+   531→      if (data.products) {
+   532→        setProducts(data.products);
+   533→      }
+   534→    } catch (e) {
+   535→      console.warn('API sync fallback to client simulation');
+   536→    }
+   537→    setG2GSettings(prev => ({ ...prev, lastSyncedAt: new Date().toISOString() }));
+   538→    addToast('success', 'Catalog Synchronized', 'Wholesale products & live stock updated from G2G supplier.');
+   539→  };
+   540→
+   541→  const cleanAllProductVariations = () => {
+   542→    setProducts(prev => prev.map(p => {
+   543→      if (!p.variations || p.variations.length <= 1) return p;
+   544→      const seen = new Set<string>();
+   545→      const clean: ProductVariation[] = [];
+   546→      for (const v of p.variations) {
+   547→        const key = `${v.type.toLowerCase().trim()}_${v.value.toLowerCase().trim()}`;
+   548→        if (!seen.has(key)) {
+   549→          seen.add(key);
+   550→          clean.push(v);
+   551→        }
+   552→      }
+   553→      return { ...p, variations: clean };
+   554→    }));
+   555→    addToast('success', 'Deduplication Complete', 'All redundant SKU options cleaned across catalog.');
+   556→  };
+   557→
+   558→  const refreshProducts = () => {
+   559→    fetch('/api/products')
+   560→      .then(res => res.json())
+   561→      .then(data => {
+   562→        if (data.products) setProducts(data.products);
+   563→      })
+   564→      .catch(() => {});
+   565→  };
+   566→
+   567→  const addProduct = (newProduct: Product) => {
+   568→    setProducts(prev => [newProduct, ...prev]);
+   569→    fetch('/api/products', {
+   570→      method: 'POST',
+   571→      headers: { 'Content-Type': 'application/json' },
+   572→      body: JSON.stringify(newProduct)
+   573→    }).catch(() => {});
+   574→    addToast('success', 'Product Added', `${newProduct.title} added to catalog.`);
+   575→  };
+   576→
+   577→  const updateProduct = (productOrId: Product | string, maybeUpdates?: Partial<Product>) => {
+   578→    if (typeof productOrId === 'string') {
+   579→      const id = productOrId;
+   580→      const updates = maybeUpdates || {};
+   581→      setProducts(prev => prev.map(p => p.id === id ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p));
+   582→      fetch(`/api/products/${id}`, {
+   583→        method: 'PUT',
+   584→        headers: { 'Content-Type': 'application/json' },
+   585→        body: JSON.stringify(updates)
+   586→      }).catch(() => {});
+   587→    } else {
+   588→      const updatedProduct = productOrId;
+   589→      setProducts(prev => prev.map(p => p.id === updatedProduct.id ? updatedProduct : p));
+   590→      fetch(`/api/products/${updatedProduct.id}`, {
+   591→        method: 'PUT',
+   592→        headers: { 'Content-Type': 'application/json' },
+   593→        body: JSON.stringify(updatedProduct)
+   594→      }).catch(() => {});
+   595→    }
+   596→    addToast('success', 'Product Updated', 'Changes saved successfully.');
+   597→  };
+   598→
+   599→  const deleteProduct = (id: string) => {
+   600→    setProducts(prev => prev.filter(p => p.id !== id));
+   601→    fetch(`/api/products/${id}`, { method: 'DELETE' }).catch(() => {});
+   602→    addToast('info', 'Product Deleted', 'Item removed from database.');
+   603→  };
+   604→
+   605→  const approveProduct = (id: string) => {
+   606→    updateProduct(id, { status: 'published' });
+   607→    addToast('success', 'Product Approved', 'Product is now live on the storefront.');
+   608→  };
+   609→
+   610→  const addNavItem = (item: Omit<NavItem, 'id'>) => {
+   611→    const newItem: NavItem = {
+   612→      ...item,
+   613→      id: `nav-${Date.now()}`
+   614→    };
+   615→    setNavItems(prev => [...prev, newItem]);
+   616→    addToast('success', 'Navigation Item Added', `"${item.label}" added to menu.`);
+   617→  };
+   618→
+   619→  const updateNavItem = (id: string, updates: Partial<NavItem>) => {
+   620→    setNavItems(prev => prev.map(item => item.id === id ? { ...item, ...updates } : item));
+   621→    addToast('success', 'Navigation Updated', 'Menu item saved successfully.');
+   622→  };
+   623→
+   624→  const deleteNavItem = (id: string) => {
+   625→    setNavItems(prev => prev.filter(item => item.id !== id));
+   626→    addToast('info', 'Navigation Item Removed', 'Menu item deleted.');
+   627→  };
+   628→
+   629→  const reorderNavItems = (newItems: NavItem[]) => {
+   630→    setNavItems(newItems.map((item, idx) => ({ ...item, order: idx + 1 })));
+   631→  };
+   632→
+   633→  const toggleNavItemActive = (id: string) => {
+   634→    setNavItems(prev => prev.map(item => item.id === id ? { ...item, isActive: !item.isActive } : item));
+   635→  };
+   636→
+   637→  return (
+   638→    <StoreContext.Provider
+   639→      value={{
+   640→        products,
+   641→        categories,
+   642→        selectedCategory,
+   643→        setSelectedCategory,
+   644→        searchQuery,
+   645→        setSearchQuery,
+   646→        productTypeFilter,
+   647→        setProductTypeFilter,
+   648→        
+   649→        navItems,
+   650→        setNavItems,
+   651→        addNavItem,
+   652→        updateNavItem,
+   653→        deleteNavItem,
+   654→        reorderNavItems,
+   655→        toggleNavItemActive,
+   656→        activePromoFilter,
+   657→        setActivePromoFilter,
+   658→        
+   659→        activeView,
+   660→        setActiveView,
+   661→        adminTab,
+   662→        setAdminTab,
+   663→        selectedProduct,
+   664→        setSelectedProduct,
+   665→        isCartOpen,
+   666→        setIsCartOpen,
+   667→        isWishlistOpen,
+   668→        setIsWishlistOpen,
+   669→        isAuthModalOpen,
+   670→        setIsAuthModalOpen,
+   671→        isCheckoutOpen,
+   672→        setIsCheckoutOpen,
+   673→        isCustomerPortalOpen,
+   674→        setIsCustomerPortalOpen,
+   675→        isWhatsAppModalOpen,
+   676→        setIsWhatsAppModalOpen,
+   677→        isCompareModalOpen,
+   678→        setIsCompareModalOpen,
+   679→        
+   680→        cart,
+   681→        addToCart,
+   682→        removeFromCart,
+   683→        updateCartQuantity,
+   684→        clearCart,
+   685→        cartSubtotal,
+   686→        cartCount,
+   687→        
+   688→        wishlist,
+   689→        toggleWishlist,
+   690→        
+   691→        compareList,
+   692→        toggleCompare,
+   693→        clearCompare,
+   694→        
+   695→        currentUser,
+   696→        switchUserRole,
+   697→        setCurrentUser,
+   698→        
+   699→        orders,
+   700→        createOrder,
+   701→        updateOrderShipment,
+   702→        updateOrderStatus,
+   703→        
+   704→        content,
+   705→        updateContent,
+   706→        coupons,
+   707→        appliedCoupon,
+   708→        applyCoupon,
+   709→        removeCoupon,
+   710→        addCoupon,
+   711→        deleteCoupon,
+   712→        
+   713→        g2gConnector,
+   714→        g2gSettings,
+   715→        updateG2GConnector,
+   716→        updateG2GSettings,
+   717→        syncG2GCatalog,
+   718→        importJobs,
+   719→        adminLogs,
+   720→        refreshProducts,
+   721→        addProduct,
+   722→        updateProduct,
+   723→        deleteProduct,
+   724→        approveProduct,
+   725→        cleanAllProductVariations,
+   726→        
+   727→        toasts,
+   728→        addToast,
+   729→        removeToast,
+   730→        
+   731→        currency,
+   732→        setCurrency,
+   733→        formatPrice
+   734→      }}
+   735→    >
+   736→      {children}
+   737→    </StoreContext.Provider>
+   738→  );
+   739→};
+   740→
+   741→export const useStore = (): StoreContextType => {
+   742→  const context = useContext(StoreContext);
+   743→  if (!context) {
+   744→    throw new Error('useStore must be used within a StoreProvider');
+   745→  }
+   746→  return context;
+   747→};
+   748→

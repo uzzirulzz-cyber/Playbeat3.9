@@ -1,0 +1,2243 @@
+@import "tailwindcss";
+
+/* Storefront header rhythm: keep account actions distinct from cart and nav links. */
+.header-actions {
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.storefront-main-nav {
+  min-height: 3.25rem;
+}
+
+.storefront-main-nav > div {
+  min-width: 0;
+}
+
+.storefront-announcement {
+  order: 1 !important;
+}
+
+.storefront-main-nav {
+  order: 4 !important;
+}
+
+.storefront-subnav {
+  flex-shrink: 0;
+}
+
+.storefront-subnav-promos {
+  order: 2 !important;
+}
+
+.storefront-subnav-categories {
+  order: 3 !important;
+}
+
+.footer-admin-profile {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04), 0 8px 20px rgba(0,0,0,.18);
+}
+
+.admin-footer-profile {
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+/* Admin palette follows the supplied PlayBeat red/orange logo. */
+.admin-skin .admin-sidebar {
+  border-right-color: rgba(255, 91, 36, .28);
+}
+
+.admin-skin .admin-card {
+  border-color: rgba(125, 49, 37, .72);
+}
+
+.admin-skin .admin-card:hover {
+  border-color: rgba(255, 137, 45, .55);
+}
+
+.admin-skin .admin-nav-item.is-active {
+  background: linear-gradient(90deg, rgba(239, 68, 68, .2), rgba(245, 158, 11, .06));
+  box-shadow: 0 0 14px rgba(239, 68, 68, .12);
+}
+
+.admin-skin .admin-nav-item.is-active::before {
+  background: linear-gradient(180deg, #ff7a18, #ef4444);
+  box-shadow: 0 0 8px rgba(255, 122, 24, .55);
+}
+
+.admin-skin .admin-section-header {
+  background: linear-gradient(180deg, #ff7a18 0%, #d92d20 100%);
+}
+
+.admin-skin .admin-footer-profile,
+.admin-skin .admin-skin-logo {
+  border-color: rgba(255, 122, 24, .42);
+}
+
+.header-cart {
+  min-width: 5.5rem;
+}
+
+.header-profile {
+  margin-left: .25rem;
+  padding-left: .75rem;
+  border-left: 1px solid rgba(38, 51, 74, .9);
+}
+
+.header-auth-actions button {
+  min-height: 1.9rem;
+}
+
+.header-auth-actions {
+  order: 10;
+  margin-left: .5rem;
+}
+
+.admin-branding-preview {
+  width: 350px;
+  height: 200px;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+@media (max-width: 1023px) {
+  .header-actions { gap: .625rem; margin-left: auto; }
+  .header-profile { margin-left: 0; padding-left: .5rem; }
+}
+
+@media (max-width: 640px) {
+  .storefront-main-nav { min-height: 3rem; }
+  .header-actions { gap: .45rem; }
+  .header-cart { min-width: 0; }
+}
+
+/* Reference dashboard frame: dark navy canvas, 270px rail, compact neon accents. */
+.dashboard-reference {
+  max-width: none;
+  min-width: 0;
+  padding: 0;
+}
+
+.dashboard-reference > .grid {
+  gap: 14px;
+}
+
+.dashboard-reference .admin-card {
+  background: linear-gradient(145deg, rgba(10, 27, 57, .92), rgba(5, 15, 31, .98));
+  border-color: rgba(38, 67, 108, .78);
+}
+
+.dashboard-reference .dashboard-kpi {
+  min-height: 148px;
+  border-width: 1px;
+}
+
+.dashboard-reference .dashboard-kpi-revenue {
+  border-left: 3px solid #1769ff;
+  background: linear-gradient(145deg, #0d1b35, #071122) !important;
+}
+
+.dashboard-reference .dashboard-kpi-orders {
+  border-left: 3px solid #facc15;
+  background: linear-gradient(145deg, #171b31, #0b1224) !important;
+}
+
+.dashboard-reference .dashboard-kpi-products {
+  border-left: 3px solid #9b5cff;
+  background: linear-gradient(145deg, #171337, #0c1026) !important;
+}
+
+.dashboard-reference .dashboard-kpi-customers {
+  border-left: 3px solid #22d3ee;
+  background: linear-gradient(145deg, #08283d, #071523) !important;
+}
+
+.quick-action {
+  display: flex;
+  align-items: center;
+  gap: .55rem;
+  min-height: 42px;
+  padding: .65rem .75rem;
+  border: 1px solid #263f68;
+  border-radius: 8px;
+  background: rgba(7, 18, 38, .8);
+  color: #dbeafe;
+  font-size: .7rem;
+  font-weight: 700;
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+.quick-action:hover { transform: translateY(-2px); box-shadow: 0 0 16px rgba(23, 105, 255, .18); }
+.quick-action-blue { color: #7db2ff; }
+.quick-action-yellow { color: #facc15; }
+.quick-action-cyan { color: #22d3ee; }
+.quick-action-purple { color: #c084fc; }
+
+@media (max-width: 600px) {
+  .dashboard-reference .dashboard-kpi { min-height: 132px; }
+  .dashboard-reference .admin-card { border-radius: 10px; }
+}
+
+@layer base {
+  :root {
+    --primary-blue: #1769FF;
+    --deep-navy: #08152F;
+    --navy-surface: #10182A;
+    --card-surface: #121C30;
+    --border-color: #26334A;
+    --accent-red: #FF304F;
+    --accent-yellow: #FFC928;
+    --success-green: #00D99A;
+    --light-grey: #F1F3F6;
+    --medium-grey: #8A94A6;
+    --dark-grey: #202633;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6, .font-display {
+    font-family: 'Outfit', sans-serif;
+    letter-spacing: -0.02em;
+  }
+  
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+/* Custom luxury scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #08152F;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #26334A;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #1769FF;
+}
+
+/* Deep Navy Background with 3% Blue/Red subtle mesh */
+.bg-playbeat-mesh {
+  background-color: #070B14;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(23, 105, 255, 0.05) 0px, transparent 40%),
+    radial-gradient(at 100% 10%, rgba(255, 48, 79, 0.03) 0px, transparent 40%),
+    radial-gradient(at 50% 100%, rgba(107, 77, 255, 0.03) 0px, transparent 50%);
+}
+
+/* Storefront Light & Dark Hybrid Cards */
+.modern-card {
+  background: #10182A;
+  border: 1px solid rgba(38, 51, 74, 0.7);
+  border-top-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.4), 0 2px 6px -1px rgba(0, 0, 0, 0.2);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modern-card:hover {
+  background: #121C30;
+  border-color: rgba(23, 105, 255, 0.4);
+  box-shadow: 0 12px 36px -10px rgba(23, 105, 255, 0.18), 0 4px 12px -2px rgba(0, 0, 0, 0.5);
+  transform: translateY(-2px);
+}
+
+/* Storefront Clean Hybrid Product Card (Light Grey Surface with Blue/Red Hover Accent) */
+.product-card-surface {
+  background: #10182A;
+  border: 1px solid rgba(38, 51, 74, 0.8);
+  box-shadow: 0 4px 16px -2px rgba(0, 0, 0, 0.35);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.product-card-surface:hover {
+  background: #121C30;
+  border-color: rgba(23, 105, 255, 0.45);
+  box-shadow: 0 10px 30px -5px rgba(23, 105, 255, 0.15), 0 0 15px rgba(255, 48, 79, 0.08);
+  transform: translateY(-2px);
+}
+
+/* Modern Button Styles */
+.btn-primary {
+  background: linear-gradient(180deg, #287BFF 0%, #1769FF 100%);
+  color: #ffffff;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 18px rgba(23, 105, 255, 0.35);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(180deg, #3d8bff 0%, #1769FF 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4), 0 0 26px rgba(23, 105, 255, 0.5);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.98);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 0 12px rgba(23, 105, 255, 0.25);
+}
+
+/* Secondary Button (Clean Navy / Slate) */
+.btn-secondary {
+  background: #10182A;
+  color: #F8FAFC;
+  border: 1px solid #26334A;
+  border-top-color: rgba(255, 255, 255, 0.15);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-secondary:hover {
+  background: #17243C;
+  color: #ffffff;
+  border-color: rgba(23, 105, 255, 0.4);
+  transform: translateY(-1px);
+}
+
+.btn-secondary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Accent Button (Subtle Red / Purple Gradient) */
+.btn-accent {
+  background: rgba(255, 48, 79, 0.12);
+  color: #FF6B81;
+  border: 1px solid rgba(255, 48, 79, 0.35);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-accent:hover {
+  background: rgba(255, 48, 79, 0.22);
+  color: #FF8A9C;
+  border-color: rgba(255, 48, 79, 0.6);
+  box-shadow: 0 0 15px rgba(255, 48, 79, 0.2);
+  transform: translateY(-1px);
+}
+
+.btn-accent:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Yellow Badge & Highlight Utility */
+.badge-yellow {
+  background: rgba(255, 201, 40, 0.15);
+  color: #FFC928;
+  border: 1px solid rgba(255, 201, 40, 0.35);
+}
+
+/* 3% Subtle Blue-Purple-Red Gradient Border / Ambient Utility */
+.gradient-accent-subtle {
+  background: linear-gradient(135deg, rgba(23, 105, 255, 0.1) 0%, rgba(107, 77, 255, 0.05) 50%, rgba(255, 48, 79, 0.08) 100%);
+}
+
+.border-gradient-subtle {
+  border-image: linear-gradient(to right, #1769FF, #6B4DFF, #FF304F) 1;
+}
+
+/* Typography Gradient Utilities */
+.text-gradient-white {
+  background: linear-gradient(180deg, #FFFFFF 0%, #CBD5E1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-blue {
+  background: linear-gradient(135deg, #287BFF 0%, #1769FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-brand {
+  background: linear-gradient(135deg, #1769FF 0%, #9065FF 50%, #FF304F 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Animation utilities */
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.65; transform: scale(1.02); }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 6s ease-in-out infinite;
+}
+
+/* ============================================
+   SHARP PREMIUM PRODUCT CARD UPGRADE
+   ============================================ */
+
+/* Premium sharp card — sharper borders, deeper shadows, smoother hover */
+.product-card-premium {
+  background: linear-gradient(180deg, #121C30 0%, #0E1626 100%);
+  border: 1px solid rgba(38, 51, 74, 0.9);
+  border-radius: 16px;
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 6px 16px -6px rgba(0, 0, 0, 0.5),
+    0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.product-card-premium:hover {
+  transform: translateY(-4px);
+  border-color: rgba(23, 105, 255, 0.55);
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.06) inset,
+    0 18px 40px -12px rgba(23, 105, 255, 0.22),
+    0 6px 16px -4px rgba(0, 0, 0, 0.6),
+    0 0 0 1px rgba(23, 105, 255, 0.15);
+}
+
+.product-card-premium:hover .product-card-image {
+  transform: scale(1.06);
+}
+
+.product-card-premium:hover .product-card-title {
+  color: #5a9eff;
+}
+
+.product-card-image {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.product-card-title {
+  transition: color 0.2s ease;
+}
+
+/* Quick view button reveal */
+.product-card-quickview {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.22s ease, transform 0.22s ease, background-color 0.18s ease;
+}
+
+.product-card-premium:hover .product-card-quickview {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (hover: none) {
+  /* On touch devices, always show quick-view */
+  .product-card-quickview {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   SKELETON LOADING
+   ============================================ */
+
+@keyframes shimmer {
+  0% { background-position: -468px 0; }
+  100% { background-position: 468px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(38, 51, 74, 0.4) 25%,
+    rgba(38, 51, 74, 0.7) 50%,
+    rgba(38, 51, 74, 0.4) 75%
+  );
+  background-size: 936px 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+.skeleton-card {
+  background: #10182A;
+  border: 1px solid rgba(38, 51, 74, 0.6);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* ============================================
+   FORM INPUT FOCUS GLOW
+   ============================================ */
+
+.input-sharp {
+  background: #141622;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+.input-sharp:focus {
+  outline: none;
+  border-color: rgba(23, 105, 255, 0.55);
+  box-shadow: 0 0 0 3px rgba(23, 105, 255, 0.12);
+  background: #181B28;
+}
+
+.input-sharp.input-error {
+  border-color: rgba(255, 48, 79, 0.6);
+  box-shadow: 0 0 0 3px rgba(255, 48, 79, 0.1);
+}
+
+/* ============================================
+   GALLERY ZOOM (PDP)
+   ============================================ */
+
+.gallery-main-image {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.gallery-main:hover .gallery-main-image {
+  transform: scale(1.04);
+}
+
+/* ============================================
+   SCROLLBAR FOR LONG LISTS
+   ============================================ */
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #26334A transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(38, 51, 74, 0.8);
+  border-radius: 9999px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #1769FF;
+}
+
+/* ============================================
+   LINE CLAMP UTILITIES
+   ============================================ */
+
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ============================================
+   ADMIN PANEL — SIDEBAR LAYOUT (screenshot match)
+   ============================================ */
+
+/* Deep black sidebar background, #0a0b0d */
+.admin-sidebar {
+  background: #0a0b0d;
+  border-right: 1px solid #1f2937;
+}
+
+/* Reference dashboard shell: compact sidebar, navy workspace, restrained neon accents. */
+.admin-sidebar .admin-section-header {
+  margin-left: 0.35rem;
+  padding-left: 0.55rem;
+  padding-right: 0.55rem;
+  font-size: 0.55rem;
+}
+
+.dashboard-kpi {
+  isolation: isolate;
+  background: linear-gradient(145deg, #0d1b35 0%, #071122 100%) !important;
+  border-width: 1px !important;
+  border-color: #26334a !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255,255,255,.04) !important;
+  animation: dashboardPulse 4.8s ease-in-out infinite;
+}
+
+.dashboard-reference {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+.dashboard-reference .admin-card {
+  background: linear-gradient(145deg, rgba(10, 27, 57, .88), rgba(5, 15, 31, .96));
+  border-color: rgba(38, 67, 108, .78);
+  box-shadow: 0 12px 30px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.035);
+}
+
+.dashboard-reference .admin-card:hover {
+  border-color: rgba(250, 204, 21, .42);
+}
+
+.dashboard-kpi-revenue { border-left: 3px solid #1769ff !important; }
+.dashboard-kpi-orders { border-left: 3px solid #ffc928 !important; }
+.dashboard-kpi-products { border-left: 3px solid #9b5cff !important; }
+.dashboard-kpi-stock { border-left: 3px solid #ff304f !important; }
+
+.dashboard-kpi::before {
+  content: '';
+  position: absolute;
+  inset: -45%;
+  z-index: -1;
+  pointer-events: none;
+  opacity: .18;
+  background: radial-gradient(ellipse at 50% 100%, var(--kpi-glow, #1769ff) 0%, transparent 58%);
+  filter: blur(24px);
+  animation: dashboardGlow 3.4s ease-in-out infinite;
+}
+
+.dashboard-kpi-revenue { --kpi-glow: #1769ff; animation-delay: -.8s; }
+.dashboard-kpi-orders { --kpi-glow: #facc15; animation-delay: -1.6s; }
+.dashboard-kpi-products { --kpi-glow: #a855f7; animation-delay: -2.4s; }
+
+.dashboard-kpi-stock {
+  --kpi-glow: #ff304f;
+  animation: dashboardFire 1.8s ease-in-out infinite;
+}
+
+.dashboard-kpi-stock::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .28;
+  background:
+    radial-gradient(ellipse at 20% 100%, #ff7a18 0%, transparent 34%),
+    radial-gradient(ellipse at 75% 110%, #ff304f 0%, transparent 38%);
+  filter: blur(13px);
+  transform-origin: bottom center;
+  animation: fireFlicker .72s steps(3, end) infinite;
+}
+
+@keyframes dashboardPulse {
+  0%, 100% { box-shadow: 0 8px 24px rgba(0,0,0,.28), 0 0 0 rgba(23,105,255,0), inset 0 1px 0 rgba(255,255,255,.04); }
+  50% { box-shadow: 0 10px 28px rgba(0,0,0,.38), 0 0 22px color-mix(in srgb, var(--kpi-glow, #1769ff) 22%, transparent), inset 0 1px 0 rgba(255,255,255,.08); }
+}
+
+@keyframes dashboardGlow {
+  0%, 100% { transform: scale(.88) translateY(4%); opacity: .12; }
+  50% { transform: scale(1.08) translateY(-2%); opacity: .32; }
+}
+
+@keyframes dashboardFire {
+  0%, 100% { transform: translateY(0); filter: saturate(1); }
+  35% { transform: translateY(-1px) scale(1.004); filter: saturate(1.3); }
+  70% { transform: translateY(0) scale(.998); filter: saturate(1.1); }
+}
+
+@keyframes fireFlicker {
+  0%, 100% { transform: scaleY(.82) skewX(-2deg); opacity: .18; }
+  35% { transform: scaleY(1.12) skewX(3deg); opacity: .38; }
+  68% { transform: scaleY(.94) skewX(-4deg); opacity: .24; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-kpi,
+  .dashboard-kpi::before,
+  .dashboard-kpi-stock::after { animation: none; }
+}
+
+.dashboard-kpi:hover {
+  border-color: rgba(255, 201, 40, .55) !important;
+  box-shadow: 0 12px 28px rgba(0,0,0,.4), 0 0 20px rgba(23,105,255,.12) !important;
+}
+
+/* Sidebar menu item — flat, hover lift, active state with blue left border */
+.admin-nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.55rem 0.85rem;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  color: #9ca3af;
+  font-weight: 500;
+  transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+}
+
+.admin-nav-item:hover {
+  background: rgba(59, 130, 246, 0.08);
+  color: #f9fafb;
+}
+
+.admin-nav-item.is-active {
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.15) 0%, rgba(37, 99, 235, 0.05) 100%);
+  color: #f9fafb;
+  font-weight: 600;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.1);
+}
+
+.admin-nav-item.is-active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.4rem;
+  bottom: 0.4rem;
+  width: 3px;
+  background: linear-gradient(180deg, #60A5FA 0%, #2563EB 100%);
+  border-radius: 0 4px 4px 0;
+  box-shadow: 0 0 8px rgba(96, 165, 250, 0.4);
+}
+
+/* Admin card — slightly lighter than sidebar, matches #151a23 */
+.admin-card {
+  background: #151a23;
+  border: 1px solid #252b3b;
+  border-radius: 12px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.admin-card:hover {
+  border-color: #3a4256;
+}
+
+/* Admin section header — glossy blue PILL BUTTON (not text) */
+.admin-section-header {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  font-weight: 800;
+  padding: 0.3rem 0.75rem;
+  margin: 0.5rem 0 0.3rem 0.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  color: #ffffff;
+  background: linear-gradient(180deg, #4D94FF 0%, #0055DD 100%);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  border-radius: 9999px;
+  box-shadow: 0 4px 12px rgba(0, 51, 204, 0.3),
+              0 0 10px rgba(77, 148, 255, 0.2),
+              inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Specular highlight on the blue pill button */
+.admin-section-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 100%);
+  pointer-events: none;
+  border-radius: 9999px 9999px 0 0;
+}
+
+/* Gold pill button (top-right "Admin Panel" button) */
+/* Teal pill (replaces gold pill for the Admin Panel header button) */
+.admin-teal-pill {
+  border: 1px solid rgba(16, 185, 129, 0.5);
+  color: #10b981;
+  background: rgba(16, 185, 129, 0.08);
+  border-radius: 9999px;
+  padding: 0.3rem 0.85rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: background-color 0.15s ease;
+}
+
+.admin-teal-pill:hover {
+  background: rgba(16, 185, 129, 0.18);
+}
+
+/* ============================================
+   COLLAPSIBLE SIDEBAR (icon-only mode)
+   ============================================ */
+
+.admin-sidebar-collapsed {
+  width: 4rem !important;
+}
+
+.admin-sidebar-collapsed .admin-nav-item span,
+.admin-sidebar-collapsed .admin-section-header,
+.admin-sidebar-collapsed .sidebar-brand-text,
+.admin-sidebar-collapsed .sidebar-footer-text,
+.admin-sidebar-collapsed .sidebar-profile-info {
+  display: none !important;
+}
+
+.admin-sidebar-collapsed .admin-nav-item {
+  justify-content: center;
+  padding: 0.55rem 0;
+}
+
+.admin-sidebar-collapsed .sidebar-brand {
+  justify-content: center;
+}
+
+.admin-sidebar-collapsed .sidebar-profile {
+  justify-content: center;
+}
+
+/* Tooltip for collapsed mode */
+.admin-nav-item-tooltip {
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%) translateX(8px);
+  background: #000;
+  color: #fff;
+  font-size: 0.625rem;
+  font-weight: 600;
+  padding: 0.25rem 0.6rem;
+  border-radius: 0.375rem;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 100;
+  transition: opacity 0.15s ease;
+}
+
+.admin-sidebar-collapsed .admin-nav-item:hover .admin-nav-item-tooltip {
+  opacity: 1;
+}
+
+/* ============================================
+   USER PROFILE AREA (sidebar top)
+   ============================================ */
+
+.sidebar-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.5rem;
+  transition: background-color 0.15s ease;
+}
+
+.sidebar-profile-avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #10b981, #34d399);
+  color: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.875rem;
+  shrink: 0;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+}
+
+.sidebar-profile-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar-profile-name {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #f9fafb;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-profile-email {
+  font-size: 0.625rem;
+  color: #6b7280;
+  font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-signout {
+  padding: 0.5rem 0.85rem;
+  border-radius: 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #ef4444;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.15s ease;
+  cursor: pointer;
+  width: 100%;
+}
+
+.sidebar-signout:hover {
+  background: rgba(239, 68, 68, 0.08);
+}
+
+/* Status pills — green / amber / red */
+.admin-pill-green {
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 9999px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.admin-pill-amber {
+  background: rgba(245, 158, 11, 0.12);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 9999px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.admin-pill-red {
+  background: rgba(239, 68, 68, 0.12);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 9999px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.admin-pill-blue {
+  background: rgba(59, 130, 246, 0.12);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 9999px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.admin-pill-purple {
+  background: rgba(139, 92, 246, 0.12);
+  color: #8b5cf6;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 9999px;
+  padding: 0.15rem 0.6rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Live Support FAB — orange gradient (premium) */
+.admin-fab {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 17.25rem;
+  z-index: 40;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #EA580C 0%, #FB923C 100%);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px -6px rgba(249, 115, 22, 0.5),
+              inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-fab:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 12px 28px -6px rgba(249, 115, 22, 0.7),
+              inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* On mobile, sidebar collapses — FAB sits at the bottom-left */
+@media (max-width: 767px) {
+  .admin-fab {
+    left: 1rem;
+    bottom: 1rem;
+  }
+}
+
+/* Scrollbar for the sidebar */
+.admin-sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #252b3b transparent;
+}
+
+.admin-sidebar-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+
+.admin-sidebar-scroll::-webkit-scrollbar-thumb {
+  background: #252b3b;
+  border-radius: 9999px;
+}
+
+/* Hide scrollbar for horizontal strips */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* ============================================
+   PREMIUM GLOSSY PILL BUTTONS v2
+   "Glassmorphism-meets-Neumorphism" CTA style
+   - Vertical gradient fills (top-to-bottom, 180deg)
+   - Strong specular highlight at top (top 20%)
+   - Deep chromatic drop shadow + ambient glow
+   - Light rim border (rgba white 0.4)
+   - Hover: translateY(-2px) + intensified glow
+   - Active: translateY(1px) + reduced shadow
+   ============================================ */
+
+.btn-glossy {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 800;
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #ffffff;
+  border: 1.5px solid rgba(255, 255, 255, 0.4);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Strong specular highlight — top 20% bright white sheen (glass look) */
+.btn-glossy::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4) 0%, transparent 100%);
+  pointer-events: none;
+  border-radius: 9999px 9999px 0 0;
+}
+
+.btn-glossy:hover {
+  transform: translateY(-2px);
+}
+
+.btn-glossy:active {
+  transform: translateY(1px);
+}
+
+/* ============================================
+   COLOR VARIANTS — each unique, premium
+   Vertical gradient (180deg): lighter top → deeper bottom
+   Each has: deep chromatic drop shadow + ambient glow
+   ============================================ */
+
+/* Royal Blue — primary action */
+.btn-glossy-blue {
+  background: linear-gradient(180deg, #4D94FF 0%, #0055DD 100%);
+  box-shadow: 0 10px 25px rgba(0, 51, 204, 0.4),
+              0 0 20px rgba(77, 148, 255, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  border-color: rgba(153, 204, 255, 0.5);
+}
+.btn-glossy-blue:hover {
+  box-shadow: 0 14px 35px rgba(0, 51, 204, 0.5),
+              0 0 30px rgba(77, 148, 255, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+/* Deep Indigo / Navy — download / secondary */
+.btn-glossy-indigo {
+  background: linear-gradient(180deg, #312E81 0%, #1E1B4B 100%);
+  box-shadow: 0 10px 25px rgba(30, 27, 75, 0.5),
+              0 0 20px rgba(67, 56, 202, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  border-color: rgba(99, 102, 241, 0.3);
+}
+.btn-glossy-indigo:hover {
+  box-shadow: 0 14px 35px rgba(30, 27, 75, 0.6),
+              0 0 30px rgba(67, 56, 202, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Hot Pink / Magenta — buy now / urgent */
+.btn-glossy-pink {
+  background: linear-gradient(180deg, #F472B6 0%, #DB2777 100%);
+  box-shadow: 0 10px 25px rgba(219, 39, 119, 0.4),
+              0 0 20px rgba(236, 72, 153, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  border-color: rgba(251, 207, 232, 0.4);
+}
+.btn-glossy-pink:hover {
+  box-shadow: 0 14px 35px rgba(219, 39, 119, 0.5),
+              0 0 30px rgba(236, 72, 153, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Charcoal / Black — ghost / dark */
+.btn-glossy-dark {
+  background: linear-gradient(180deg, #1E293B 0%, #0F172A 100%);
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.5),
+              0 0 20px rgba(51, 65, 85, 0.2),
+              inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  border-color: rgba(100, 116, 139, 0.3);
+}
+.btn-glossy-dark:hover {
+  box-shadow: 0 14px 35px rgba(15, 23, 42, 0.6),
+              0 0 30px rgba(51, 65, 85, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Emerald Green — contact / success */
+.btn-glossy-emerald {
+  background: linear-gradient(180deg, #34D399 0%, #047857 100%);
+  box-shadow: 0 10px 25px rgba(4, 120, 87, 0.4),
+              0 0 20px rgba(16, 185, 129, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  border-color: rgba(167, 243, 208, 0.4);
+}
+.btn-glossy-emerald:hover {
+  box-shadow: 0 14px 35px rgba(4, 120, 87, 0.5),
+              0 0 30px rgba(16, 185, 129, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Warm Orange — read more / attention */
+.btn-glossy-orange {
+  background: linear-gradient(180deg, #FB923C 0%, #EA580C 100%);
+  box-shadow: 0 10px 25px rgba(234, 88, 12, 0.4),
+              0 0 20px rgba(249, 115, 22, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  border-color: rgba(254, 215, 170, 0.4);
+}
+.btn-glossy-orange:hover {
+  box-shadow: 0 14px 35px rgba(234, 88, 12, 0.5),
+              0 0 30px rgba(249, 115, 22, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Vivid Purple — learn more / expand */
+.btn-glossy-purple {
+  background: linear-gradient(180deg, #A855F7 0%, #7E22CE 100%);
+  box-shadow: 0 10px 25px rgba(126, 34, 206, 0.4),
+              0 0 20px rgba(147, 51, 234, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  border-color: rgba(221, 214, 254, 0.4);
+}
+.btn-glossy-purple:hover {
+  box-shadow: 0 14px 35px rgba(126, 34, 206, 0.5),
+              0 0 30px rgba(147, 51, 234, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Teal / Turquoise — subscribe */
+.btn-glossy-cyan {
+  background: linear-gradient(180deg, #22D3EE 0%, #0891B2 100%);
+  box-shadow: 0 10px 25px rgba(8, 145, 178, 0.4),
+              0 0 20px rgba(6, 182, 212, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  border-color: rgba(165, 243, 252, 0.4);
+}
+.btn-glossy-cyan:hover {
+  box-shadow: 0 14px 35px rgba(8, 145, 178, 0.5),
+              0 0 30px rgba(6, 182, 212, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Red-Orange / Vermillion — options / danger */
+.btn-glossy-red {
+  background: linear-gradient(180deg, #F97316 0%, #DC2626 100%);
+  box-shadow: 0 10px 25px rgba(220, 38, 38, 0.4),
+              0 0 20px rgba(239, 68, 68, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  border-color: rgba(254, 202, 202, 0.4);
+}
+.btn-glossy-red:hover {
+  box-shadow: 0 14px 35px rgba(220, 38, 38, 0.5),
+              0 0 30px rgba(239, 68, 68, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Yellow → Amber (95% yellow, 5% orange) — Sign Up CTA */
+.btn-glossy-yellow {
+  background: linear-gradient(180deg, #FDE047 0%, #F59E0B 100%);
+  box-shadow: 0 10px 25px rgba(245, 158, 11, 0.4),
+              0 0 20px rgba(252, 211, 77, 0.3),
+              inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  border-color: rgba(254, 240, 138, 0.5);
+  color: #1a1a1a;
+}
+.btn-glossy-yellow:hover {
+  box-shadow: 0 14px 35px rgba(245, 158, 11, 0.5),
+              0 0 30px rgba(252, 211, 77, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  color: #000;
+}
+
+/* Compact variant for tight spaces (icon buttons, small CTAs) */
+.btn-glossy-sm {
+  padding: 0.4rem 1rem;
+  font-size: 0.625rem;
+}
+
+/* Icon-only circular variant (settings gear style) */
+.btn-glossy-circle {
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border-radius: 9999px;
+}
+
+/* ============================================================================
+   PLAYBEAT PREMIUM DESIGN SYSTEM v2 (2026-08)
+   "Black / Charcoal / White / Silver / Subtle Red Accent"
+   ----------------------------------------------------------------------------
+   - Additive: does NOT replace or break any existing token / class.
+   - All new classes prefixed with `.pb-` (PlayBeat premium) to avoid collisions.
+   - Existing components keep working unchanged.
+   - Goal: production-grade contrast, accessibility, touch-friendly targets,
+     and a unified aesthetic shared between storefront and admin.
+   ============================================================================ */
+
+@layer base {
+  :root {
+    /* ---------- Premium palette (PlayBeat v2) ---------- */
+    --pb-black:        #000000;
+    --pb-ink:          #050505;  /* page background — true near-black */
+    --pb-charcoal:     #0E0E10;  /* primary card / surface */
+    --pb-charcoal-2:  #16161A;  /* elevated surface (hover / active) */
+    --pb-charcoal-3:  #1E1E22;  /* tertiary surface (input, chip) */
+    --pb-line:         #2A2A2F;  /* default border */
+    --pb-line-soft:   rgba(255, 255, 255, 0.06);
+    --pb-silver:       #E5E7EB;  /* primary text on dark — soft silver-white */
+    --pb-silver-2:     #B8BABF;  /* secondary text */
+    --pb-silver-3:     #8A8C92;  /* tertiary text / labels */
+    --pb-silver-4:     #5E6066;  /* muted / placeholder */
+    --pb-white:        #FFFFFF;
+    --pb-red:          #E11D2E;  /* subtle red accent — primary CTA */
+    --pb-red-bright:   #FF2E42;  /* hover / live indicator */
+    --pb-red-soft:     rgba(225, 29, 46, 0.12);
+    --pb-red-line:     rgba(225, 29, 46, 0.35);
+    --pb-gold:         #FFC928;  /* ratings — kept from v1 for warmth */
+    --pb-emerald:      #10B981;  /* in-stock — kept for status semantics */
+    --pb-amber:        #F59E0B;  /* low-stock — kept for status semantics */
+
+    /* ---------- Spacing & radii ---------- */
+    --pb-radius-sm:    8px;
+    --pb-radius:       12px;
+    --pb-radius-lg:    16px;
+    --pb-radius-xl:    20px;
+    --pb-space-1:      0.25rem;
+    --pb-space-2:      0.5rem;
+    --pb-space-3:      0.75rem;
+    --pb-space-4:      1rem;
+    --pb-space-5:      1.5rem;
+    --pb-space-6:      2rem;
+    --pb-space-8:      3rem;
+
+    /* ---------- Shadows ---------- */
+    --pb-shadow-sm:   0 1px 2px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.02);
+    --pb-shadow:      0 4px 12px -2px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    --pb-shadow-lg:   0 12px 32px -8px rgba(0, 0, 0, 0.6), 0 4px 12px -2px rgba(0, 0, 0, 0.4);
+    --pb-shadow-red:  0 8px 24px -6px rgba(225, 29, 46, 0.35), 0 0 0 1px rgba(225, 29, 46, 0.12);
+    --pb-ring-focus:  0 0 0 3px rgba(225, 29, 46, 0.4);
+  }
+}
+
+/* ============================================================================
+   PREMIUM SURFACES
+   ============================================================================ */
+
+/* Page background — true near-black with very subtle red glow */
+.pb-bg-premium {
+  background-color: var(--pb-ink);
+  background-image:
+    radial-gradient(at 0% 0%, rgba(225, 29, 46, 0.04) 0px, transparent 45%),
+    radial-gradient(at 100% 100%, rgba(255, 255, 255, 0.015) 0px, transparent 50%);
+  min-height: 100vh;
+}
+
+.pb-hero-title {
+  font-family: 'Outfit', sans-serif;
+  text-wrap: balance;
+  text-shadow: 0 8px 35px rgba(0, 0, 0, 0.35);
+}
+
+/* Primary premium card — black/charcoal with silver border */
+.pb-card {
+  background: linear-gradient(180deg, var(--pb-charcoal) 0%, var(--pb-ink) 100%);
+  border: 1px solid var(--pb-line);
+  border-radius: var(--pb-radius-lg);
+  box-shadow: var(--pb-shadow);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pb-card:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: var(--pb-shadow-lg);
+}
+
+/* Subtle elevated panel (admin sidebars, secondary cards) */
+.pb-panel {
+  background: var(--pb-charcoal);
+  border: 1px solid var(--pb-line);
+  border-radius: var(--pb-radius);
+  box-shadow: var(--pb-shadow-sm);
+}
+
+/* Inset / input surface */
+.pb-inset {
+  background: var(--pb-charcoal-3);
+  border: 1px solid var(--pb-line);
+  border-radius: var(--pb-radius-sm);
+  color: var(--pb-silver);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+.pb-inset:focus,
+.pb-inset:focus-visible {
+  outline: none;
+  border-color: var(--pb-red);
+  box-shadow: var(--pb-ring-focus);
+  background: var(--pb-charcoal-2);
+}
+
+.pb-inset::placeholder {
+  color: var(--pb-silver-4);
+}
+
+/* ============================================================================
+   PREMIUM PRODUCT CARD (v2 — replaces .product-card-premium visually)
+   ----------------------------------------------------------------------------
+   Shared by storefront catalog, search results, related rails, and admin
+   live-preview pane. Designed for:
+   - 4-5 columns desktop, 2-3 tablet, 1-2 mobile.
+   - Equal heights via flex column + min-height on title/desc.
+   - High contrast on prices, badges, buttons.
+   - Hover: lift + image zoom + red accent ring.
+   - Touch: quick view always visible.
+   ============================================================================ */
+
+.pb-product-card {
+  background: linear-gradient(180deg, var(--pb-charcoal) 0%, var(--pb-ink) 100%);
+  border: 1px solid var(--pb-line);
+  border-radius: var(--pb-radius-lg);
+  box-shadow: var(--pb-shadow);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+  position: relative;
+  overflow: hidden;
+}
+
+.pb-product-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(225, 29, 46, 0.45);
+  box-shadow:
+    var(--pb-shadow-lg),
+    0 0 0 1px rgba(225, 29, 46, 0.18),
+    0 18px 40px -12px rgba(225, 29, 46, 0.22);
+}
+
+.pb-product-card:hover .pb-pc-image {
+  transform: scale(1.06);
+}
+
+.pb-product-card:hover .pb-pc-title {
+  color: #FFFFFF;
+}
+
+/* On focus (keyboard), show the same red accent ring without lift */
+.pb-product-card:focus-within {
+  border-color: rgba(225, 29, 46, 0.5);
+  box-shadow: var(--pb-shadow-lg), var(--pb-ring-focus);
+}
+
+.pb-pc-image {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.pb-pc-title {
+  transition: color 0.2s ease;
+}
+
+/* Quick view reveal — same behavior as v1, just renamed */
+.pb-pc-quickview {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.22s ease, transform 0.22s ease, background-color 0.18s ease;
+}
+
+.pb-product-card:hover .pb-pc-quickview {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (hover: none) {
+  .pb-pc-quickview {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================================================
+   PREMIUM BADGES (NEW / SALE / POPULAR / BEST SELLER / LIMITED / -%)
+   ----------------------------------------------------------------------------
+   Black-with-red-border system. High contrast on every background.
+   ============================================================================ */
+
+.pb-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 9999px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  line-height: 1.2;
+  backdrop-filter: blur(8px);
+  border: 1px solid transparent;
+  white-space: nowrap;
+}
+
+.pb-badge-default    { background: rgba(0, 0, 0, 0.65); color: var(--pb-silver); border-color: rgba(255, 255, 255, 0.12); }
+.pb-badge-red        { background: rgba(225, 29, 46, 0.92); color: #FFFFFF; border-color: rgba(255, 80, 95, 0.9); }
+.pb-badge-yellow     { background: rgba(255, 201, 40, 0.92); color: #1a1a1a; border-color: rgba(255, 220, 100, 0.9); }
+.pb-badge-green      { background: rgba(16, 185, 129, 0.92); color: #FFFFFF; border-color: rgba(52, 211, 153, 0.9); }
+.pb-badge-blue       { background: rgba(59, 130, 246, 0.92); color: #FFFFFF; border-color: rgba(96, 165, 250, 0.9); }
+.pb-badge-silver     { background: rgba(229, 231, 235, 0.92); color: #0E0E10; border-color: rgba(255, 255, 255, 0.9); }
+.pb-badge-dark       { background: rgba(14, 14, 16, 0.92); color: var(--pb-silver); border-color: var(--pb-line); }
+
+/* ============================================================================
+   PREMIUM BUTTONS (CTA system)
+   ----------------------------------------------------------------------------
+   - .pb-btn-primary    → red gradient (main CTA: Add to Cart, Buy Now)
+   - .pb-btn-secondary  → silver border (Quick View, secondary)
+   - .pb-btn-ghost      → transparent (wishlist, icon-only)
+   - .pb-btn-dark       → charcoal (admin toolbar, tertiary)
+   - .pb-btn-success    → emerald (alt CTA where needed)
+   - .pb-btn-sm         → size modifier
+   - .pb-btn-block      → full width
+   ============================================================================ */
+
+.pb-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--pb-radius-sm);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-decoration: none;
+  user-select: none;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.pb-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--pb-ring-focus);
+}
+
+.pb-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.pb-btn-primary {
+  background: linear-gradient(180deg, #FF2E42 0%, #E11D2E 100%);
+  color: #FFFFFF;
+  border-color: rgba(255, 80, 95, 0.5);
+  box-shadow: 0 4px 12px -2px rgba(225, 29, 46, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.pb-btn-primary:hover {
+  background: linear-gradient(180deg, #FF4458 0%, #E11D2E 100%);
+  box-shadow: 0 6px 20px -4px rgba(225, 29, 46, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  transform: translateY(-1px);
+}
+
+.pb-btn-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.pb-btn-secondary {
+  background: var(--pb-charcoal-2);
+  color: var(--pb-silver);
+  border-color: var(--pb-line);
+  box-shadow: var(--pb-shadow-sm);
+}
+
+.pb-btn-secondary:hover {
+  background: var(--pb-charcoal-3);
+  color: var(--pb-white);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.pb-btn-ghost {
+  background: transparent;
+  color: var(--pb-silver-2);
+  border-color: transparent;
+}
+
+.pb-btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--pb-white);
+}
+
+.pb-btn-dark {
+  background: var(--pb-charcoal-3);
+  color: var(--pb-silver);
+  border-color: var(--pb-line);
+}
+
+.pb-btn-dark:hover {
+  background: var(--pb-charcoal-2);
+  color: var(--pb-white);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.pb-btn-success {
+  background: linear-gradient(180deg, #10B981 0%, #059669 100%);
+  color: #FFFFFF;
+  border-color: rgba(52, 211, 153, 0.5);
+  box-shadow: 0 4px 12px -2px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.pb-btn-success:hover {
+  background: linear-gradient(180deg, #34D399 0%, #059669 100%);
+  box-shadow: 0 6px 20px -4px rgba(16, 185, 129, 0.55);
+  transform: translateY(-1px);
+}
+
+.pb-btn-sm {
+  padding: 0.4rem 0.9rem;
+  font-size: 0.6875rem;
+}
+
+.pb-btn-block {
+  width: 100%;
+}
+
+/* ============================================================================
+   PREMIUM PRICE BLOCK
+   ----------------------------------------------------------------------------
+   Designed for visual dominance — current price is large + white,
+   strike-through is silver-3, discount % is red badge, savings is small emerald text.
+   ============================================================================ */
+
+.pb-price-current {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.125rem;
+  font-weight: 900;
+  color: var(--pb-white);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+.pb-price-original {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--pb-silver-3);
+  text-decoration: line-through;
+  text-decoration-color: rgba(225, 29, 46, 0.6);
+  line-height: 1;
+}
+
+.pb-price-savings {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: var(--pb-emerald);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* ============================================================================
+   PREMIUM STATUS PILLS (stock / availability)
+   ============================================================================ */
+
+.pb-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.55rem;
+  border-radius: 9999px;
+  border: 1px solid transparent;
+}
+
+.pb-status-in-stock    { color: var(--pb-emerald); background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); }
+.pb-status-low-stock   { color: var(--pb-amber);   background: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.3); }
+.pb-status-out-stock   { color: #FF2E42;            background: rgba(225, 29, 46, 0.1); border-color: rgba(225, 29, 46, 0.35); }
+.pb-status-published   { color: var(--pb-emerald); background: rgba(16, 185, 129, 0.1); border-color: rgba(16, 185, 129, 0.3); }
+.pb-status-draft       { color: var(--pb-silver-2); background: rgba(255, 255, 255, 0.04); border-color: var(--pb-line); }
+.pb-status-archived    { color: var(--pb-silver-3); background: rgba(255, 255, 255, 0.03); border-color: var(--pb-line); }
+
+/* ============================================================================
+   PREMIUM VARIANT SELECTOR (chips)
+   ============================================================================ */
+
+.pb-variant-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.7rem;
+  border-radius: var(--pb-radius-sm);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--pb-silver-2);
+  background: var(--pb-charcoal-3);
+  border: 1px solid var(--pb-line);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pb-variant-chip:hover {
+  color: var(--pb-white);
+  border-color: rgba(255, 255, 255, 0.25);
+  background: var(--pb-charcoal-2);
+}
+
+.pb-variant-chip.is-selected {
+  color: #FFFFFF;
+  background: rgba(225, 29, 46, 0.18);
+  border-color: rgba(225, 29, 46, 0.55);
+  font-weight: 700;
+}
+
+.pb-variant-chip:focus-visible {
+  outline: none;
+  box-shadow: var(--pb-ring-focus);
+}
+
+/* ============================================================================
+   PREMIUM SKELETON (loading state)
+   ============================================================================ */
+
+@keyframes pb-shimmer {
+  0% { background-position: -468px 0; }
+  100% { background-position: 468px 0; }
+}
+
+.pb-skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(42, 42, 47, 0.3) 25%,
+    rgba(42, 42, 47, 0.6) 50%,
+    rgba(42, 42, 47, 0.3) 75%
+  );
+  background-size: 936px 100%;
+  animation: pb-shimmer 1.4s ease-in-out infinite;
+  border-radius: var(--pb-radius-sm);
+}
+
+.pb-skeleton-card {
+  background: var(--pb-charcoal);
+  border: 1px solid var(--pb-line);
+  border-radius: var(--pb-radius-lg);
+  overflow: hidden;
+}
+
+/* ============================================================================
+   PREMIUM FORM ELEMENTS (admin + auth)
+   ============================================================================ */
+
+.pb-input {
+  background: var(--pb-charcoal-3);
+  border: 1px solid var(--pb-line);
+  border-radius: var(--pb-radius-sm);
+  color: var(--pb-silver);
+  padding: 0.6rem 0.85rem;
+  font-size: 0.8125rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+  width: 100%;
+}
+
+.pb-input:focus,
+.pb-input:focus-visible {
+  outline: none;
+  border-color: var(--pb-red);
+  box-shadow: var(--pb-ring-focus);
+  background: var(--pb-charcoal-2);
+}
+
+.pb-input::placeholder {
+  color: var(--pb-silver-4);
+}
+
+.pb-input.input-error {
+  border-color: rgba(255, 46, 66, 0.7);
+  box-shadow: 0 0 0 3px rgba(225, 29, 46, 0.15);
+}
+
+.pb-label {
+  display: block;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: var(--pb-silver-2);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.4rem;
+}
+
+.pb-select {
+  background: var(--pb-charcoal-3);
+  border: 1px solid var(--pb-line);
+  border-radius: var(--pb-radius-sm);
+  color: var(--pb-silver);
+  padding: 0.55rem 0.85rem;
+  font-size: 0.8125rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23B8BABF' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.65rem center;
+  background-size: 0.95rem;
+  padding-right: 2rem;
+}
+
+.pb-select:focus,
+.pb-select:focus-visible {
+  outline: none;
+  border-color: var(--pb-red);
+  box-shadow: var(--pb-ring-focus);
+}
+
+.pb-select option {
+  background: var(--pb-charcoal);
+  color: var(--pb-silver);
+}
+
+/* ============================================================================
+   PREMIUM DIVIDER & UTILITIES
+   ============================================================================ */
+
+.pb-divider {
+  height: 1px;
+  background: var(--pb-line);
+  border: none;
+  margin: var(--pb-space-4) 0;
+}
+
+.pb-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--pb-red-bright);
+}
+
+.pb-eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 1.5rem;
+  height: 2px;
+  background: var(--pb-red);
+  border-radius: 1px;
+}
+
+.pb-link {
+  color: var(--pb-silver);
+  text-decoration: none;
+  transition: color 0.15s ease;
+  border-bottom: 1px solid transparent;
+}
+
+.pb-link:hover {
+  color: var(--pb-white);
+  border-bottom-color: var(--pb-red);
+}
+
+/* ============================================================================
+   PREMIUM FOCUS RING (global — applies to all interactive elements by default)
+   ----------------------------------------------------------------------------
+   Removes default outline, replaces with a 3px red ring on focus-visible.
+   Keeps keyboard navigation visible and accessible.
+   ============================================================================ */
+
+*:focus-visible {
+  outline: none;
+  box-shadow: var(--pb-ring-focus);
+  border-radius: var(--pb-radius-sm);
+}
+
+/* Don't double-apply on inputs that already have their own focus ring */
+.pb-input:focus-visible,
+.pb-select:focus-visible,
+.pb-inset:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  box-shadow: var(--pb-ring-focus) !important;
+}
+
+/* ============================================================================
+   PREMIUM GRID HELPER
+   ----------------------------------------------------------------------------
+   Standard responsive product grid: 2 cols mobile, 3 tablet, 4-5 desktop.
+   ============================================================================ */
+
+.pb-grid-products {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--pb-space-4);
+}
+
+@media (min-width: 640px) {
+  .pb-grid-products {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--pb-space-5);
+  }
+}
+
+@media (min-width: 1024px) {
+  .pb-grid-products {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--pb-space-5);
+  }
+}
+
+@media (min-width: 1536px) {
+  .pb-grid-products {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+/* Compact variant for related-products rails (smaller cards) */
+.pb-grid-products-compact {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--pb-space-3);
+}
+
+@media (min-width: 768px) {
+  .pb-grid-products-compact {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .pb-grid-products-compact {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* ============================================================================
+   PREMIUM IMAGE FALLBACK
+   ----------------------------------------------------------------------------
+   Shown when product.images is empty or the URL fails to load.
+   ============================================================================ */
+
+.pb-image-fallback {
+  background:
+    linear-gradient(135deg, var(--pb-charcoal-2) 0%, var(--pb-charcoal) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pb-silver-4);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.pb-image-fallback::after {
+  content: 'No Image';
+}
+
+/* ============================================================================
+   PREMIUM SECTION HEADER
+   ----------------------------------------------------------------------------
+   Shared between storefront sections.
+   ============================================================================ */
+
+.pb-section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: var(--pb-space-6);
+}
+
+.pb-section-header h2 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.875rem;
+  font-weight: 800;
+  color: var(--pb-white);
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+@media (min-width: 768px) {
+  .pb-section-header h2 {
+    font-size: 2.25rem;
+  }
+}
+
+.pb-section-header p {
+  color: var(--pb-silver-3);
+  font-size: 0.875rem;
+  max-width: 42rem;
+}
+
+/* ============================================================================
+   PREMIUM TOGGLE SWITCH (admin: featured / trending / visibility)
+   ============================================================================ */
+
+.pb-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.pb-toggle input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.pb-toggle-track {
+  width: 2.5rem;
+  height: 1.4rem;
+  background: var(--pb-charcoal-3);
+  border: 1px solid var(--pb-line);
+  border-radius: 9999px;
+  position: relative;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.pb-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: calc(1.4rem - 6px);
+  height: calc(1.4rem - 6px);
+  background: var(--pb-silver-2);
+  border-radius: 9999px;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease;
+}
+
+.pb-toggle input:checked + .pb-toggle-track {
+  background: rgba(225, 29, 46, 0.18);
+  border-color: rgba(225, 29, 46, 0.5);
+}
+
+.pb-toggle input:checked + .pb-toggle-track .pb-toggle-thumb {
+  transform: translateX(calc(2.5rem - 1.4rem));
+  background: var(--pb-red-bright);
+}
+
+.pb-toggle input:focus-visible + .pb-toggle-track {
+  box-shadow: var(--pb-ring-focus);
+}
+
+/* ============================================================================
+   PREMIUM TAB / SEGMENTED CONTROL
+   ============================================================================ */
+
+.pb-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.25rem;
+  background: var(--pb-charcoal);
+  border: 1px solid var(--pb-line);
+  border-radius: var(--pb-radius);
+}
+
+.pb-tab {
+  padding: 0.4rem 0.9rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pb-silver-3);
+  background: transparent;
+  border: none;
+  border-radius: var(--pb-radius-sm);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.pb-tab:hover {
+  color: var(--pb-silver);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.pb-tab.is-active {
+  color: #FFFFFF;
+  background: linear-gradient(180deg, #FF2E42 0%, #E11D2E 100%);
+  box-shadow: 0 2px 6px rgba(225, 29, 46, 0.4);
+}
+
+/* ============================================================================
+   PREMIUM KPI CARD (admin dashboard)
+   ============================================================================ */
+
+.pb-kpi {
+  background: linear-gradient(180deg, var(--pb-charcoal) 0%, var(--pb-ink) 100%);
+  border: 1px solid var(--pb-line);
+  border-radius: var(--pb-radius-lg);
+  padding: var(--pb-space-5);
+  box-shadow: var(--pb-shadow);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.pb-kpi:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+.pb-kpi-accent {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: var(--pb-radius-lg) var(--pb-radius-lg) 0 0;
+}
+
+.pb-kpi-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pb-silver-3);
+}
+
+.pb-kpi-value {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--pb-white);
+  line-height: 1;
+  margin-top: 0.5rem;
+  letter-spacing: -0.02em;
+}
+
+.pb-kpi-delta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  margin-top: 0.4rem;
+}
+
+.pb-kpi-delta.up    { color: var(--pb-emerald); }
+.pb-kpi-delta.down  { color: #FF2E42; }
+.pb-kpi-delta.flat  { color: var(--pb-silver-3); }
+
+/* ============================================================================
+   PREMIUM TABLE (admin)
+   ============================================================================ */
+
+.pb-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.8125rem;
+}
+
+.pb-table thead th {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pb-silver-3);
+  padding: 0.75rem 1rem;
+  text-align: left;
+  background: var(--pb-charcoal);
+  border-bottom: 1px solid var(--pb-line);
+}
+
+.pb-table tbody td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--pb-line);
+  color: var(--pb-silver);
+  vertical-align: middle;
+}
+
+.pb-table tbody tr {
+  transition: background-color 0.15s ease;
+}
+
+.pb-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.pb-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ============================================================================
+   PREMIUM ANIMATION (entrance)
+   ============================================================================ */
+
+@keyframes pb-fade-up {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.pb-fade-up {
+  animation: pb-fade-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes pb-pulse-red {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(225, 29, 46, 0.6); }
+  50%      { box-shadow: 0 0 0 6px rgba(225, 29, 46, 0); }
+}
+
+.pb-pulse-red {
+  animation: pb-pulse-red 2s ease-in-out infinite;
+}
+
+/* ============================================================================
+   PREMIUM SCROLLBAR
+   ============================================================================ */
+
+.pb-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.pb-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pb-scroll::-webkit-scrollbar-thumb {
+  background: var(--pb-line);
+  border-radius: 9999px;
+}
+
+.pb-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--pb-silver-4);
+}
+
+/* ============================================================================
+   PREMIUM MOBILE FILTER DRAWER (storefront search/filter)
+   ============================================================================ */
+
+.pb-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 60;
+}
+
+.pb-drawer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  max-height: 85vh;
+  background: var(--pb-charcoal);
+  border-top: 1px solid var(--pb-line);
+  border-radius: var(--pb-radius-xl) var(--pb-radius-xl) 0 0;
+  box-shadow: 0 -12px 32px -8px rgba(0, 0, 0, 0.6);
+  z-index: 61;
+  overflow-y: auto;
+  padding: var(--pb-space-5);
+}
+
+@media (min-width: 768px) {
+  .pb-drawer-overlay,
+  .pb-drawer { display: none !important; }
+}
+
+/* ============================================================================
+   PREMIUM RESPONSIVE HELPERS
+   ============================================================================ */
+
+.pb-hide-mobile { display: none; }
+@media (min-width: 768px) { .pb-hide-mobile { display: initial; } }
+
+.pb-show-mobile { display: initial; }
+@media (min-width: 768px) { .pb-show-mobile { display: none; } }
+
+/* Container max-width for storefront sections */
+.pb-container {
+  width: 100%;
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--pb-space-4);
+  padding-right: var(--pb-space-4);
+}
+
+@media (min-width: 768px) {
+  .pb-container {
+    padding-left: var(--pb-space-6);
+    padding-right: var(--pb-space-6);
+  }
+}

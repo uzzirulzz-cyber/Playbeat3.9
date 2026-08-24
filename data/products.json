@@ -1,0 +1,892 @@
+[
+  {
+    "title": "text-start",
+    "region": "flex",
+    "price": null,
+    "priceRaw": "text-base",
+    "url": "h-button href (2)",
+    "sku": "text-start",
+    "image": "",
+    "description": "text-start"
+  },
+  {
+    "title": "CapCut Pro Subscription (iOS, Android, PC) 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 1.1,
+    "priceRaw": "1.10",
+    "url": "https://www.g2g.com/categories/capcut-accounts/offer/group?fa=c0107a82%3A89c8e24a&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "capcut-pro-subscription-ios-android-pc-1-month-private-account-global",
+    "image": "",
+    "description": "CapCut Pro Subscription (iOS, Android, PC) 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "Gmail Phone Verified Account",
+    "region": "GLOBAL",
+    "price": 0.03,
+    "priceRaw": "0.03",
+    "url": "https://www.g2g.com/categories/e-mail-accounts/offer/group?fa=5fb7e681%3A4ce94290&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "gmail-phone-verified-account",
+    "image": "",
+    "description": "Gmail Phone Verified Account"
+  },
+  {
+    "title": "Cursor AI Pro Subscription 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 8.0,
+    "priceRaw": "8.00",
+    "url": "https://www.g2g.com/categories/cursor-ai-accounts/offer/group?fa=c1e67742%3A7c44d033&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "cursor-ai-pro-subscription-1-month-private-account-global",
+    "image": "",
+    "description": "Cursor AI Pro Subscription 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "Google Storage 5 TB Subscription 1 Month - Activation Link (Global)",
+    "region": "GLOBAL",
+    "price": 0.5,
+    "priceRaw": "0.5",
+    "url": "https://www.g2g.com/categories/google-activation-links/offer/group?fa=dc18c28a%3Afe40c787&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "google-storage-5-tb-subscription-1-month-activation-link-global",
+    "image": "",
+    "description": "Google Storage 5 TB Subscription 1 Month - Activation Link (Global)"
+  },
+  {
+    "title": "Adobe Creative Cloud Subscription 1 Month - Key (Global)",
+    "region": "GLOBAL",
+    "price": 13.39,
+    "priceRaw": "13.39",
+    "url": "https://www.g2g.com/categories/adobe-gift-cards/offer/group?fa=807dc4c8%3A0ff087fe&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "adobe-creative-cloud-subscription-1-month-key-global",
+    "image": "",
+    "description": "Adobe Creative Cloud Subscription 1 Month - Key (Global)"
+  },
+  {
+    "title": "Lovable Pro",
+    "region": "GLOBAL",
+    "price": 12.95,
+    "priceRaw": "12.95",
+    "url": "https://www.g2g.com/categories/lovable-gift-cards/offer/group?fa=8ad68442%3A80a20fac&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "lovable-pro",
+    "image": "",
+    "description": "Lovable Pro"
+  },
+  {
+    "title": "Outlook Phone Verified Account",
+    "region": "GLOBAL",
+    "price": 0.02,
+    "priceRaw": "0.02",
+    "url": "https://www.g2g.com/categories/e-mail-accounts/offer/group?fa=5fb7e681%3A5db35deb&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "outlook-phone-verified-account",
+    "image": "",
+    "description": "Outlook Phone Verified Account"
+  },
+  {
+    "title": "Cursor AI Ultra Plan Subscription 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 80.0,
+    "priceRaw": "80.00",
+    "url": "https://www.g2g.com/categories/cursor-ai-accounts/offer/group?fa=c1e67742%3Ab3c53e7c&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "cursor-ai-ultra-plan-subscription-1-month-private-account-global",
+    "image": "",
+    "description": "Cursor AI Ultra Plan Subscription 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "Google AI Ultra Subscription 30TB 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 20.0,
+    "priceRaw": "20.00",
+    "url": "https://www.g2g.com/categories/google-accounts/offer/group?fa=9f081a5e%3A6473d64b&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "google-ai-ultra-subscription-30tb-1-month-private-account-global",
+    "image": "",
+    "description": "Google AI Ultra Subscription 30TB 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "Adobe subscription 1 month Account",
+    "region": "GLOBAL",
+    "price": 7.14,
+    "priceRaw": "7.14",
+    "url": "https://www.g2g.com/categories/adobe-accounts/offer/group?fa=53df4a10%3A4819413f&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "adobe-subscription-1-month-account",
+    "image": "",
+    "description": "Adobe subscription 1 month Account"
+  },
+  {
+    "title": "Hotmail Phone Verified Account",
+    "region": "GLOBAL",
+    "price": 0.01,
+    "priceRaw": "0.01",
+    "url": "https://www.g2g.com/categories/e-mail-accounts/offer/group?fa=5fb7e681%3A8cc39212&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "hotmail-phone-verified-account",
+    "image": "",
+    "description": "Hotmail Phone Verified Account"
+  },
+  {
+    "title": "Mail New Account",
+    "region": "GLOBAL",
+    "price": 0.04,
+    "priceRaw": "0.04",
+    "url": "https://www.g2g.com/categories/e-mail-accounts/offer/group?fa=5fb7e681%3A71932c45&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "mail-new-account",
+    "image": "",
+    "description": "Mail New Account"
+  },
+  {
+    "title": "CapCut Pro Subscription (Browser, PC) 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 1.0,
+    "priceRaw": "1.00",
+    "url": "https://www.g2g.com/categories/capcut-accounts/offer/group?fa=c0107a82%3A4eac8f79&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "capcut-pro-subscription-browser-pc-1-month-private-account-global",
+    "image": "",
+    "description": "CapCut Pro Subscription (Browser, PC) 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "CapCut Team Subscription 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 1.33,
+    "priceRaw": "1.33",
+    "url": "https://www.g2g.com/categories/capcut-accounts/offer/group?fa=c0107a82%3Aea0b871b&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "capcut-team-subscription-1-month-private-account-global",
+    "image": "",
+    "description": "CapCut Team Subscription 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "CNVA Pro Subscription 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 0.1,
+    "priceRaw": "0.1",
+    "url": "https://www.g2g.com/categories/cnva-accounts/offer/group?fa=d4b3223b%3Afbd6fc4a&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "cnva-pro-subscription-1-month-private-account-global",
+    "image": "",
+    "description": "CNVA Pro Subscription 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "CapCut Pro Subscription 1 Month (US)",
+    "region": "US",
+    "price": 9.0,
+    "priceRaw": "9.00",
+    "url": "https://www.g2g.com/categories/capcut-top-up/offer/group?fa=ab0b9051%3A4e57cf93&region_id=dfced32f-2f0a-4df5-a218-1e068cfadffa",
+    "sku": "capcut-pro-subscription-1-month-us",
+    "image": "",
+    "description": "CapCut Pro Subscription 1 Month (US)"
+  },
+  {
+    "title": "CapCut Pro Subscription 1 Month (EU)",
+    "region": "EU",
+    "price": 14.99,
+    "priceRaw": "14.99",
+    "url": "https://www.g2g.com/categories/capcut-top-up/offer/group?fa=130e2a59%3A21516105&region_id=ac3f85c1-7562-437e-b125-e89576b9a38e",
+    "sku": "capcut-pro-subscription-1-month-eu",
+    "image": "",
+    "description": "CapCut Pro Subscription 1 Month (EU)"
+  },
+  {
+    "title": "CapCut Standard Subscription 1 Month (EU)",
+    "region": "EU",
+    "price": 7.99,
+    "priceRaw": "7.99",
+    "url": "https://www.g2g.com/categories/capcut-top-up/offer/group?fa=130e2a59%3A6d49c5da&region_id=ac3f85c1-7562-437e-b125-e89576b9a38e",
+    "sku": "capcut-standard-subscription-1-month-eu",
+    "image": "",
+    "description": "CapCut Standard Subscription 1 Month (EU)"
+  },
+  {
+    "title": "Google AI Pro Subscription 1 Month - Shared Account (Global)",
+    "region": "GLOBAL",
+    "price": 1.07,
+    "priceRaw": "1.07",
+    "url": "https://www.g2g.com/categories/google-accounts/offer/group?fa=9f081a5e%3Af0e28745&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "google-ai-pro-subscription-1-month-shared-account-global",
+    "image": "",
+    "description": "Google AI Pro Subscription 1 Month - Shared Account (Global)"
+  },
+  {
+    "title": "Firstmail New Account",
+    "region": "GLOBAL",
+    "price": 0.01,
+    "priceRaw": "0.01",
+    "url": "https://www.g2g.com/categories/e-mail-accounts/offer/group?fa=5fb7e681%3Afb276b3f&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "firstmail-new-account",
+    "image": "",
+    "description": "Firstmail New Account"
+  },
+  {
+    "title": "GMX Email New Account",
+    "region": "GLOBAL",
+    "price": 0.09,
+    "priceRaw": "0.09",
+    "url": "https://www.g2g.com/categories/e-mail-accounts/offer/group?fa=5fb7e681%3A970257b8&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "gmx-email-new-account",
+    "image": "",
+    "description": "GMX Email New Account"
+  },
+  {
+    "title": "Rambler Mail New Account",
+    "region": "GLOBAL",
+    "price": 0.02,
+    "priceRaw": "0.02",
+    "url": "https://www.g2g.com/categories/e-mail-accounts/offer/group?fa=5fb7e681%3A92c0b82d&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "rambler-mail-new-account",
+    "image": "",
+    "description": "Rambler Mail New Account"
+  },
+  {
+    "title": "Claude Pro Subscription 1 Month - Shared Account (Global)",
+    "region": "GLOBAL",
+    "price": 5.85,
+    "priceRaw": "5.85",
+    "url": "https://www.g2g.com/categories/claude-accounts/offer/group?fa=d769c0bd%3Acf0b1f95&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "claude-pro-subscription-1-month-shared-account-global",
+    "image": "",
+    "description": "Claude Pro Subscription 1 Month - Shared Account (Global)"
+  },
+  {
+    "title": "Google AI Pro 5TB + Gemini Advanced Subscription 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 1.0,
+    "priceRaw": "1.00",
+    "url": "https://www.g2g.com/categories/google-accounts/offer/group?fa=9f081a5e%3Ac2932b9d&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "google-ai-pro-5tb-gemini-advanced-subscription-1-month-private-account-global",
+    "image": "",
+    "description": "Google AI Pro 5TB + Gemini Advanced Subscription 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "Hotmail New Account",
+    "region": "GLOBAL",
+    "price": 0.01,
+    "priceRaw": "0.01",
+    "url": "https://www.g2g.com/categories/e-mail-accounts/offer/group?fa=5fb7e681%3A6e46a5ae&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "hotmail-new-account",
+    "image": "",
+    "description": "Hotmail New Account"
+  },
+  {
+    "title": "Cursor AI Pro+ Plan Subscription 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 20.0,
+    "priceRaw": "20.00",
+    "url": "https://www.g2g.com/categories/cursor-ai-accounts/offer/group?fa=c1e67742%3A86795ab8&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "cursor-ai-pro-plan-subscription-1-month-private-account-global",
+    "image": "",
+    "description": "Cursor AI Pro+ Plan Subscription 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "Grok SuperGrok Subscription 1 Month - Shared Account (Global)",
+    "region": "GLOBAL",
+    "price": 7.5,
+    "priceRaw": "7.50",
+    "url": "https://www.g2g.com/categories/grok-accounts/offer/group?fa=19400336%3Ad242d6b3&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "grok-supergrok-subscription-1-month-shared-account-global",
+    "image": "",
+    "description": "Grok SuperGrok Subscription 1 Month - Shared Account (Global)"
+  },
+  {
+    "title": "Lovable AI Pro Subscription 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 1.0,
+    "priceRaw": "1.00",
+    "url": "https://www.g2g.com/categories/lovable-accounts/offer/group?fa=d4a4c08d%3A9404c497&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "lovable-ai-pro-subscription-1-month-private-account-global",
+    "image": "",
+    "description": "Lovable AI Pro Subscription 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "Higgsfield Pro 1 Month Account (Global)",
+    "region": "GLOBAL",
+    "price": 40.0,
+    "priceRaw": "40.00",
+    "url": "https://www.g2g.com/categories/higgsfield-accounts/offer/group?fa=903dc27f%3A0608b860&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "higgsfield-pro-1-month-account-global",
+    "image": "",
+    "description": "Higgsfield Pro 1 Month Account (Global)"
+  },
+  {
+    "title": "Claude Pro Subscription 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 23.82,
+    "priceRaw": "23.82",
+    "url": "https://www.g2g.com/categories/claude-accounts/offer/group?fa=d769c0bd%3Afece105b&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "claude-pro-subscription-1-month-private-account-global",
+    "image": "",
+    "description": "Claude Pro Subscription 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "Claude Max Subscription 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 148.78,
+    "priceRaw": "148.78",
+    "url": "https://www.g2g.com/categories/claude-accounts/offer/group?fa=d769c0bd%3A05c8eb3c&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "claude-max-subscription-1-month-private-account-global",
+    "image": "",
+    "description": "Claude Max Subscription 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "Grok SuperGrok Subscription 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 15.0,
+    "priceRaw": "15.00",
+    "url": "https://www.g2g.com/categories/grok-accounts/offer/group?fa=19400336%3A4ef9c402&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "grok-supergrok-subscription-1-month-private-account-global",
+    "image": "",
+    "description": "Grok SuperGrok Subscription 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "Replit Core Subscription 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 9.75,
+    "priceRaw": "9.75",
+    "url": "https://www.g2g.com/categories/replit-accounts/offer/group?fa=dda09dc0%3A767502a1&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "replit-core-subscription-1-month-private-account-global",
+    "image": "",
+    "description": "Replit Core Subscription 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "GMX Email 1 Month+ Account",
+    "region": "GLOBAL",
+    "price": 0.18,
+    "priceRaw": "0.18",
+    "url": "https://www.g2g.com/categories/e-mail-accounts/offer/group?fa=5fb7e681%3Aa8d2d40e&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "gmx-email-1-month-account",
+    "image": "",
+    "description": "GMX Email 1 Month+ Account"
+  },
+  {
+    "title": "Claude Max Subscription 1 Month - Activation Link (Global)",
+    "region": "GLOBAL",
+    "price": 180.0,
+    "priceRaw": "180.00",
+    "url": "https://www.g2g.com/categories/claude-ai-activation-links/offer/group?fa=b23d8499%3A6e8af2e6&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "claude-max-subscription-1-month-activation-link-global",
+    "image": "",
+    "description": "Claude Max Subscription 1 Month - Activation Link (Global)"
+  },
+  {
+    "title": "Claude Pro Subscription 1 Month - Activation Link (Global)",
+    "region": "GLOBAL",
+    "price": 23.82,
+    "priceRaw": "23.82",
+    "url": "https://www.g2g.com/categories/claude-ai-activation-links/offer/group?fa=b23d8499%3A2cf2b265&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "claude-pro-subscription-1-month-activation-link-global",
+    "image": "",
+    "description": "Claude Pro Subscription 1 Month - Activation Link (Global)"
+  },
+  {
+    "title": "Trade Vw Premium 1 Month Account",
+    "region": "GLOBAL",
+    "price": 2.08,
+    "priceRaw": "2.08",
+    "url": "https://www.g2g.com/categories/trade-vw-accounts/offer/group?fa=579054c5%3A017c3480&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "trade-vw-premium-1-month-account",
+    "image": "",
+    "description": "Trade Vw Premium 1 Month Account"
+  },
+  {
+    "title": "Figma Pro Education Account (Global)",
+    "region": "GLOBAL",
+    "price": 3.0,
+    "priceRaw": "3.00",
+    "url": "https://www.g2g.com/categories/figma-accounts/offer/group?fa=ae9e12a7%3A6bed974a&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "figma-pro-education-account-global",
+    "image": "",
+    "description": "Figma Pro Education Account (Global)"
+  },
+  {
+    "title": "Adobe Creative Cloud Subscription 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 8.5,
+    "priceRaw": "8.50",
+    "url": "https://www.g2g.com/categories/adobe-accounts/offer/group?fa=53df4a10%3A9ce6e100&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "adobe-creative-cloud-subscription-1-month-private-account-global",
+    "image": "",
+    "description": "Adobe Creative Cloud Subscription 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "Higgsfield Ultimate 1 Month Account (Global)",
+    "region": "GLOBAL",
+    "price": 17.5,
+    "priceRaw": "17.50",
+    "url": "https://www.g2g.com/categories/higgsfield-accounts/offer/group?fa=903dc27f%3Abb6ddd16&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "higgsfield-ultimate-1-month-account-global",
+    "image": "",
+    "description": "Higgsfield Ultimate 1 Month Account (Global)"
+  },
+  {
+    "title": "Adobe Acrobat Pro Monthly Subscription - Key (Global)",
+    "region": "GLOBAL",
+    "price": 1.49,
+    "priceRaw": "1.49",
+    "url": "https://www.g2g.com/categories/adobe-gift-cards/offer/group?fa=807dc4c8%3A98395217&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "adobe-acrobat-pro-monthly-subscription-key-global",
+    "image": "",
+    "description": "Adobe Acrobat Pro Monthly Subscription - Key (Global)"
+  },
+  {
+    "title": "Google AI Ultra Subscription 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 20.0,
+    "priceRaw": "20.00",
+    "url": "https://www.g2g.com/categories/google-accounts/offer/group?fa=9f081a5e%3A2bc013bd&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "google-ai-ultra-subscription-1-month-private-account-global",
+    "image": "",
+    "description": "Google AI Ultra Subscription 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "Google AI Pro Subscription 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 1.0,
+    "priceRaw": "1.00",
+    "url": "https://www.g2g.com/categories/google-accounts/offer/group?fa=9f081a5e%3Add9867bc&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "google-ai-pro-subscription-1-month-private-account-global",
+    "image": "",
+    "description": "Google AI Pro Subscription 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "Adobe Creative Cloud Photography Plan 1 TB, 1 Device, 1 Month - Key (Global)",
+    "region": "GLOBAL",
+    "price": 9.3,
+    "priceRaw": "9.30",
+    "url": "https://www.g2g.com/categories/adobe-gift-cards/offer/group?fa=807dc4c8%3Ad9a50f9d&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "adobe-creative-cloud-photography-plan-1-tb-1-device-1-month-key-global",
+    "image": "",
+    "description": "Adobe Creative Cloud Photography Plan 1 TB, 1 Device, 1 Month - Key (Global)"
+  },
+  {
+    "title": "Google AI Ultra Subscription 1 Month - Shared Account (Global)",
+    "region": "GLOBAL",
+    "price": 20.0,
+    "priceRaw": "20.00",
+    "url": "https://www.g2g.com/categories/google-accounts/offer/group?fa=9f081a5e%3A06a03f3d&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "google-ai-ultra-subscription-1-month-shared-account-global",
+    "image": "",
+    "description": "Google AI Ultra Subscription 1 Month - Shared Account (Global)"
+  },
+  {
+    "title": "Adobe Acrobat Standard Monthly Subscription - Key (Global)",
+    "region": "GLOBAL",
+    "price": 1.0,
+    "priceRaw": "1.00",
+    "url": "https://www.g2g.com/categories/adobe-gift-cards/offer/group?fa=807dc4c8%3Ad1d33313&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "adobe-acrobat-standard-monthly-subscription-key-global",
+    "image": "",
+    "description": "Adobe Acrobat Standard Monthly Subscription - Key (Global)"
+  },
+  {
+    "title": "Krea AI Basic Plan Subscription 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 5.03,
+    "priceRaw": "5.03",
+    "url": "https://www.g2g.com/categories/krea-accounts/offer/group?fa=179c7b70%3A9c21de33&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "krea-ai-basic-plan-subscription-1-month-private-account-global",
+    "image": "",
+    "description": "Krea AI Basic Plan Subscription 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "Adobe Express Premium 1 Month Subscription - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 2.5,
+    "priceRaw": "2.50",
+    "url": "https://www.g2g.com/categories/adobe-accounts/offer/group?fa=53df4a10%3Ad949082e&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "adobe-express-premium-1-month-subscription-private-account-global",
+    "image": "",
+    "description": "Adobe Express Premium 1 Month Subscription - Private Account (Global)"
+  },
+  {
+    "title": "VIP 1 Month",
+    "region": "GLOBAL",
+    "price": 3.5,
+    "priceRaw": "3.50",
+    "url": "https://www.g2g.com/categories/capcut-top-up/offer/group?fa=df986fb6%3A529d961b&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "vip-1-month",
+    "image": "",
+    "description": "VIP 1 Month"
+  },
+  {
+    "title": "Lovable 1,020 Credits (Global)",
+    "region": "GLOBAL",
+    "price": 1.0,
+    "priceRaw": "1.00",
+    "url": "https://www.g2g.com/categories/lovable-gift-cards/offer/group?fa=8ad68442%3Af1a0bf2e&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "lovable-1-020-credits-global",
+    "image": "",
+    "description": "Lovable 1,020 Credits (Global)"
+  },
+  {
+    "title": "Higgsfield Creator 1 Month Account (Global)",
+    "region": "GLOBAL",
+    "price": 105.99,
+    "priceRaw": "105.99",
+    "url": "https://www.g2g.com/categories/higgsfield-accounts/offer/group?fa=903dc27f%3A5735a873&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "higgsfield-creator-1-month-account-global",
+    "image": "",
+    "description": "Higgsfield Creator 1 Month Account (Global)"
+  },
+  {
+    "title": "Flow AI Pro Prepaid 25,000 Credits - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 20.0,
+    "priceRaw": "20.00",
+    "url": "https://www.g2g.com/categories/flow-ai-accounts/offer/group?fa=01fae2c8%3Ae7b0be07&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "flow-ai-pro-prepaid-25-000-credits-private-account-global",
+    "image": "",
+    "description": "Flow AI Pro Prepaid 25,000 Credits - Private Account (Global)"
+  },
+  {
+    "title": "Claude Team Premium Seat Subscription Single Slot 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 124.9,
+    "priceRaw": "124.90",
+    "url": "https://www.g2g.com/categories/claude-accounts/offer/group?fa=d769c0bd%3A63b1a608&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "claude-team-premium-seat-subscription-single-slot-1-month-private-account-global",
+    "image": "",
+    "description": "Claude Team Premium Seat Subscription Single Slot 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "Business Plan - Private Account",
+    "region": "GLOBAL",
+    "price": 1.01,
+    "priceRaw": "1.01",
+    "url": "https://www.g2g.com/categories/cnva-accounts/offer/group?fa=d4b3223b%3A8b1ae0aa&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "business-plan-private-account",
+    "image": "",
+    "description": "Business Plan - Private Account"
+  },
+  {
+    "title": "Business Plan - Shared Account",
+    "region": "GLOBAL",
+    "price": 1.0,
+    "priceRaw": "1.00",
+    "url": "https://www.g2g.com/categories/cnva-accounts/offer/group?fa=d4b3223b%3Afd042eab&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "business-plan-shared-account",
+    "image": "",
+    "description": "Business Plan - Shared Account"
+  },
+  {
+    "title": "CNVA Reseller Panel 500 Users - Reseller Account (Global)",
+    "region": "GLOBAL",
+    "price": 5.8,
+    "priceRaw": "5.80",
+    "url": "https://www.g2g.com/categories/cnva-accounts/offer/group?fa=d4b3223b%3Ac5db424a&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "cnva-reseller-panel-500-users-reseller-account-global",
+    "image": "",
+    "description": "CNVA Reseller Panel 500 Users - Reseller Account (Global)"
+  },
+  {
+    "title": "Grok SuperGrok Heavy Subscription 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 110.85,
+    "priceRaw": "110.85",
+    "url": "https://www.g2g.com/categories/grok-accounts/offer/group?fa=19400336%3Ae90675b1&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "grok-supergrok-heavy-subscription-1-month-private-account-global",
+    "image": "",
+    "description": "Grok SuperGrok Heavy Subscription 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "Replit Core Subscription 1 Month - Shared Account (Global)",
+    "region": "GLOBAL",
+    "price": 10.9,
+    "priceRaw": "10.90",
+    "url": "https://www.g2g.com/categories/replit-accounts/offer/group?fa=dda09dc0%3A933b8b2a&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "replit-core-subscription-1-month-shared-account-global",
+    "image": "",
+    "description": "Replit Core Subscription 1 Month - Shared Account (Global)"
+  },
+  {
+    "title": "Google AntiGravity - Private Account",
+    "region": "GLOBAL",
+    "price": 3.9,
+    "priceRaw": "3.90",
+    "url": "https://www.g2g.com/categories/google-accounts/offer/group?fa=9f081a5e%3Abddc6d60&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "google-antigravity-private-account",
+    "image": "",
+    "description": "Google AntiGravity - Private Account"
+  },
+  {
+    "title": "CapCut Pro Subscription (Browser, PC) 1 Month - Shared Account (Global)",
+    "region": "GLOBAL",
+    "price": 1.0,
+    "priceRaw": "1.00",
+    "url": "https://www.g2g.com/categories/capcut-accounts/offer/group?fa=c0107a82%3A46c8ec7f&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "capcut-pro-subscription-browser-pc-1-month-shared-account-global",
+    "image": "",
+    "description": "CapCut Pro Subscription (Browser, PC) 1 Month - Shared Account (Global)"
+  },
+  {
+    "title": "Flow AI Ultra Pro Prepaid 75,000 Credits - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 22.0,
+    "priceRaw": "22.00",
+    "url": "https://www.g2g.com/categories/flow-ai-accounts/offer/group?fa=01fae2c8%3Abfc2c864&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "flow-ai-ultra-pro-prepaid-75-000-credits-private-account-global",
+    "image": "",
+    "description": "Flow AI Ultra Pro Prepaid 75,000 Credits - Private Account (Global)"
+  },
+  {
+    "title": "HeyGen Creator Subscription 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 15.0,
+    "priceRaw": "15.00",
+    "url": "https://www.g2g.com/categories/heygen-accounts/offer/group?fa=9905d0db%3A83038d9a&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "heygen-creator-subscription-1-month-private-account-global",
+    "image": "",
+    "description": "HeyGen Creator Subscription 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "Trade Vw Essential 1 Month Account",
+    "region": "GLOBAL",
+    "price": 3.49,
+    "priceRaw": "3.49",
+    "url": "https://www.g2g.com/categories/trade-vw-accounts/offer/group?fa=579054c5%3A903a22fa&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "trade-vw-essential-1-month-account",
+    "image": "",
+    "description": "Trade Vw Essential 1 Month Account"
+  },
+  {
+    "title": "OpenArt AI Wonder Subscription 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 89.0,
+    "priceRaw": "89.00",
+    "url": "https://www.g2g.com/categories/openart-ai-accounts/offer/group?fa=71b5eb28%3A79c8975e&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "openart-ai-wonder-subscription-1-month-private-account-global",
+    "image": "",
+    "description": "OpenArt AI Wonder Subscription 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "Manus AI 4,000 Credits - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 4.75,
+    "priceRaw": "4.75",
+    "url": "https://www.g2g.com/categories/manus-ai-accounts/offer/group?fa=321cf8a8%3A7314b68b&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "manus-ai-4-000-credits-private-account-global",
+    "image": "",
+    "description": "Manus AI 4,000 Credits - Private Account (Global)"
+  },
+  {
+    "title": "SS-VPN 1 Month Account",
+    "region": "GLOBAL",
+    "price": 1.0,
+    "priceRaw": "1.00",
+    "url": "https://www.g2g.com/categories/ss-vpn-accounts/offer/group?fa=36bb15a4%3Ac5036f2d&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "ss-vpn-1-month-account",
+    "image": "",
+    "description": "SS-VPN 1 Month Account"
+  },
+  {
+    "title": "Adobe Substance 3D Subscription 1 Month - Key (Global)",
+    "region": "GLOBAL",
+    "price": 1.0,
+    "priceRaw": "1.00",
+    "url": "https://www.g2g.com/categories/adobe-gift-cards/offer/group?fa=807dc4c8%3A23bc5942&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "adobe-substance-3d-subscription-1-month-key-global",
+    "image": "",
+    "description": "Adobe Substance 3D Subscription 1 Month - Key (Global)"
+  },
+  {
+    "title": "HeyGen Team Plan Subscription 1 Month - Shared Account (Global)",
+    "region": "GLOBAL",
+    "price": 10.0,
+    "priceRaw": "10.00",
+    "url": "https://www.g2g.com/categories/heygen-accounts/offer/group?fa=9905d0db%3A26d95ad2&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "heygen-team-plan-subscription-1-month-shared-account-global",
+    "image": "",
+    "description": "HeyGen Team Plan Subscription 1 Month - Shared Account (Global)"
+  },
+  {
+    "title": "CNVA Pro Subscription 1 Month - Shared Account (Global)",
+    "region": "GLOBAL",
+    "price": 0.25,
+    "priceRaw": "0.25",
+    "url": "https://www.g2g.com/categories/cnva-accounts/offer/group?fa=d4b3223b%3A92ecb66c&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "cnva-pro-subscription-1-month-shared-account-global",
+    "image": "",
+    "description": "CNVA Pro Subscription 1 Month - Shared Account (Global)"
+  },
+  {
+    "title": "CapCut Pro Subscription (iOS, Android, PC) 1 Month - Shared Account (Global)",
+    "region": "GLOBAL",
+    "price": 1.0,
+    "priceRaw": "1.00",
+    "url": "https://www.g2g.com/categories/capcut-accounts/offer/group?fa=c0107a82%3A558b7b45&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "capcut-pro-subscription-ios-android-pc-1-month-shared-account-global",
+    "image": "",
+    "description": "CapCut Pro Subscription (iOS, Android, PC) 1 Month - Shared Account (Global)"
+  },
+  {
+    "title": "Envato Elements Subscription 1 Month Account (Global)",
+    "region": "GLOBAL",
+    "price": 4.44,
+    "priceRaw": "4.44",
+    "url": "https://www.g2g.com/categories/envato-elements-accounts/offer/group?fa=d7945119%3A6408fd71&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "envato-elements-subscription-1-month-account-global",
+    "image": "",
+    "description": "Envato Elements Subscription 1 Month Account (Global)"
+  },
+  {
+    "title": "Flow AI Ultra Pro Prepaid 75,000 Credits",
+    "region": "GLOBAL",
+    "price": 20.0,
+    "priceRaw": "20.00",
+    "url": "https://www.g2g.com/categories/flow-ai-top-up/offer/group?fa=9ab02a70%3A20a88753&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "flow-ai-ultra-pro-prepaid-75-000-credits",
+    "image": "",
+    "description": "Flow AI Ultra Pro Prepaid 75,000 Credits"
+  },
+  {
+    "title": "Claude Team Standard Seat Subscription Single Slot 1 Month - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 80.83,
+    "priceRaw": "80.83",
+    "url": "https://www.g2g.com/categories/claude-accounts/offer/group?fa=d769c0bd%3Aeb2db971&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "claude-team-standard-seat-subscription-single-slot-1-month-private-account-global",
+    "image": "",
+    "description": "Claude Team Standard Seat Subscription Single Slot 1 Month - Private Account (Global)"
+  },
+  {
+    "title": "Manus AI 6,000 Credits - Private Account (Global)",
+    "region": "GLOBAL",
+    "price": 69.99,
+    "priceRaw": "69.99",
+    "url": "https://www.g2g.com/categories/manus-ai-accounts/offer/group?fa=321cf8a8%3A92db1566&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "manus-ai-6-000-credits-private-account-global",
+    "image": "",
+    "description": "Manus AI 6,000 Credits - Private Account (Global)"
+  },
+  {
+    "title": "Replit Pro Subscription 1 Month - Shared Account (Global)",
+    "region": "GLOBAL",
+    "price": 35.0,
+    "priceRaw": "35.00",
+    "url": "https://www.g2g.com/categories/replit-accounts/offer/group?fa=dda09dc0%3A8524292a&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "replit-pro-subscription-1-month-shared-account-global",
+    "image": "",
+    "description": "Replit Pro Subscription 1 Month - Shared Account (Global)"
+  },
+  {
+    "title": "Replit Teams Subscription 1 Month",
+    "region": "GLOBAL",
+    "price": 35.0,
+    "priceRaw": "35.00",
+    "url": "https://www.g2g.com/categories/replit-top-up/offer/group?fa=c12d3397%3A28b275a7&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "replit-teams-subscription-1-month",
+    "image": "",
+    "description": "Replit Teams Subscription 1 Month"
+  },
+  {
+    "title": "Google Storage 200 GB Subscription 1 Month - Activation Link (Global)",
+    "region": "GLOBAL",
+    "price": 5.0,
+    "priceRaw": "5.00",
+    "url": "https://www.g2g.com/categories/google-activation-links/offer/group?fa=dc18c28a%3A717f2c88&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "google-storage-200-gb-subscription-1-month-activation-link-global",
+    "image": "",
+    "description": "Google Storage 200 GB Subscription 1 Month - Activation Link (Global)"
+  },
+  {
+    "title": "Google Storage 100 GB Subscription 1 Month - Activation Link (Global)",
+    "region": "GLOBAL",
+    "price": 4.0,
+    "priceRaw": "4.00",
+    "url": "https://www.g2g.com/categories/google-activation-links/offer/group?fa=dc18c28a%3Adbe90664&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "google-storage-100-gb-subscription-1-month-activation-link-global",
+    "image": "",
+    "description": "Google Storage 100 GB Subscription 1 Month - Activation Link (Global)"
+  },
+  {
+    "title": "Gmail Phone Verified Account",
+    "region": "GLOBAL",
+    "price": 0.03,
+    "priceRaw": "0.03",
+    "url": "https://www.g2g.com/categories/e-mail-accounts/offer/group?fa=5fb7e681%3A4ce94290&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "gmail-phone-verified-account",
+    "image": "",
+    "description": "Gmail Phone Verified Account"
+  },
+  {
+    "title": "Outlook Phone Verified Account",
+    "region": "GLOBAL",
+    "price": 0.02,
+    "priceRaw": "0.02",
+    "url": "https://www.g2g.com/categories/e-mail-accounts/offer/group?fa=5fb7e681%3A5db35deb&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "outlook-phone-verified-account",
+    "image": "",
+    "description": "Outlook Phone Verified Account"
+  },
+  {
+    "title": "Hotmail Phone Verified Account",
+    "region": "GLOBAL",
+    "price": 0.01,
+    "priceRaw": "0.01",
+    "url": "https://www.g2g.com/categories/e-mail-accounts/offer/group?fa=5fb7e681%3A8cc39212&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "hotmail-phone-verified-account",
+    "image": "",
+    "description": "Hotmail Phone Verified Account"
+  },
+  {
+    "title": "Mail New Account",
+    "region": "GLOBAL",
+    "price": 0.04,
+    "priceRaw": "0.04",
+    "url": "https://www.g2g.com/categories/e-mail-accounts/offer/group?fa=5fb7e681%3A71932c45&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "mail-new-account",
+    "image": "",
+    "description": "Mail New Account"
+  },
+  {
+    "title": "Firstmail New Account",
+    "region": "GLOBAL",
+    "price": 0.01,
+    "priceRaw": "0.01",
+    "url": "https://www.g2g.com/categories/e-mail-accounts/offer/group?fa=5fb7e681%3Afb276b3f&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "firstmail-new-account",
+    "image": "",
+    "description": "Firstmail New Account"
+  },
+  {
+    "title": "GMX Email New Account",
+    "region": "GLOBAL",
+    "price": 0.09,
+    "priceRaw": "0.09",
+    "url": "https://www.g2g.com/categories/e-mail-accounts/offer/group?fa=5fb7e681%3A970257b8&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "gmx-email-new-account",
+    "image": "",
+    "description": "GMX Email New Account"
+  },
+  {
+    "title": "Rambler Mail New Account",
+    "region": "GLOBAL",
+    "price": 0.02,
+    "priceRaw": "0.02",
+    "url": "https://www.g2g.com/categories/e-mail-accounts/offer/group?fa=5fb7e681%3A92c0b82d&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "rambler-mail-new-account",
+    "image": "",
+    "description": "Rambler Mail New Account"
+  },
+  {
+    "title": "Hotmail New Account",
+    "region": "GLOBAL",
+    "price": 0.01,
+    "priceRaw": "0.01",
+    "url": "https://www.g2g.com/categories/e-mail-accounts/offer/group?fa=5fb7e681%3A6e46a5ae&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "hotmail-new-account",
+    "image": "",
+    "description": "Hotmail New Account"
+  },
+  {
+    "title": "GMX Email 1 Month+ Account",
+    "region": "GLOBAL",
+    "price": 0.18,
+    "priceRaw": "0.18",
+    "url": "https://www.g2g.com/categories/e-mail-accounts/offer/group?fa=5fb7e681%3Aa8d2d40e&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "gmx-email-1-month-account",
+    "image": "",
+    "description": "GMX Email 1 Month+ Account"
+  },
+  {
+    "title": "Offlive New Account",
+    "region": "GLOBAL",
+    "price": 0.04,
+    "priceRaw": "0.04",
+    "url": "https://www.g2g.com/categories/e-mail-accounts/offer/group?fa=5fb7e681%3A96aa8e99&region_id=0f76ac42-3267-4d77-9fba-f9d9d719dac9",
+    "sku": "offlive-new-account",
+    "image": "",
+    "description": "Offlive New Account"
+  }
+]

@@ -1,0 +1,727 @@
+     1→import React, { useState } from 'react';
+     2→import { useStore } from '../../context/StoreContext';
+     3→import {
+     4→  TrendingUp,
+     5→  CheckCircle2,
+     6→  Globe,
+     7→  Server,
+     8→  ShieldCheck,
+     9→  PackageCheck,
+    10→  Package,
+    11→  ShoppingCart,
+    12→  BellRing,
+    13→  Activity,
+    14→  ArrowUpRight,
+    15→  ArrowRight,
+    16→  CircleCheck,
+    17→  Cpu,
+    18→  Network,
+    19→  CreditCard,
+    20→  Database,
+    21→  Sparkles,
+    22→  RotateCcw,
+    23→  AlertTriangle,
+    24→  Loader2,
+    25→  X,
+    26→  Play,
+    27→  BarChart3,
+    28→  FileText,
+    29→  Calendar,
+    30→  ChevronDown,
+    31→  Download,
+    32→  Settings,
+    33→} from 'lucide-react';
+    34→import {
+    35→  ResponsiveContainer,
+    36→  LineChart,
+    37→  Line,
+    38→  XAxis,
+    39→  YAxis,
+    40→  Tooltip,
+    41→  CartesianGrid,
+    42→  Area,
+    43→  AreaChart,
+    44→} from 'recharts';
+    45→import { motion, AnimatePresence } from 'motion/react';
+    46→
+    47→/**
+    48→ * New admin dashboard matching the screenshot.
+    49→ *
+    50→ * Layout (top-to-bottom):
+    51→ *   Row 1: Revenue Trend (wide) + Order Breakdown (donut) + Traffic Sources (bars)
+    52→ *   Row 2: System Status (list) + Pending Approvals (empty state) + Live Notifications
+    53→ *   Row 3: Recent Orders table + Top Products list
+    54→ *
+    55→ * Includes a "Reset Dashboard" button that wipes all MongoDB data and re-seeds
+    56→ * from mock data (useful for demos and testing).
+    57→ */
+    58→export const AdminDashboard: React.FC = () => {
+    59→  const { orders, products, formatPrice, addToast } = useStore();
+    60→  const [isResetOpen, setIsResetOpen] = useState(false);
+    61→  const [resetting, setResetting] = useState(false);
+    62→  const [confirmText, setConfirmText] = useState('');
+    63→  const [timeRange, setTimeRange] = useState<'1D' | '1W' | '1M' | '1Y'>('1W');
+    64→  const [dashboardTab, setDashboardTab] = useState<'activities' | 'statistics' | 'summary'>('activities');
+    65→
+    66→  const handleReset = async () => {
+    67→    if (confirmText !== 'RESET') {
+    68→      addToast('error', 'Confirmation Required', 'Type RESET to confirm.');
+    69→      return;
+    70→    }
+    71→    setResetting(true);
+    72→    try {
+    73→      const res = await fetch('/api/admin/reset-db', { method: 'POST' });
+    74→      const data = await res.json();
+    75→      if (data.success) {
+    76→        addToast('success', 'Database Reset', 'All data has been wiped and re-seeded. Reloading...');
+    77→        setIsResetOpen(false);
+    78→        setConfirmText('');
+    79→        setTimeout(() => window.location.reload(), 1500);
+    80→      } else {
+    81→        addToast('error', 'Reset Failed', data.error || 'Could not reset database.');
+    82→      }
+    83→    } catch {
+    84→      addToast('error', 'Reset Failed', 'Network error.');
+    85→    }
+    86→    setResetting(false);
+    87→  };
+    88→
+    89→  // ---- Mock data for the dashboard cards (kept lightweight, no API churn) ----
+    90→
+    91→  // 14-day revenue trend (deterministic, no Math.random on render)
+    92→  const revenueData = [
+    93→    { date: 'Aug 03', revenue: 620 },
+    94→    { date: 'Aug 04', revenue: 540 },
+    95→    { date: 'Aug 05', revenue: 780 },
+    96→    { date: 'Aug 06', revenue: 690 },
+    97→    { date: 'Aug 07', revenue: 920 },
+    98→    { date: 'Aug 08', revenue: 860 },
+    99→    { date: 'Aug 09', revenue: 1100 },
+   100→    { date: 'Aug 10', revenue: 1020 },
+   101→    { date: 'Aug 11', revenue: 1240 },
+   102→    { date: 'Aug 12', revenue: 1180 },
+   103→    { date: 'Aug 13', revenue: 1450 },
+   104→    { date: 'Aug 14', revenue: 1380 },
+   105→    { date: 'Aug 15', revenue: 1620 },
+   106→    { date: 'Aug 16', revenue: 1890 },
+   107→    { date: 'Aug 17', revenue: 1740 },
+   108→    { date: 'Aug 18', revenue: 1980 },
+   109→    { date: 'Aug 19', revenue: 2150 },
+   110→  ];
+   111→
+   112→  // Order breakdown — most orders completed
+   113→  const completedOrders = orders.filter(o => o.orderStatus === 'completed').length;
+   114→  const processingOrders = orders.filter(o => o.orderStatus === 'processing').length;
+   115→  const totalOrdersCount = orders.length || 2;
+   116→  const completionRate = totalOrdersCount > 0 ? Math.round((completedOrders / totalOrdersCount) * 100) : 100;
+   117→
+   118→  // Traffic sources (deterministic)
+   119→  const trafficSources = [
+   120→    { label: 'Direct / URL', percent: 52, count: 1492, color: '#3b82f6' },
+   121→    { label: 'TikTok Leads & Pixel', percent: 28, count: 882, color: '#8b5cf6' },
+   122→    { label: 'Organic Google Search', percent: 14, count: 481, color: '#10b981' },
+   123→    { label: 'Affiliate Network Referrals', percent: 6, count: 172, color: '#f59e0b' },
+   124→  ];
+   125→
+   126→  // System status
+   127→  const systemStatus = [
+   128→    { icon: Server, label: 'Server', status: 'Operational', state: 'green' },
+   129→    { icon: Globe, label: 'CDN', status: 'Operational', state: 'green' },
+   130→    { icon: CreditCard, label: 'Payment Gateway', status: 'Operational', state: 'green' },
+   131→    { icon: Database, label: 'MongoDB Atlas Cloud', sublabel: 'playbeat.unopay.mongodb.net', status: 'Connected', state: 'green' },
+   132→  ];
+   133→
+   134→  // Live notifications — pull from recent orders if available
+   135→  const liveNotifications = orders.slice(0, 2).map((o, i) => ({
+   136→    title: i === 0 ? 'Order Verified' : 'New Order',
+   137→    message: `${o.customerName} — ${o.items[0]?.productTitle || 'Order'} #${o.id}`,
+   138→    time: '1h ago',
+   139→  }));
+   140→  // Fallbacks if no orders in store
+   141→  const notifications = liveNotifications.length > 0 ? liveNotifications : [
+   142→    { title: 'Order Verified', message: 'Megacubic HY300 PRO parcel dispatched via TCS Express #TCS-892182', time: '1h ago' },
+   143→    { title: 'New Arrival', message: 'Megacubic HY300Pro Plus with motorized focus now in stock at ZeroByte store.', time: '1h ago' },
+   144→  ];
+   145→
+   146→  // Recent orders (last 5)
+   147→  const recentOrders = orders.slice(0, 5);
+   148→
+   149→  // Top products (highest totalSold)
+   150→  const topProducts = [...products]
+   151→    .sort((a, b) => (b.totalSold || 0) - (a.totalSold || 0))
+   152→    .slice(0, 5);
+   153→
+   154→  // Donut chart values
+   155→  const donutSize = 120;
+   156→  const donutStroke = 12;
+   157→  const donutRadius = (donutSize - donutStroke) / 2;
+   158→  const donutCircumference = 2 * Math.PI * donutRadius;
+   159→  const donutOffset = donutCircumference * (1 - completionRate / 100);
+   160→
+   161→  return (
+   162→    <div className="space-y-5">
+   163→      {/* ============================================
+   164→          DASHBOARD HEADER — Flare UI + DashFlat hybrid
+   165→          Icon+text tab buttons, pill action buttons, date selector, export, settings, reset
+   166→          ============================================ */}
+   167→      <div className="flex items-center justify-between gap-4 flex-wrap">
+   168→        <div className="flex items-center gap-3">
+   169→          <div className="w-10 h-10 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center">
+   170→            <Activity className="w-5 h-5 text-blue-400" />
+   171→          </div>
+   172→          <div>
+   173→            <h1 className="text-xl font-bold text-white font-display">Executive Dashboard</h1>
+   174→            <p className="text-xs text-gray-500 mt-0.5">Live metrics, orders, and product performance.</p>
+   175→          </div>
+   176→        </div>
+   177→        <div className="flex items-center gap-2 flex-wrap">
+   178→          {/* Each tab button gets its OWN unique glossy color when active */}
+   179→          <div className="flex items-center p-1 rounded-full bg-[#0f141c] border border-[#1f2937]">
+   180→            {([
+   181→              { id: 'activities', label: 'Activities', icon: Play, activeClass: 'btn-glossy btn-glossy-yellow btn-glossy-sm' },
+   182→              { id: 'statistics', label: 'Statistics', icon: BarChart3, activeClass: 'btn-glossy btn-glossy-cyan btn-glossy-sm' },
+   183→              { id: 'summary', label: 'Summary', icon: FileText, activeClass: 'btn-glossy btn-glossy-purple btn-glossy-sm' },
+   184→            ] as const).map((tab) => {
+   185→              const TabIcon = tab.icon;
+   186→              return (
+   187→                <button
+   188→                  key={tab.id}
+   189→                  onClick={() => setDashboardTab(tab.id)}
+   190→                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all ${
+   191→                    dashboardTab === tab.id
+   192→                      ? tab.activeClass
+   193→                      : 'text-gray-500 hover:text-gray-300'
+   194→                  }`}
+   195→                >
+   196→                  <TabIcon className="w-3 h-3" />
+   197→                  <span>{tab.label}</span>
+   198→                </button>
+   199→              );
+   200→            })}
+   201→          </div>
+   202→
+   203→          {/* Each action button has a DIFFERENT premium glossy color */}
+   204→          <button className="btn-glossy btn-glossy-blue btn-glossy-sm">
+   205→            <Calendar className="w-3.5 h-3.5" />
+   206→            <span>{timeRange === '1D' ? 'Today' : timeRange === '1W' ? 'This Week' : timeRange === '1M' ? 'This Month' : 'This Year'}</span>
+   207→            <ChevronDown className="w-3 h-3" />
+   208→          </button>
+   209→
+   210→          <button className="btn-glossy btn-glossy-emerald btn-glossy-sm">
+   211→            <Download className="w-3.5 h-3.5" />
+   212→            <span className="hidden sm:inline">Export</span>
+   213→          </button>
+   214→
+   215→          <button className="btn-glossy btn-glossy-purple btn-glossy-circle" aria-label="Settings">
+   216→            <Settings className="w-4 h-4" />
+   217→          </button>
+   218→
+   219→          <button
+   220→            onClick={() => setIsResetOpen(true)}
+   221→            className="btn-glossy btn-glossy-red btn-glossy-sm"
+   222→          >
+   223→            <RotateCcw className="w-3.5 h-3.5" />
+   224→            <span className="hidden sm:inline">Reset</span>
+   225→          </button>
+   226→        </div>
+   227→      </div>
+   228→
+   229→      {/* ============================================
+   230→          COLORFUL KPI CARDS WITH SPARKLINES (Flare UI style)
+   231→          Each card: solid colored bg, large bold number, trend badge, mini sparkline
+   232→          ============================================ */}
+   233→      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+   234→        {/* Revenue — emerald glossy card */}
+   235→        <button className="text-left rounded-xl p-5 overflow-hidden relative border-2 border-emerald-400/30 transition-all hover:-translate-y-0.5"
+   236→          style={{ background: 'linear-gradient(180deg, #047857 0%, #064E3B 100%)', boxShadow: '0 10px 25px rgba(4,120,87,0.3), 0 0 20px rgba(16,185,129,0.15), inset 0 1px 0 rgba(255,255,255,0.15)' }}>
+   237→          <div className="flex items-center justify-between mb-3">
+   238→            <div className="text-[10px] uppercase text-emerald-100 tracking-wider font-mono font-bold">Total Revenue</div>
+   239→            <TrendingUp className="w-4 h-4 text-emerald-200" />
+   240→          </div>
+   241→          <div className="text-2xl font-bold text-white font-mono">{formatPrice(orders.reduce((s, o) => s + (o.paymentStatus === 'paid' ? o.total : 0), 0))}</div>
+   242→          <div className="text-[10px] text-emerald-200 mt-1 flex items-center gap-1">
+   243→            <ArrowUpRight className="w-3 h-3" /> +18.4% vs last period
+   244→          </div>
+   245→          <div className="flex items-end gap-0.5 mt-3 h-8">
+   246→            {[40, 55, 45, 70, 60, 85, 75, 90, 80, 95].map((h, i) => (
+   247→              <div key={i} className="flex-1 bg-emerald-300/40 rounded-sm" style={{ height: `${h}%` }} />
+   248→            ))}
+   249→          </div>
+   250→        </button>
+   251→
+   252→        {/* Orders — blue glossy card */}
+   253→        <button className="text-left rounded-xl p-5 overflow-hidden relative border-2 border-blue-400/30 transition-all hover:-translate-y-0.5"
+   254→          style={{ background: 'linear-gradient(180deg, #2563EB 0%, #1E40AF 100%)', boxShadow: '0 10px 25px rgba(37,99,235,0.3), 0 0 20px rgba(59,130,246,0.15), inset 0 1px 0 rgba(255,255,255,0.15)' }}>
+   255→          <div className="flex items-center justify-between mb-3">
+   256→            <div className="text-[10px] uppercase text-blue-100 tracking-wider font-mono font-bold">Total Orders</div>
+   257→            <ShoppingCart className="w-4 h-4 text-blue-200" />
+   258→          </div>
+   259→          <div className="text-2xl font-bold text-white font-mono">{orders.length}</div>
+   260→          <div className="text-[10px] text-blue-200 mt-1 flex items-center gap-1">
+   261→            <ArrowUpRight className="w-3 h-3" /> +12.1% vs last period
+   262→          </div>
+   263→          <div className="flex items-end gap-0.5 mt-3 h-8">
+   264→            {[30, 45, 35, 60, 50, 65, 55, 70, 60, 75].map((h, i) => (
+   265→              <div key={i} className="flex-1 bg-blue-300/40 rounded-sm" style={{ height: `${h}%` }} />
+   266→            ))}
+   267→          </div>
+   268→        </button>
+   269→
+   270→        {/* Products — purple glossy card */}
+   271→        <button className="text-left rounded-xl p-5 overflow-hidden relative border-2 border-purple-400/30 transition-all hover:-translate-y-0.5"
+   272→          style={{ background: 'linear-gradient(180deg, #7E22CE 0%, #581C87 100%)', boxShadow: '0 10px 25px rgba(126,34,206,0.3), 0 0 20px rgba(147,51,234,0.15), inset 0 1px 0 rgba(255,255,255,0.15)' }}>
+   273→          <div className="flex items-center justify-between mb-3">
+   274→            <div className="text-[10px] uppercase text-purple-100 tracking-wider font-mono font-bold">Products</div>
+   275→            <Package className="w-4 h-4 text-purple-200" />
+   276→          </div>
+   277→          <div className="text-2xl font-bold text-white font-mono">{products.length}</div>
+   278→          <div className="text-[10px] text-purple-200 mt-1 flex items-center gap-1">
+   279→            <ArrowUpRight className="w-3 h-3" /> {products.filter(p => p.status === 'published').length} published
+   280→          </div>
+   281→          <div className="flex items-end gap-0.5 mt-3 h-8">
+   282→            {[50, 60, 55, 65, 70, 75, 80, 85, 90, 95].map((h, i) => (
+   283→              <div key={i} className="flex-1 bg-purple-300/40 rounded-sm" style={{ height: `${h}%` }} />
+   284→            ))}
+   285→          </div>
+   286→        </button>
+   287→
+   288→        {/* Low Stock — orange/red glossy card */}
+   289→        <button className="text-left rounded-xl p-5 overflow-hidden relative border-2 border-orange-400/30 transition-all hover:-translate-y-0.5"
+   290→          style={{ background: 'linear-gradient(180deg, #EA580C 0%, #9A3412 100%)', boxShadow: '0 10px 25px rgba(234,88,12,0.3), 0 0 20px rgba(249,115,22,0.15), inset 0 1px 0 rgba(255,255,255,0.15)' }}>
+   291→          <div className="flex items-center justify-between mb-3">
+   292→            <div className="text-[10px] uppercase text-orange-100 tracking-wider font-mono font-bold">Low Stock Alerts</div>
+   293→            <AlertTriangle className="w-4 h-4 text-orange-200" />
+   294→          </div>
+   295→          <div className="text-2xl font-bold text-white font-mono">{products.filter(p => p.stock <= p.lowStockThreshold).length}</div>
+   296→          <div className="text-[10px] text-orange-200 mt-1 flex items-center gap-1">
+   297→            <ArrowUpRight className="w-3 h-3" /> needs attention
+   298→          </div>
+   299→          <div className="flex items-end gap-0.5 mt-3 h-8">
+   300→            {[20, 25, 30, 20, 35, 40, 30, 45, 50, 40].map((h, i) => (
+   301→              <div key={i} className="flex-1 bg-orange-300/40 rounded-sm" style={{ height: `${h}%` }} />
+   302→            ))}
+   303→          </div>
+   304→        </button>
+   305→      </div>
+   306→
+   307→      {/* ============================================
+   308→          TIME RANGE SEGMENTED CONTROL + VIEW LABEL (DashFlat 1D/1W/1M/1Y)
+   309→          ============================================ */}
+   310→      <div className="flex items-center justify-between gap-3 flex-wrap">
+   311→        <div className="flex items-center gap-2">
+   312→          <span className="text-[10px] text-gray-500 font-mono uppercase tracking-wider mr-1">Range:</span>
+   313→          <div className="flex items-center gap-0.5 p-0.5 rounded-full bg-[#0f141c] border border-[#1f2937]">
+   314→            {([
+   315→              { r: '1D', c: 'btn-glossy btn-glossy-blue btn-glossy-sm' },
+   316→              { r: '1W', c: 'btn-glossy btn-glossy-yellow btn-glossy-sm' },
+   317→              { r: '1M', c: 'btn-glossy btn-glossy-emerald btn-glossy-sm' },
+   318→              { r: '1Y', c: 'btn-glossy btn-glossy-cyan btn-glossy-sm' },
+   319→            ] as const).map((item) => (
+   320→              <button
+   321→                key={item.r}
+   322→                onClick={() => setTimeRange(item.r)}
+   323→                className={`px-3 py-1.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider transition-all ${
+   324→                  timeRange === item.r
+   325→                    ? item.c
+   326→                    : 'text-gray-500 hover:text-gray-300 hover:bg-white/5'
+   327→                }`}
+   328→              >
+   329→                {item.r}
+   330→              </button>
+   331→            ))}
+   332→          </div>
+   333→        </div>
+   334→        <span className="text-[10px] text-gray-500 font-mono uppercase tracking-wider">
+   335→          Showing: {timeRange === '1D' ? 'Last 24 hours' : timeRange === '1W' ? 'Last 7 days' : timeRange === '1M' ? 'Last 30 days' : 'Last 12 months'}
+   336→        </span>
+   337→      </div>
+   338→
+   339→      {/* ============================================
+   340→          ROW 1 — KEY METRICS
+   341→          ============================================ */}
+   342→      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+   343→        {/* Revenue Trend — spans wider */}
+   344→        <div className="admin-card p-5 lg:col-span-6">
+   345→          <div className="flex items-start justify-between mb-3">
+   346→            <div>
+   347→              <div className="flex items-center gap-2">
+   348→                <TrendingUp className="w-4 h-4 text-blue-400" />
+   349→                <h3 className="text-sm font-semibold text-white">Revenue Trend</h3>
+   350→              </div>
+   351→              <p className="text-[11px] text-gray-500 mt-0.5 font-mono">Live 14-Day Cycle</p>
+   352→            </div>
+   353→            <span className="admin-pill-green flex items-center gap-1">
+   354→              <ArrowUpRight className="w-3 h-3" />
+   355→              +18.4%
+   356→            </span>
+   357→          </div>
+   358→          <div className="h-[180px] -ml-2">
+   359→            <ResponsiveContainer width="100%" height="100%">
+   360→              <AreaChart data={revenueData} margin={{ top: 5, right: 5, bottom: 0, left: -10 }}>
+   361→                <defs>
+   362→                  <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+   363→                    <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.4} />
+   364→                    <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
+   365→                  </linearGradient>
+   366→                </defs>
+   367→                <CartesianGrid strokeDasharray="3 3" stroke="#1f2937" vertical={false} />
+   368→                <XAxis
+   369→                  dataKey="date"
+   370→                  tick={{ fill: '#6b7280', fontSize: 10, fontFamily: 'JetBrains Mono' }}
+   371→                  axisLine={{ stroke: '#1f2937' }}
+   372→                  tickLine={false}
+   373→                  interval={3}
+   374→                />
+   375→                <YAxis
+   376→                  tick={{ fill: '#6b7280', fontSize: 10, fontFamily: 'JetBrains Mono' }}
+   377→                  axisLine={false}
+   378→                  tickLine={false}
+   379→                  width={32}
+   380→                />
+   381→                <Tooltip
+   382→                  contentStyle={{
+   383→                    background: '#0a0b0d',
+   384→                    border: '1px solid #252b3b',
+   385→                    borderRadius: 8,
+   386→                    fontSize: 12,
+   387→                    color: '#f9fafb',
+   388→                  }}
+   389→                  labelStyle={{ color: '#9ca3af', fontFamily: 'JetBrains Mono', fontSize: 10 }}
+   390→                  formatter={(value: any) => [`$${value}`, 'Revenue']}
+   391→                />
+   392→                <Area
+   393→                  type="monotone"
+   394→                  dataKey="revenue"
+   395→                  stroke="#3b82f6"
+   396→                  strokeWidth={2.5}
+   397→                  fill="url(#revGrad)"
+   398→                  dot={false}
+   399→                  activeDot={{ r: 4, fill: '#3b82f6', stroke: '#fff', strokeWidth: 2 }}
+   400→                />
+   401→              </AreaChart>
+   402→            </ResponsiveContainer>
+   403→          </div>
+   404→        </div>
+   405→
+   406→        {/* Order Breakdown — donut */}
+   407→        <div className="admin-card p-5 lg:col-span-3">
+   408→          <div className="flex items-start justify-between mb-3">
+   409→            <div className="flex items-center gap-2">
+   410→              <CheckCircle2 className="w-4 h-4 text-blue-400" />
+   411→              <h3 className="text-sm font-semibold text-white">Order Breakdown</h3>
+   412→            </div>
+   413→            <span className="text-[10px] text-gray-500 font-mono">{completionRate}% Fulfilled</span>
+   414→          </div>
+   415→          <div className="flex flex-col items-center justify-center py-3">
+   416→            <div className="relative" style={{ width: donutSize, height: donutSize }}>
+   417→              <svg width={donutSize} height={donutSize} className="-rotate-90">
+   418→                <circle
+   419→                  cx={donutSize / 2}
+   420→                  cy={donutSize / 2}
+   421→                  r={donutRadius}
+   422→                  fill="none"
+   423→                  stroke="#1f2937"
+   424→                  strokeWidth={donutStroke}
+   425→                />
+   426→                <circle
+   427→                  cx={donutSize / 2}
+   428→                  cy={donutSize / 2}
+   429→                  r={donutRadius}
+   430→                  fill="none"
+   431→                  stroke="#3b82f6"
+   432→                  strokeWidth={donutStroke}
+   433→                  strokeLinecap="round"
+   434→                  strokeDasharray={donutCircumference}
+   435→                  strokeDashoffset={donutOffset}
+   436→                  style={{ filter: 'drop-shadow(0 0 6px rgba(59, 130, 246, 0.5))', transition: 'stroke-dashoffset 0.6s ease' }}
+   437→                />
+   438→              </svg>
+   439→              <div className="absolute inset-0 flex flex-col items-center justify-center">
+   440→                <span className="text-3xl font-bold text-white font-mono">{totalOrdersCount}</span>
+   441→                <span className="text-[10px] text-gray-500 uppercase tracking-wider mt-0.5">Total</span>
+   442→              </div>
+   443→            </div>
+   444→            <div className="mt-4 space-y-1 w-full">
+   445→              <div className="flex items-center justify-between text-[11px]">
+   446→                <div className="flex items-center gap-1.5">
+   447→                  <span className="w-2 h-2 rounded-full bg-blue-500" />
+   448→                  <span className="text-gray-400">Completed</span>
+   449→                </div>
+   450→                <span className="text-white font-mono font-semibold">{completedOrders}</span>
+   451→              </div>
+   452→              {processingOrders > 0 && (
+   453→                <div className="flex items-center justify-between text-[11px]">
+   454→                  <div className="flex items-center gap-1.5">
+   455→                    <span className="w-2 h-2 rounded-full bg-amber-500" />
+   456→                    <span className="text-gray-400">Processing</span>
+   457→                  </div>
+   458→                  <span className="text-white font-mono font-semibold">{processingOrders}</span>
+   459→                </div>
+   460→              )}
+   461→            </div>
+   462→          </div>
+   463→        </div>
+   464→
+   465→        {/* Traffic Sources — horizontal bars */}
+   466→        <div className="admin-card p-5 lg:col-span-3">
+   467→          <div className="flex items-start justify-between mb-3">
+   468→            <div className="flex items-center gap-2">
+   469→              <Globe className="w-4 h-4 text-blue-400" />
+   470→              <h3 className="text-sm font-semibold text-white">Traffic Sources</h3>
+   471→            </div>
+   472→            <span className="admin-pill-green flex items-center gap-1">
+   473→              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+   474→              Live Influx
+   475→            </span>
+   476→          </div>
+   477→          <div className="space-y-2.5">
+   478→            {trafficSources.map((src) => (
+   479→              <div key={src.label}>
+   480→                <div className="flex items-center justify-between text-[11px] mb-1">
+   481→                  <span className="text-gray-300 truncate pr-2">{src.label}</span>
+   482→                  <span className="text-gray-500 font-mono">
+   483→                    <span className="text-white font-semibold">{src.percent}%</span> ({src.count})
+   484→                  </span>
+   485→                </div>
+   486→                <div className="h-1.5 bg-[#1f2937] rounded-full overflow-hidden">
+   487→                  <div
+   488→                    className="h-full rounded-full transition-all"
+   489→                    style={{ width: `${src.percent}%`, background: src.color }}
+   490→                  />
+   491→                </div>
+   492→              </div>
+   493→            ))}
+   494→          </div>
+   495→          <p className="text-[10px] text-gray-600 mt-3 font-mono">
+   496→            Real-time analytics captured from playbeat.digital
+   497→          </p>
+   498→        </div>
+   499→      </div>
+   500→
+   501→      {/* ============================================
+   502→          ROW 2 — STATUS & APPROVALS
+   503→          ============================================ */}
+   504→      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+   505→        {/* System Status */}
+   506→        <div className="admin-card p-5">
+   507→          <div className="flex items-start justify-between mb-3">
+   508→            <div className="flex items-center gap-2">
+   509→              <Activity className="w-4 h-4 text-teal-400" />
+   510→              <h3 className="text-sm font-semibold text-white">System Status</h3>
+   511→            </div>
+   512→            <span className="admin-pill-green">100% Healthy</span>
+   513→          </div>
+   514→          <div className="space-y-2">
+   515→            {systemStatus.map((sys) => {
+   516→              const Icon = sys.icon;
+   517→              return (
+   518→                <div key={sys.label} className="flex items-center justify-between p-2.5 rounded-lg bg-[#0f141c] border border-[#1f2937]">
+   519→                  <div className="flex items-center gap-2 min-w-0">
+   520→                    <div className="w-7 h-7 rounded-md bg-[#1f2937] flex items-center justify-center shrink-0">
+   521→                      <Icon className="w-3.5 h-3.5 text-teal-400" />
+   522→                    </div>
+   523→                    <div className="min-w-0">
+   524→                      <div className="text-xs text-white font-medium truncate">{sys.label}</div>
+   525→                      {sys.sublabel && (
+   526→                        <div className="text-[10px] text-gray-500 font-mono truncate">{sys.sublabel}</div>
+   527→                      )}
+   528→                    </div>
+   529→                  </div>
+   530→                  <span className={`shrink-0 ${sys.state === 'green' ? 'admin-pill-green' : 'admin-pill-amber'}`}>
+   531→                    {sys.status}
+   532→                  </span>
+   533→                </div>
+   534→              );
+   535→            })}
+   536→          </div>
+   537→        </div>
+   538→
+   539→        {/* Pending Approvals */}
+   540→        <div className="admin-card p-5">
+   541→          <div className="flex items-start justify-between mb-3">
+   542→            <div className="flex items-center gap-2">
+   543→              <PackageCheck className="w-4 h-4 text-emerald-400" />
+   544→              <h3 className="text-sm font-semibold text-white">Pending Products Approvals</h3>
+   545→            </div>
+   546→            <span className="admin-pill-green">0 Queued</span>
+   547→          </div>
+   548→          <div className="flex flex-col items-center justify-center py-8 text-center">
+   549→            <div className="w-14 h-14 rounded-full bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center mb-3">
+   550→              <CircleCheck className="w-7 h-7 text-emerald-400" />
+   551→            </div>
+   552→            <div className="text-sm font-bold text-emerald-400">All products published</div>
+   553→            <p className="text-[11px] text-gray-500 mt-1">No products awaiting approval</p>
+   554→            <p className="text-[10px] text-gray-600 mt-3 font-mono">
+   555→              Auto-verification enabled for verified merchants
+   556→            </p>
+   557→          </div>
+   558→        </div>
+   559→
+   560→        {/* Live Notifications */}
+   561→        <div className="admin-card p-5">
+   562→          <div className="flex items-start justify-between mb-3">
+   563→            <div className="flex items-center gap-2">
+   564→              <BellRing className="w-4 h-4 text-amber-400" />
+   565→              <h3 className="text-sm font-semibold text-white">Live Notifications</h3>
+   566→            </div>
+   567→            <span className="text-[10px] text-gray-500 font-mono uppercase">Real-time</span>
+   568→          </div>
+   569→          <div className="space-y-2.5">
+   570→            {notifications.map((n, idx) => (
+   571→              <div key={idx} className="p-2.5 rounded-lg bg-[#0f141c] border border-[#1f2937] hover:border-[#3a4256] transition-colors">
+   572→                <div className="flex items-center justify-between mb-1">
+   573→                  <span className="text-[11px] font-bold text-amber-400 uppercase tracking-wider">{n.title}</span>
+   574→                  <span className="text-[10px] text-gray-600 font-mono">{n.time}</span>
+   575→                </div>
+   576→                <p className="text-[11px] text-gray-300 leading-snug">{n.message}</p>
+   577→              </div>
+   578→            ))}
+   579→          </div>
+   580→          <p className="text-[10px] text-gray-600 mt-3 font-mono">
+   581→            [PN] Webhook listeners active on /api/webhooks
+   582→          </p>
+   583→        </div>
+   584→      </div>
+   585→
+   586→      {/* ============================================
+   587→          ROW 3 — DATA TABLES
+   588→          ============================================ */}
+   589→      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+   590→        {/* Recent Orders */}
+   591→        <div className="admin-card p-5 lg:col-span-7">
+   592→          <div className="flex items-start justify-between mb-4">
+   593→            <div>
+   594→              <h3 className="text-sm font-semibold text-white">Recent Orders</h3>
+   595→              <p className="text-[11px] text-gray-500 mt-0.5">Latest transactions dispatched across Pakistan</p>
+   596→            </div>
+   597→            <span className="admin-pill-blue">{recentOrders.length} Total</span>
+   598→          </div>
+   599→          {recentOrders.length === 0 ? (
+   600→            <div className="py-8 text-center text-xs text-gray-500">
+   601→              No recent orders yet — orders will appear here once customers check out.
+   602→            </div>
+   603→          ) : (
+   604→            <div className="overflow-x-auto -mx-2">
+   605→              <table className="w-full text-left text-xs border-collapse min-w-[500px]">
+   606→                <thead>
+   607→                  <tr className="border-b border-[#1f2937] text-gray-500 uppercase text-[10px] tracking-wider font-mono">
+   608→                    <th className="px-2 py-2 font-medium">Order</th>
+   609→                    <th className="px-2 py-2 font-medium">Customer</th>
+   610→                    <th className="px-2 py-2 font-medium">Amount</th>
+   611→                    <th className="px-2 py-2 font-medium">Method</th>
+   612→                    <th className="px-2 py-2 font-medium text-right">Status</th>
+   613→                  </tr>
+   614→                </thead>
+   615→                <tbody className="divide-y divide-[#1f2937]/60">
+   616→                  {recentOrders.map((order) => (
+   617→                    <tr key={order.id} className="hover:bg-white/[0.02] transition-colors">
+   618→                      <td className="px-2 py-2.5 font-mono text-white">{order.id}</td>
+   619→                      <td className="px-2 py-2.5">
+   620→                        <div className="text-white font-medium truncate max-w-[140px]">{order.customerName}</div>
+   621→                        <div className="text-[10px] text-gray-500 font-mono truncate max-w-[140px]">{order.customerEmail}</div>
+   622→                      </td>
+   623→                      <td className="px-2 py-2.5 font-mono">
+   624→                        <span className="text-amber-400 font-semibold">{formatPrice(order.total)}</span>
+   625→                      </td>
+   626→                      <td className="px-2 py-2.5">
+   627→                        <span className="text-gray-300 font-mono text-[11px] uppercase">
+   628→                          {order.paymentGateway || order.paymentMethod || 'Stripe'}
+   629→                        </span>
+   630→                      </td>
+   631→                      <td className="px-2 py-2.5 text-right">
+   632→                        <span className="admin-pill-green">
+   633→                          {order.orderStatus || 'completed'}
+   634→                        </span>
+   635→                      </td>
+   636→                    </tr>
+   637→                  ))}
+   638→                </tbody>
+   639→              </table>
+   640→            </div>
+   641→          )}
+   642→        </div>
+   643→
+   644→        {/* Top Products */}
+   645→        <div className="admin-card p-5 lg:col-span-5">
+   646→          <div className="flex items-start justify-between mb-4">
+   647→            <div>
+   648→              <h3 className="text-sm font-semibold text-white">Top Products</h3>
+   649→              <p className="text-[11px] text-gray-500 mt-0.5">Best-selling subscriptions, projectors & passes</p>
+   650→            </div>
+   651→            <span className="admin-pill-purple">Verified</span>
+   652→          </div>
+   653→          <div className="space-y-2.5">
+   654→            {topProducts.map((product) => (
+   655→              <div
+   656→                key={product.id}
+   657→                className="flex items-center gap-3 p-2 rounded-lg bg-[#0f141c] border border-[#1f2937] hover:border-[#3a4256] transition-colors"
+   658→              >
+   659→                <img
+   660→                  src={product.images[0]}
+   661→                  alt={product.title}
+   662→                  className="w-10 h-10 rounded-md object-cover bg-black/40 shrink-0"
+   663→                />
+   664→                <div className="flex-1 min-w-0">
+   665→                  <div className="flex items-center gap-1.5 mb-0.5">
+   666→                    {product.productType === 'physical_projector' && (
+   667→                      <span className="admin-pill-blue !py-0 !px-1.5 !text-[9px]">4K</span>
+   668→                    )}
+   669→                    <span className="text-xs text-white font-medium truncate">{product.title}</span>
+   670→                  </div>
+   671→                  <div className="text-[10px] text-gray-500 font-mono">
+   672→                    {product.categoryName} · {(product.totalSold || 0)} sold
+   673→                  </div>
+   674→                </div>
+   675→                <div className="text-right shrink-0">
+   676→                  <div className="text-xs font-bold text-amber-400 font-mono">{formatPrice(product.price)}</div>
+   677→                  <div className="text-[10px] text-emerald-400 font-mono flex items-center gap-0.5 justify-end">
+   678→                    <TrendingUp className="w-2.5 h-2.5" />
+   679→                    {product.rating} ({product.reviewCount})
+   680→                  </div>
+   681→                </div>
+   682→              </div>
+   683→            ))}
+   684→          </div>
+   685→        </div>
+   686→      </div>
+   687→
+   688→      {/* ============================================
+   689→          RESET DASHBOARD CONFIRMATION MODAL
+   690→          ============================================ */}
+   691→      <AnimatePresence>
+   692→        {isResetOpen && (
+   693→          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+   694→            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsResetOpen(false)} className="absolute inset-0 bg-black/85 backdrop-blur-md" />
+   695→            <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }} className="relative w-full max-w-md rounded-2xl bg-[#151a23] border border-red-500/30 shadow-2xl p-6 z-10" role="dialog" aria-modal="true">
+   696→              <div className="flex items-center justify-between mb-5">
+   697→                <div className="flex items-center gap-2">
+   698→                  <div className="w-8 h-8 rounded-lg bg-red-500/15 border border-red-500/30 flex items-center justify-center">
+   699→                    <AlertTriangle className="w-4 h-4 text-red-400" />
+   700→                  </div>
+   701→                  <h3 className="text-base font-bold text-white font-display">Reset Dashboard</h3>
+   702→                </div>
+   703→                <button onClick={() => setIsResetOpen(false)} className="p-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white"><X className="w-4 h-4" /></button>
+   704→              </div>
+   705→              <div className="p-3 rounded-lg bg-red-500/5 border border-red-500/20 text-[11px] text-red-300 leading-relaxed mb-4">
+   706→                <AlertTriangle className="w-4 h-4 inline mr-1" />
+   707→                This will permanently delete ALL data in MongoDB (products, orders, users, coupons, logs) and re-seed with default mock data. This action cannot be undone.
+   708→              </div>
+   709→              <div>
+   710→                <label className="block text-[11px] text-gray-400 mb-1">Type <span className="font-mono font-bold text-red-400">RESET</span> to confirm</label>
+   711→                <input type="text" value={confirmText} onChange={(e) => setConfirmText(e.target.value)} placeholder="RESET" className="input-sharp w-full px-3 py-2 text-xs text-white font-mono uppercase" />
+   712→              </div>
+   713→              <div className="flex items-center gap-2 pt-4">
+   714→                <button onClick={() => setIsResetOpen(false)} className="flex-1 py-2.5 rounded-lg bg-[#1f2937] hover:bg-[#2a3344] text-gray-300 text-xs font-bold uppercase tracking-wider">Cancel</button>
+   715→                <button onClick={handleReset} disabled={resetting || confirmText !== 'RESET'} className="flex-1 py-2.5 rounded-lg bg-red-600 hover:bg-red-500 text-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed">
+   716→                  {resetting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <RotateCcw className="w-3.5 h-3.5" />}
+   717→                  <span>Reset Everything</span>
+   718→                </button>
+   719→              </div>
+   720→            </motion.div>
+   721→          </div>
+   722→        )}
+   723→      </AnimatePresence>
+   724→    </div>
+   725→  );
+   726→};
+   727→

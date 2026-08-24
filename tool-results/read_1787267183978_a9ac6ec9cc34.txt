@@ -1,0 +1,703 @@
+     1→import React, { useState, useRef, useEffect } from 'react';
+     2→import { useStore } from '../../context/StoreContext';
+     3→import { CategoryIcon } from './CategoryIcon';
+     4→import {
+     5→  Search,
+     6→  ShoppingCart,
+     7→  Heart,
+     8→  User,
+     9→  Shield,
+    10→  MessageCircle,
+    11→  Menu,
+    12→  X,
+    13→  ChevronDown,
+    14→  Sparkles,
+    15→  Zap,
+    16→  Layers,
+    17→  Flame,
+    18→  Clock,
+    19→  TrendingUp,
+    20→  Award,
+    21→  ArrowRight,
+    22→  Gift,
+    23→  Laptop,
+    24→  Cpu,
+    25→  Tv,
+    26→  Radio,
+    27→  Projector
+    28→} from 'lucide-react';
+    29→import { motion, AnimatePresence } from 'motion/react';
+    30→
+    31→export const Header: React.FC = () => {
+    32→  const {
+    33→    categories,
+    34→    selectedCategory,
+    35→    setSelectedCategory,
+    36→    searchQuery,
+    37→    setSearchQuery,
+    38→    cartCount,
+    39→    cartSubtotal,
+    40→    setIsCartOpen,
+    41→    wishlist,
+    42→    setIsWishlistOpen,
+    43→    currentUser,
+    44→    setIsAuthModalOpen,
+    45→    setIsCustomerPortalOpen,
+    46→    setIsWhatsAppModalOpen,
+    47→    activeView,
+    48→    setActiveView,
+    49→    content,
+    50→    products,
+    51→    setSelectedProduct,
+    52→    currency,
+    53→    setCurrency,
+    54→    formatPrice,
+    55→    setProductTypeFilter,
+    56→    navItems,
+    57→    activePromoFilter,
+    58→    setActivePromoFilter
+    59→  } = useStore();
+    60→
+    61→  const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false);
+    62→  const [isSearchFocused, setIsSearchFocused] = useState(false);
+    63→  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
+    64→  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    65→  const [isCurrencyMenuOpen, setIsCurrencyMenuOpen] = useState(false);
+    66→
+    67→  const searchRef = useRef<HTMLDivElement>(null);
+    68→
+    69→  // Close search dropdown on click outside
+    70→  useEffect(() => {
+    71→    const handleClickOutside = (e: MouseEvent) => {
+    72→      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+    73→        setIsSearchFocused(false);
+    74→      }
+    75→    };
+    76→    document.addEventListener('mousedown', handleClickOutside);
+    77→    return () => document.removeEventListener('mousedown', handleClickOutside);
+    78→  }, []);
+    79→
+    80→  // Filter products for quick search popup
+    81→  const searchResults = searchQuery.trim()
+    82→    ? products
+    83→        .filter(p =>
+    84→          p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    85→          p.categoryName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    86→          p.tags.some(t => t.toLowerCase().includes(searchQuery.toLowerCase())) ||
+    87→          p.sku.toLowerCase().includes(searchQuery.toLowerCase())
+    88→        )
+    89→        .slice(0, 5)
+    90→    : [];
+    91→
+    92→  const currencies = [
+    93→    { code: 'PKR', symbol: 'Rs ', rate: 1 },
+    94→    { code: 'USD', symbol: '$', rate: 1 / 278.5 },
+    95→    { code: 'EUR', symbol: '€', rate: 1 / 302.0 },
+    96→    { code: 'GBP', symbol: '£', rate: 1 / 352.0 },
+    97→    { code: 'AED', symbol: 'AED ', rate: 1 / 75.8 }
+    98→  ];
+    99→
+   100→  // Helper to handle nav item clicks
+   101→  const handleNavClick = (target: string) => {
+   102→    setActiveView('store');
+   103→    if (target === 'limited-time') {
+   104→      setActivePromoFilter('limited-time');
+   105→      setSelectedCategory('all');
+   106→      setProductTypeFilter('all');
+   107→      const el = document.getElementById('catalog');
+   108→      if (el) el.scrollIntoView({ behavior: 'smooth' });
+   109→    } else if (target === 'flash-deals') {
+   110→      setActivePromoFilter('flash-deals');
+   111→      const el = document.getElementById('deals');
+   112→      if (el) el.scrollIntoView({ behavior: 'smooth' });
+   113→    } else if (target === 'trending-week') {
+   114→      setActivePromoFilter('trending-week');
+   115→      const el = document.getElementById('trending');
+   116→      if (el) el.scrollIntoView({ behavior: 'smooth' });
+   117→    } else if (target === 'best-sellers') {
+   118→      setActivePromoFilter('best-sellers');
+   119→      setSelectedCategory('all');
+   120→      const el = document.getElementById('catalog');
+   121→      if (el) el.scrollIntoView({ behavior: 'smooth' });
+   122→    } else if (target === 'projectors') {
+   123→      setSelectedCategory('smart-projectors');
+   124→      setProductTypeFilter('physical_projector');
+   125→      const el = document.getElementById('projectors-section');
+   126→      if (el) el.scrollIntoView({ behavior: 'smooth' });
+   127→    } else if (target.startsWith('category:')) {
+   128→      const catId = target.replace('category:', '');
+   129→      setSelectedCategory(catId);
+   130→      setProductTypeFilter(catId === 'smart-projectors' ? 'physical_projector' : 'all');
+   131→      const el = document.getElementById('catalog');
+   132→      if (el) el.scrollIntoView({ behavior: 'smooth' });
+   133→    } else {
+   134→      setSelectedCategory('all');
+   135→      setProductTypeFilter('all');
+   136→      setActivePromoFilter('all');
+   137→      window.scrollTo({ top: 0, behavior: 'smooth' });
+   138→    }
+   139→  };
+   140→
+   141→  const getNavIcon = (iconName?: string) => {
+   142→    switch (iconName) {
+   143→      case 'Clock': return <Clock className="w-3.5 h-3.5 text-[#FFC928]" />;
+   144→      case 'Flame': return <Flame className="w-3.5 h-3.5 text-[#FF304F]" />;
+   145→      case 'TrendingUp': return <TrendingUp className="w-3.5 h-3.5 text-[#1769FF]" />;
+   146→      case 'Award': return <Award className="w-3.5 h-3.5 text-[#FFC928]" />;
+   147→      case 'Projector': return <Projector className="w-3.5 h-3.5 text-[#1769FF]" />;
+   148→      default: return null;
+   149→    }
+   150→  };
+   151→
+   152→  const activeNavList = navItems.filter(item => item.isActive).sort((a, b) => a.order - b.order);
+   153→
+   154→  return (
+   155→    <header className="sticky top-0 z-40 w-full flex flex-col bg-[#08152F]/95 backdrop-blur-xl border-b border-[#26334A] shadow-2xl">
+   156→      {/* 1. ANNOUNCEMENT BAR */}
+   157→      {content.announcementBar.enabled && (
+   158→        <div className="w-full bg-[#070B14] border-b border-[#26334A]/80 py-1.5 px-4 text-xs text-slate-300 font-medium">
+   159→          <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+   160→            <div className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
+   161→              {content.announcementBar.badgeText && (
+   162→                <span className="px-2 py-0.5 rounded-md bg-[#FFC928]/15 text-[#FFC928] text-[10px] font-bold uppercase tracking-widest border border-[#FFC928]/35 font-mono">
+   163→                  {content.announcementBar.badgeText}
+   164→                </span>
+   165→              )}
+   166→              <span className="truncate text-slate-200 text-xs">{content.announcementBar.text}</span>
+   167→            </div>
+   168→
+   169→            <div className="hidden sm:flex items-center gap-4 text-slate-400 text-xs shrink-0">
+   170→              <span className="flex items-center gap-1.5 text-[#00D99A] font-mono text-[11px] uppercase tracking-wider">
+   171→                <span className="w-1.5 h-1.5 rounded-full bg-[#00D99A] animate-ping" />
+   172→                24/7 Automated Delivery
+   173→              </span>
+   174→              <span className="text-[#26334A]">|</span>
+   175→              <button
+   176→                onClick={() => setIsWhatsAppModalOpen(true)}
+   177→                className="hover:text-[#1769FF] transition-colors flex items-center gap-1.5 text-slate-300 text-xs"
+   178→              >
+   179→                <MessageCircle className="w-3.5 h-3.5 text-[#00D99A]" />
+   180→                WhatsApp Concierge
+   181→              </button>
+   182→            </div>
+   183→          </div>
+   184→        </div>
+   185→      )}
+   186→
+   187→      {/* 2. MAIN HEADER NAVIGATION */}
+   188→      <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 py-3 flex items-center justify-between gap-3 lg:gap-8">
+   189→        {/* BRAND LOGO */}
+   190→        <div className="flex items-center gap-6">
+   191→          <button
+   192→            onClick={() => {
+   193→              setActiveView('store');
+   194→              setSelectedCategory('all');
+   195→              setProductTypeFilter('all');
+   196→              setActivePromoFilter('all');
+   197→              window.scrollTo({ top: 0, behavior: 'smooth' });
+   198→            }}
+   199→            className="flex items-center gap-3 group text-left focus:outline-none"
+   200→            aria-label="PlayBeat Digital Home"
+   201→          >
+   202→            {/* Custom PlayBeat Logo Mark */}
+   203→            <div className="w-9 h-9 rounded-xl bg-[#10182A] border border-[#26334A] group-hover:border-[#1769FF]/60 flex items-center justify-center relative overflow-hidden transition-all duration-300 shadow-lg">
+   204→              <div className="absolute inset-0 bg-gradient-to-tr from-[#1769FF]/20 via-[#6B4DFF]/10 to-[#FF304F]/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+   205→              <div className="w-4 h-4 bg-gradient-to-br from-[#1769FF] to-[#287BFF] flex items-center justify-center rotate-45 transform group-hover:scale-110 transition-transform shadow-[0_0_12px_rgba(23,105,255,0.7)]">
+   206→                <Zap className="w-2.5 h-2.5 text-white -rotate-45" />
+   207→              </div>
+   208→            </div>
+   209→
+   210→            <div className="flex items-center">
+   211→              <div className="text-xl sm:text-2xl font-bold tracking-tighter flex items-center">
+   212→                <span className="text-white font-display">PLAY</span>
+   213→                <span className="text-[#1769FF] font-display">BEAT</span>
+   214→                <span className="ml-2 text-[10px] bg-[#1769FF]/15 text-[#287BFF] border border-[#1769FF]/30 px-2 py-0.5 rounded-md font-mono font-bold tracking-wider shadow-sm">
+   215→                  DIGITAL
+   216→                </span>
+   217→              </div>
+   218→            </div>
+   219→          </button>
+   220→
+   221→          {/* CATEGORIES BUTTON (DESKTOP) */}
+   222→          <div className="relative hidden md:block">
+   223→            <button
+   224→              onClick={() => setIsMegaMenuOpen(!isMegaMenuOpen)}
+   225→              className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs uppercase tracking-widest font-bold transition-all ${
+   226→                isMegaMenuOpen
+   227→                  ? 'bg-[#1769FF]/20 text-[#287BFF] border border-[#1769FF]/40 font-bold shadow-sm'
+   228→                  : 'btn-secondary'
+   229→              }`}
+   230→            >
+   231→              <Layers className="w-3.5 h-3.5 text-[#1769FF]" />
+   232→              <span>Categories</span>
+   233→              <ChevronDown className={`w-3 h-3 transition-transform ${isMegaMenuOpen ? 'rotate-180 text-[#1769FF]' : 'text-slate-400'}`} />
+   234→            </button>
+   235→
+   236→            {/* CATEGORY MEGA-MENU DROPDOWN */}
+   237→            <AnimatePresence>
+   238→              {isMegaMenuOpen && (
+   239→                <motion.div
+   240→                  initial={{ opacity: 0, y: 8, scale: 0.98 }}
+   241→                  animate={{ opacity: 1, y: 0, scale: 1 }}
+   242→                  exit={{ opacity: 0, y: 8, scale: 0.98, transition: { duration: 0.12 } }}
+   243→                  className="absolute left-0 top-full mt-2 w-[720px] rounded-2xl modern-card shadow-2xl p-5 z-50 grid grid-cols-2 gap-2"
+   244→                >
+   245→                  <div className="col-span-2 pb-2 mb-2 border-b border-[#26334A] flex items-center justify-between text-xs text-slate-400">
+   246→                    <span className="font-bold text-white uppercase tracking-[0.2em]">Explore Verified Collections</span>
+   247→                    <span className="font-mono text-slate-400">{categories.length} Categories</span>
+   248→                  </div>
+   249→
+   250→                  {categories.map((cat) => (
+   251→                    <button
+   252→                      key={cat.id}
+   253→                      onClick={() => {
+   254→                        setSelectedCategory(cat.id);
+   255→                        setProductTypeFilter(cat.id === 'smart-projectors' ? 'physical_projector' : 'all');
+   256→                        setIsMegaMenuOpen(false);
+   257→                        setActiveView('store');
+   258→                        const el = document.getElementById('catalog');
+   259→                        if (el) el.scrollIntoView({ behavior: 'smooth' });
+   260→                      }}
+   261→                      className={`flex items-center gap-3 p-3 rounded-xl transition-all text-left ${
+   262→                        selectedCategory === cat.id
+   263→                          ? 'bg-[#1769FF]/15 border border-[#1769FF]/40 text-white shadow-sm'
+   264→                          : 'hover:bg-[#121C30] border border-transparent text-slate-300 hover:text-white'
+   265→                      }`}
+   266→                    >
+   267→                      <div className={`p-2.5 rounded-xl ${cat.id === 'smart-projectors' ? 'bg-[#1769FF]/20 text-[#287BFF] border border-[#1769FF]/30 shadow-sm' : 'bg-[#10182A] text-slate-300 border border-[#26334A]'}`}>
+   268→                        <CategoryIcon name={cat.iconName} className="w-4 h-4" />
+   269→                      </div>
+   270→                      <div className="flex-1 min-w-0">
+   271→                        <div className="text-xs font-semibold truncate flex items-center gap-1.5">
+   272→                          {cat.name}
+   273→                          {cat.isFeatured && (
+   274→                            <span className="px-1.5 py-0.5 text-[9px] rounded bg-[#FFC928]/15 text-[#FFC928] font-mono border border-[#FFC928]/30">
+   275→                              Popular
+   276→                            </span>
+   277→                          )}
+   278→                        </div>
+   279→                        <div className="text-xs text-slate-400 truncate">{cat.description}</div>
+   280→                      </div>
+   281→                      <span className="text-[10px] text-slate-400 font-mono">{cat.productCount}</span>
+   282→                    </button>
+   283→                  ))}
+   284→                </motion.div>
+   285→              )}
+   286→            </AnimatePresence>
+   287→          </div>
+   288→        </div>
+   289→
+   290→        {/* 3. GLOBAL SMART SEARCH */}
+   291→        <div ref={searchRef} className="relative flex-1 max-w-lg hidden sm:block">
+   292→          <div className={`relative flex items-center rounded-full bg-[#10182A] border transition-all duration-200 ${
+   293→            isSearchFocused ? 'border-[#1769FF]/70 shadow-[0_0_20px_rgba(23,105,255,0.2)]' : 'border-[#26334A] hover:border-[#1769FF]/40'
+   294→          }`}>
+   295→            <Search className="w-4 h-4 text-slate-400 ml-4 shrink-0" />
+   296→            <input
+   297→              type="text"
+   298→              placeholder="Search digital assets, 4K projectors, licenses..."
+   299→              value={searchQuery}
+   300→              onChange={(e) => setSearchQuery(e.target.value)}
+   301→              onFocus={() => setIsSearchFocused(true)}
+   302→              className="w-full bg-transparent px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:outline-none"
+   303→            />
+   304→            {searchQuery && (
+   305→              <button
+   306→                onClick={() => setSearchQuery('')}
+   307→                className="mr-3 text-slate-400 hover:text-white text-xs p-1"
+   308→              >
+   309→                <X className="w-3.5 h-3.5" />
+   310→              </button>
+   311→            )}
+   312→            <kbd className="hidden lg:inline-block mr-3 px-2 py-0.5 text-[10px] font-mono text-slate-400 bg-white/5 border border-[#26334A] rounded-md shadow-inner">
+   313→              /
+   314→            </kbd>
+   315→          </div>
+   316→
+   317→          {/* INSTANT SEARCH AUTOCOMPLETE DROPDOWN */}
+   318→          <AnimatePresence>
+   319→            {isSearchFocused && (
+   320→              <motion.div
+   321→                initial={{ opacity: 0, y: 6 }}
+   322→                animate={{ opacity: 1, y: 0 }}
+   323→                exit={{ opacity: 0, y: 6, transition: { duration: 0.1 } }}
+   324→                className="absolute left-0 right-0 top-full mt-2 rounded-2xl modern-card shadow-2xl p-3 z-50"
+   325→              >
+   326→                {searchResults.length > 0 ? (
+   327→                  <div className="space-y-1">
+   328→                    <div className="text-[10px] uppercase font-bold text-slate-400 px-2 tracking-[0.2em] mb-1 font-mono">Matching Assets</div>
+   329→                    {searchResults.map((item) => (
+   330→                      <button
+   331→                        key={item.id}
+   332→                        onClick={() => {
+   333→                          setSelectedProduct(item);
+   334→                          setIsSearchFocused(false);
+   335→                        }}
+   336→                        className="w-full flex items-center justify-between gap-3 p-2.5 rounded-xl hover:bg-[#121C30] text-left transition-colors group"
+   337→                      >
+   338→                        <div className="flex items-center gap-2.5 min-w-0">
+   339→                          <img src={item.images[0]} alt={item.title} className="w-9 h-9 rounded-lg object-cover bg-slate-950 shrink-0 border border-[#26334A]" />
+   340→                          <div className="min-w-0">
+   341→                            <div className="text-xs font-semibold text-slate-100 truncate group-hover:text-[#1769FF] transition-colors">
+   342→                              {item.title}
+   343→                            </div>
+   344→                            <div className="text-[10px] text-slate-400 font-mono">
+   345→                              {item.categoryName} • {item.productType === 'physical_projector' ? 'Tracked Delivery' : 'Instant Key'}
+   346→                            </div>
+   347→                          </div>
+   348→                        </div>
+   349→                        <div className="text-xs font-bold text-[#1769FF] font-mono shrink-0">
+   350→                          {formatPrice(item.price)}
+   351→                        </div>
+   352→                      </button>
+   353→                    ))}
+   354→                  </div>
+   355→                ) : searchQuery.trim() ? (
+   356→                  <div className="p-4 text-center text-xs text-slate-400">
+   357→                    No matching assets found for "{searchQuery}".
+   358→                  </div>
+   359→                ) : (
+   360→                  <div className="p-2 space-y-2">
+   361→                    <div className="text-[10px] uppercase font-bold text-slate-400 px-1 tracking-[0.2em] font-mono">Trending Searches</div>
+   362→                    <div className="flex flex-wrap gap-1.5">
+   363→                      {['4K Laser Projector', 'Steam $100', 'IPTV 4K', 'Canva Pro', 'Windows 11 Pro', 'Netflix 4K'].map((tag) => (
+   364→                        <button
+   365→                          key={tag}
+   366→                          onClick={() => setSearchQuery(tag)}
+   367→                          className="px-2.5 py-1 rounded-md bg-[#10182A] hover:bg-[#1769FF]/20 hover:text-[#287BFF] border border-[#26334A] text-xs text-slate-300 font-medium transition-all"
+   368→                        >
+   369→                          {tag}
+   370→                        </button>
+   371→                      ))}
+   372→                    </div>
+   373→                  </div>
+   374→                )}
+   375→              </motion.div>
+   376→            )}
+   377→          </AnimatePresence>
+   378→        </div>
+   379→
+   380→        {/* 4. ACTIONS & SHORTCUTS */}
+   381→        <div className="flex items-center gap-2.5">
+   382→          {/* CURRENCY SELECTOR */}
+   383→          <div className="relative hidden lg:block">
+   384→            <button
+   385→              onClick={() => setIsCurrencyMenuOpen(!isCurrencyMenuOpen)}
+   386→              className="flex items-center gap-1.5 px-3 py-2 rounded-xl btn-secondary text-xs font-mono text-slate-200"
+   387→            >
+   388→              <span>{currency.code}</span>
+   389→              <ChevronDown className="w-3 h-3 text-slate-400" />
+   390→            </button>
+   391→
+   392→            <AnimatePresence>
+   393→              {isCurrencyMenuOpen && (
+   394→                <motion.div
+   395→                  initial={{ opacity: 0, scale: 0.95 }}
+   396→                  animate={{ opacity: 1, scale: 1 }}
+   397→                  exit={{ opacity: 0, scale: 0.95 }}
+   398→                  className="absolute right-0 top-full mt-1.5 w-28 rounded-2xl modern-card shadow-xl p-1.5 z-50"
+   399→                >
+   400→                  {currencies.map((c) => (
+   401→                    <button
+   402→                      key={c.code}
+   403→                      onClick={() => {
+   404→                        setCurrency(c);
+   405→                        setIsCurrencyMenuOpen(false);
+   406→                      }}
+   407→                      className={`w-full flex items-center justify-between px-3 py-1.5 text-xs font-mono rounded-lg transition-colors ${
+   408→                        currency.code === c.code ? 'bg-[#1769FF]/20 text-[#287BFF] font-bold' : 'text-slate-300 hover:bg-white/5 hover:text-white'
+   409→                      }`}
+   410→                    >
+   411→                      <span>{c.code}</span>
+   412→                      <span className="text-slate-400">{c.symbol}</span>
+   413→                    </button>
+   414→                  ))}
+   415→                </motion.div>
+   416→              )}
+   417→            </AnimatePresence>
+   418→          </div>
+   419→
+   420→          {/* WISHLIST BUTTON */}
+   421→          <button
+   422→            onClick={() => setIsWishlistOpen(true)}
+   423→            className="relative p-2.5 rounded-xl btn-secondary text-slate-300 hover:text-white"
+   424→            aria-label="View Wishlist"
+   425→          >
+   426→            <Heart className="w-4 h-4" />
+   427→            {wishlist.length > 0 && (
+   428→              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-[#FF304F] rounded-full shadow-[0_0_8px_rgba(255,48,79,0.7)]" />
+   429→            )}
+   430→          </button>
+   431→
+   432→          {/* CART BUTTON */}
+   433→          <button
+   434→            onClick={() => setIsCartOpen(true)}
+   435→            className="relative p-2.5 rounded-xl btn-secondary text-slate-300 hover:text-white flex items-center gap-2"
+   436→            aria-label="View Cart"
+   437→          >
+   438→            <div className="relative">
+   439→              <ShoppingCart className="w-4 h-4" />
+   440→              {cartCount > 0 && (
+   441→                <span className="absolute -top-1.5 -right-1.5 w-2.5 h-2.5 bg-[#1769FF] rounded-full shadow-[0_0_8px_rgba(23,105,255,0.7)]" />
+   442→              )}
+   443→            </div>
+   444→            <span className="hidden md:inline font-mono text-xs font-bold text-white">
+   445→              {formatPrice(cartSubtotal)}
+   446→            </span>
+   447→          </button>
+   448→
+   449→          {/* USER ACCOUNT BUTTON */}
+   450→          <div className="relative">
+   451→            <button
+   452→              onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+   453→              className="flex items-center gap-2 p-1 text-slate-400 hover:text-white transition-colors"
+   454→            >
+   455→              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#1769FF]/40 to-[#10182A] border border-[#26334A] flex items-center justify-center text-xs text-white font-bold shadow-md">
+   456→                {currentUser.name.charAt(0).toUpperCase()}
+   457→              </div>
+   458→            </button>
+   459→
+   460→            <AnimatePresence>
+   461→              {isUserMenuOpen && (
+   462→                <motion.div
+   463→                  initial={{ opacity: 0, y: 8, scale: 0.95 }}
+   464→                  animate={{ opacity: 1, y: 0, scale: 1 }}
+   465→                  exit={{ opacity: 0, y: 8, scale: 0.95 }}
+   466→                  className="absolute right-0 top-full mt-2 w-56 rounded-2xl modern-card shadow-2xl p-2 z-50"
+   467→                >
+   468→                  <div className="px-3 py-2.5 border-b border-[#26334A]">
+   469→                    <div className="text-xs font-semibold text-white truncate">{currentUser.name}</div>
+   470→                    <div className="text-[10px] text-slate-400 font-mono truncate">{currentUser.email}</div>
+   471→                    <div className="mt-1">
+   472→                      <span className="px-2 py-0.5 rounded-md bg-[#1769FF]/15 text-[#287BFF] text-[9px] font-bold uppercase tracking-wider font-mono border border-[#1769FF]/30">
+   473→                        {currentUser.role.replace('_', ' ')}
+   474→                      </span>
+   475→                    </div>
+   476→                  </div>
+   477→
+   478→                  <div className="py-1 space-y-1">
+   479→                    <button
+   480→                      onClick={() => {
+   481→                        setIsCustomerPortalOpen(true);
+   482→                        setIsUserMenuOpen(false);
+   483→                      }}
+   484→                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-slate-200 hover:text-white hover:bg-[#121C30] rounded-xl transition-colors"
+   485→                    >
+   486→                      <User className="w-3.5 h-3.5 text-slate-400" />
+   487→                      Orders & Key Vault
+   488→                    </button>
+   489→
+   490→                    <button
+   491→                      onClick={() => {
+   492→                        setActiveView(activeView === 'store' ? 'admin' : 'store');
+   493→                        setIsUserMenuOpen(false);
+   494→                      }}
+   495→                      className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold text-[#287BFF] hover:bg-[#1769FF]/15 rounded-xl transition-colors"
+   496→                    >
+   497→                      <span className="flex items-center gap-2">
+   498→                        <Shield className="w-3.5 h-3.5" />
+   499→                        {activeView === 'store' ? 'Admin Console' : 'Storefront'}
+   500→                      </span>
+   501→                      <ArrowRight className="w-3 h-3" />
+   502→                    </button>
+   503→
+   504→                    <button
+   505→                      onClick={() => {
+   506→                        setIsAuthModalOpen(true);
+   507→                        setIsUserMenuOpen(false);
+   508→                      }}
+   509→                      className="w-full flex items-center gap-2.5 px-3 py-2 text-xs text-slate-400 hover:text-slate-200 hover:bg-white/5 rounded-xl transition-colors"
+   510→                    >
+   511→                      <Sparkles className="w-3.5 h-3.5" />
+   512→                      Switch Role Demo
+   513→                    </button>
+   514→                  </div>
+   515→                </motion.div>
+   516→              )}
+   517→            </AnimatePresence>
+   518→          </div>
+   519→
+   520→          {/* ADMIN CONSOLE QUICK LAUNCH BUTTON (DESKTOP) */}
+   521→          <button
+   522→            onClick={() => setActiveView(activeView === 'store' ? 'admin' : 'store')}
+   523→            className={`hidden md:flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-widest transition-all ${
+   524→              activeView === 'admin'
+   525→                ? 'btn-primary'
+   526→                : 'btn-secondary'
+   527→            }`}
+   528→          >
+   529→            <Shield className="w-3.5 h-3.5 text-white" />
+   530→            <span>{activeView === 'admin' ? 'Storefront' : 'Admin'}</span>
+   531→          </button>
+   532→
+   533→          {/* MOBILE MENU TOGGLE */}
+   534→          <button
+   535→            onClick={() => setIsMobileNavOpen(!isMobileNavOpen)}
+   536→            className="md:hidden p-2.5 rounded-xl btn-secondary text-slate-300"
+   537→            aria-label="Toggle navigation menu"
+   538→          >
+   539→            {isMobileNavOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+   540→          </button>
+   541→        </div>
+   542→      </div>
+   543→
+   544→      {/* 5. QUICK NAVIGATION BAR (SUB-HEADER WITH PROMO & CUSTOM NAV ITEMS) */}
+   545→      <div className="hidden md:block w-full border-t border-[#26334A] bg-[#070B14] px-4 sm:px-6">
+   546→        <div className="max-w-7xl mx-auto flex items-center justify-between overflow-x-auto no-scrollbar py-2.5 text-xs uppercase tracking-wider">
+   547→          <div className="flex items-center gap-5 text-xs text-slate-300 font-medium">
+   548→            <button
+   549→              onClick={() => handleNavClick('all')}
+   550→              className={`hover:text-[#1769FF] transition-colors ${
+   551→                selectedCategory === 'all' && activePromoFilter === 'all' ? 'text-[#287BFF] font-bold' : ''
+   552→              }`}
+   553→            >
+   554→              All Assets
+   555→            </button>
+   556→
+   557→            {/* DYNAMIC CUSTOMIZABLE NAV ITEMS (FROM ADMIN) */}
+   558→            {activeNavList.map((item) => {
+   559→              const isSelected = 
+   560→                (item.target === 'limited-time' && activePromoFilter === 'limited-time') ||
+   561→                (item.target === 'flash-deals' && activePromoFilter === 'flash-deals') ||
+   562→                (item.target === 'trending-week' && activePromoFilter === 'trending-week') ||
+   563→                (item.target === 'best-sellers' && activePromoFilter === 'best-sellers') ||
+   564→                (item.target === 'projectors' && selectedCategory === 'smart-projectors') ||
+   565→                (item.target.startsWith('category:') && selectedCategory === item.target.replace('category:', ''));
+   566→
+   567→              return (
+   568→                <button
+   569→                  key={item.id}
+   570→                  onClick={() => handleNavClick(item.target)}
+   571→                  className={`flex items-center gap-1.5 transition-all whitespace-nowrap px-1 py-0.5 rounded-md ${
+   572→                    isSelected
+   573→                      ? 'text-[#287BFF] font-bold drop-shadow-[0_0_8px_rgba(23,105,255,0.4)]'
+   574→                      : 'text-slate-300 hover:text-white'
+   575→                  }`}
+   576→                >
+   577→                  {getNavIcon(item.icon)}
+   578→                  <span>{item.label}</span>
+   579→                  {item.badgeText && (
+   580→                    <span className={`px-1.5 py-0.2 rounded text-[9px] font-mono font-bold tracking-tight ${
+   581→                      item.badgeColor === 'yellow'
+   582→                        ? 'bg-[#FFC928]/15 text-[#FFC928] border border-[#FFC928]/35'
+   583→                        : item.badgeColor === 'red'
+   584→                        ? 'bg-[#FF304F]/15 text-[#FF304F] border border-[#FF304F]/35'
+   585→                        : 'bg-[#1769FF]/15 text-[#287BFF] border border-[#1769FF]/35'
+   586→                    }`}>
+   587→                      {item.badgeText}
+   588→                    </span>
+   589→                  )}
+   590→                </button>
+   591→              );
+   592→            })}
+   593→          </div>
+   594→
+   595→          <div className="flex items-center gap-4 shrink-0 pl-6 border-l border-[#26334A]">
+   596→            <button
+   597→              onClick={() => handleNavClick('flash-deals')}
+   598→              className="flex items-center gap-1.5 text-[#FF304F] font-bold hover:text-[#ff6b81] transition-colors text-xs uppercase tracking-widest"
+   599→            >
+   600→              <Flame className="w-3.5 h-3.5 text-[#FF304F]" />
+   601→              <span>Cyber Drops</span>
+   602→            </button>
+   603→          </div>
+   604→        </div>
+   605→      </div>
+   606→
+   607→      {/* 6. MOBILE NAVIGATION DRAWER */}
+   608→      <AnimatePresence>
+   609→        {isMobileNavOpen && (
+   610→          <motion.div
+   611→            initial={{ height: 0, opacity: 0 }}
+   612→            animate={{ height: 'auto', opacity: 1 }}
+   613→            exit={{ height: 0, opacity: 0 }}
+   614→            className="md:hidden border-t border-[#26334A] bg-[#070B14] px-4 py-4 space-y-4 shadow-2xl"
+   615→          >
+   616→            {/* Mobile Search */}
+   617→            <div className="relative">
+   618→              <input
+   619→                type="text"
+   620→                placeholder="Search digital assets..."
+   621→                value={searchQuery}
+   622→                onChange={(e) => setSearchQuery(e.target.value)}
+   623→                className="w-full bg-[#10182A] rounded-full border border-[#26334A] px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-[#1769FF]/60"
+   624→              />
+   625→            </div>
+   626→
+   627→            <div className="grid grid-cols-2 gap-2">
+   628→              <button
+   629→                onClick={() => {
+   630→                  setActiveView(activeView === 'store' ? 'admin' : 'store');
+   631→                  setIsMobileNavOpen(false);
+   632→                }}
+   633→                className="flex items-center justify-center gap-2 p-3 rounded-xl btn-primary text-xs font-bold uppercase tracking-widest"
+   634→              >
+   635→                <Shield className="w-4 h-4" />
+   636→                {activeView === 'admin' ? 'Store' : 'Admin'}
+   637→              </button>
+   638→
+   639→              <button
+   640→                onClick={() => {
+   641→                  setIsCustomerPortalOpen(true);
+   642→                  setIsMobileNavOpen(false);
+   643→                }}
+   644→                className="flex items-center justify-center gap-2 p-3 rounded-xl btn-secondary text-xs font-bold uppercase tracking-widest"
+   645→              >
+   646→                <User className="w-4 h-4" />
+   647→                Vault
+   648→              </button>
+   649→            </div>
+   650→
+   651→            {/* Promotional Quick Links */}
+   652→            <div className="space-y-1">
+   653→              <div className="text-[10px] uppercase font-bold text-slate-400 tracking-[0.2em] font-mono mb-2">Featured Highlights</div>
+   654→              {activeNavList.map((item) => (
+   655→                <button
+   656→                  key={item.id}
+   657→                  onClick={() => {
+   658→                    handleNavClick(item.target);
+   659→                    setIsMobileNavOpen(false);
+   660→                  }}
+   661→                  className="w-full flex items-center justify-between p-2.5 rounded-xl text-xs text-slate-300 hover:bg-[#10182A] transition-colors"
+   662→                >
+   663→                  <span className="flex items-center gap-2">
+   664→                    {getNavIcon(item.icon)}
+   665→                    {item.label}
+   666→                  </span>
+   667→                  {item.badgeText && (
+   668→                    <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-[#FFC928]/15 text-[#FFC928] border border-[#FFC928]/35">
+   669→                      {item.badgeText}
+   670→                    </span>
+   671→                  )}
+   672→                </button>
+   673→              ))}
+   674→            </div>
+   675→
+   676→            <div className="space-y-1 pt-2 border-t border-[#26334A]">
+   677→              <div className="text-[10px] uppercase font-bold text-slate-400 tracking-[0.2em] font-mono mb-2">Categories</div>
+   678→              {categories.slice(0, 8).map((cat) => (
+   679→                <button
+   680→                  key={cat.id}
+   681→                  onClick={() => {
+   682→                    setSelectedCategory(cat.id);
+   683→                    setProductTypeFilter(cat.id === 'smart-projectors' ? 'physical_projector' : 'all');
+   684→                    setIsMobileNavOpen(false);
+   685→                    setActiveView('store');
+   686→                  }}
+   687→                  className="w-full flex items-center justify-between p-2 rounded-xl text-xs text-slate-300 hover:bg-[#10182A]"
+   688→                >
+   689→                  <span className="flex items-center gap-2.5">
+   690→                    <CategoryIcon name={cat.iconName} className="w-4 h-4 text-[#1769FF]" />
+   691→                    {cat.name}
+   692→                  </span>
+   693→                  <span className="text-[10px] text-slate-400 font-mono">{cat.productCount}</span>
+   694→                </button>
+   695→              ))}
+   696→            </div>
+   697→          </motion.div>
+   698→        )}
+   699→      </AnimatePresence>
+   700→    </header>
+   701→  );
+   702→};
+   703→

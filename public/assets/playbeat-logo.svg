@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 900 260" role="img" aria-labelledby="title desc">
+  <title id="title">PlayBeat Digital</title>
+  <desc id="desc">PlayBeat Digital logo with a play button and gold orbital rings.</desc>
+  <defs>
+    <linearGradient id="navy" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#071d58"/><stop offset="1" stop-color="#020817"/></linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff36b"/><stop offset=".45" stop-color="#ffc400"/><stop offset="1" stop-color="#ff8a00"/></linearGradient>
+  </defs>
+  <ellipse cx="450" cy="112" rx="420" ry="82" fill="none" stroke="url(#gold)" stroke-width="13" transform="rotate(-8 450 112)"/>
+  <ellipse cx="470" cy="122" rx="390" ry="70" fill="none" stroke="#e9eef8" stroke-width="10" opacity=".95" transform="rotate(10 470 122)"/>
+  <circle cx="450" cy="65" r="48" fill="url(#navy)" stroke="url(#gold)" stroke-width="9"/>
+  <path d="M437 40l31 25-31 25z" fill="url(#gold)"/>
+  <text x="40" y="155" font-family="Arial Black,Arial,sans-serif" font-size="105" font-weight="900" letter-spacing="-8" fill="#f5f7fb" stroke="#071d58" stroke-width="10" paint-order="stroke">play</text>
+  <text x="405" y="155" font-family="Arial Black,Arial,sans-serif" font-size="105" font-weight="900" letter-spacing="-8" fill="url(#gold)" stroke="#071d58" stroke-width="10" paint-order="stroke">beat</text>
+  <rect x="170" y="178" width="560" height="48" rx="24" fill="url(#navy)" stroke="url(#gold)" stroke-width="5"/>
+  <text x="450" y="211" text-anchor="middle" font-family="Arial,sans-serif" font-size="24" font-weight="700" letter-spacing="10" fill="#fff">DIGITAL PVT LTD</text>
+</svg>

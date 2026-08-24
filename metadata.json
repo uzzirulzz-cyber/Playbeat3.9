@@ -1,0 +1,6 @@
+{
+  "name": "PlayBeat Digital - Storefront & Admin Marketplace",
+  "description": "Premium digital-products and smart projector marketplace with instant digital key delivery, physical shipment tracking, smart G2G/CSV import engine, duplicate variation protection, and unified SaaS admin panel.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

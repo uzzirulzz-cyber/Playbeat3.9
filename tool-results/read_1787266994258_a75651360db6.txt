@@ -1,0 +1,836 @@
+     1→import express from 'express';
+     2→import path from 'path';
+     3→import { createServer as createViteServer } from 'vite';
+     4→import {
+     5→  INITIAL_CATEGORIES,
+     6→  INITIAL_PRODUCTS,
+     7→  INITIAL_USERS,
+     8→  INITIAL_ORDERS,
+     9→  INITIAL_G2G_CONNECTOR,
+    10→  INITIAL_CONTENT,
+    11→  INITIAL_COUPONS,
+    12→  INITIAL_ADMIN_LOGS
+    13→} from './src/data/mockData';
+    14→import { Product, Order, User, G2GSupplierConnector, ContentSection, Coupon, AdminLog, ImportJob } from './src/types';
+    15→import { processSmartProductImport, RawImportItem } from './src/utils/smartImportEngine';
+    16→import { deduplicateVariations } from './src/utils/variantProtection';
+    17→
+    18→// In-Memory Database Storage
+    19→let dbCategories = [...INITIAL_CATEGORIES];
+    20→let dbProducts: Product[] = [...INITIAL_PRODUCTS];
+    21→let dbUsers: User[] = [...INITIAL_USERS];
+    22→let dbOrders: Order[] = [...INITIAL_ORDERS];
+    23→let dbG2GConnector: G2GSupplierConnector = { ...INITIAL_G2G_CONNECTOR };
+    24→let dbContent: ContentSection = { ...INITIAL_CONTENT };
+    25→let dbCoupons: Coupon[] = [...INITIAL_COUPONS];
+    26→let dbAdminLogs: AdminLog[] = [...INITIAL_ADMIN_LOGS];
+    27→let dbImportJobs: ImportJob[] = [];
+    28→
+    29→async function startServer() {
+    30→  const app = express();
+    31→  const PORT = 3000;
+    32→
+    33→  app.use(express.json({ limit: '15mb' }));
+    34→
+    35→  // ----------------------------------------------------
+    36→  // API HEALTH
+    37→  // ----------------------------------------------------
+    38→  app.get('/api/health', (req, res) => {
+    39→    res.json({
+    40→      status: 'ok',
+    41→      service: 'PlayBeat Digital API Engine',
+    42→      version: '2.4.0',
+    43→      uptime: process.uptime(),
+    44→      timestamp: new Date().toISOString()
+    45→    });
+    46→  });
+    47→
+    48→  // ----------------------------------------------------
+    49→  // PRODUCTS API
+    50→  // ----------------------------------------------------
+    51→  app.get('/api/products', (req, res) => {
+    52→    const { category, type, search, sort, status, featured, trending, deal } = req.query;
+    53→    let list = [...dbProducts];
+    54→
+    55→    if (status) {
+    56→      list = list.filter(p => p.status === status);
+    57→    } else {
+    58→      // By default for public queries, return published only unless requested
+    59→      if (req.headers['x-admin-query'] !== 'true') {
+    60→        list = list.filter(p => p.status === 'published');
+    61→      }
+    62→    }
+    63→
+    64→    if (category && category !== 'all') {
+    65→      list = list.filter(p => p.categoryId === category || p.slug === category);
+    66→    }
+    67→
+    68→    if (type && type !== 'all') {
+    69→      list = list.filter(p => p.productType === type);
+    70→    }
+    71→
+    72→    if (featured === 'true') {
+    73→      list = list.filter(p => p.isFeatured);
+    74→    }
+    75→    if (trending === 'true') {
+    76→      list = list.filter(p => p.isTrending);
+    77→    }
+    78→    if (deal === 'true') {
+    79→      list = list.filter(p => p.isFlashDeal);
+    80→    }
+    81→
+    82→    if (search && typeof search === 'string') {
+    83→      const q = search.toLowerCase().trim();
+    84→      list = list.filter(p =>
+    85→        p.title.toLowerCase().includes(q) ||
+    86→        p.shortDescription.toLowerCase().includes(q) ||
+    87→        p.sku.toLowerCase().includes(q) ||
+    88→        p.tags.some(t => t.toLowerCase().includes(q)) ||
+    89→        (p.projectorSpecs && (
+    90→          p.projectorSpecs.brand.toLowerCase().includes(q) ||
+    91→          p.projectorSpecs.model.toLowerCase().includes(q) ||
+    92→          p.projectorSpecs.nativeResolution.toLowerCase().includes(q)
+    93→        ))
+    94→      );
+    95→    }
+    96→
+    97→    if (sort === 'price-low') {
+    98→      list.sort((a, b) => a.price - b.price);
+    99→    } else if (sort === 'price-high') {
+   100→      list.sort((a, b) => b.price - a.price);
+   101→    } else if (sort === 'rating') {
+   102→      list.sort((a, b) => b.rating - a.rating);
+   103→    } else if (sort === 'newest') {
+   104→      list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+   105→    } else {
+   106→      // Default: best seller / featured order
+   107→      list.sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0));
+   108→    }
+   109→
+   110→    res.json({ products: list, total: list.length });
+   111→  });
+   112→
+   113→  app.get('/api/products/:idOrSlug', (req, res) => {
+   114→    const param = req.params.idOrSlug;
+   115→    const product = dbProducts.find(p => p.id === param || p.slug === param);
+   116→    if (!product) {
+   117→      return res.status(404).json({ error: 'Product not found' });
+   118→    }
+   119→    res.json({ product });
+   120→  });
+   121→
+   122→  app.post('/api/products', (req, res) => {
+   123→    const raw = req.body as Product;
+   124→    if (!raw.title || !raw.categoryId) {
+   125→      return res.status(400).json({ error: 'Title and category are required' });
+   126→    }
+   127→
+   128→    const productId = raw.id || `pb-prod-${Date.now()}`;
+   129→    const dedupeResult = deduplicateVariations(productId, raw.variations || []);
+   130→
+   131→    const newProduct: Product = {
+   132→      ...raw,
+   133→      id: productId,
+   134→      slug: raw.slug || raw.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+   135→      variations: dedupeResult.cleanVariations,
+   136→      rating: raw.rating || 5.0,
+   137→      reviewCount: raw.reviewCount || 0,
+   138→      reviews: raw.reviews || [],
+   139→      stock: dedupeResult.cleanVariations.reduce((sum, v) => sum + v.stock, 0) || raw.stock || 50,
+   140→      createdAt: new Date().toISOString(),
+   141→      updatedAt: new Date().toISOString()
+   142→    };
+   143→
+   144→    dbProducts.unshift(newProduct);
+   145→
+   146→    dbAdminLogs.unshift({
+   147→      id: `log-${Date.now()}`,
+   148→      adminName: 'PlayBeat Admin',
+   149→      adminEmail: 'admin@playbeat.digital',
+   150→      action: 'Product Created',
+   151→      targetType: 'product',
+   152→      targetId: newProduct.id,
+   153→      details: `Created product "${newProduct.title}" ($${newProduct.price}). Warnings: ${dedupeResult.warnings.length}`,
+   154→      timestamp: new Date().toISOString()
+   155→    });
+   156→
+   157→    res.status(201).json({ product: newProduct, deduplicationInfo: dedupeResult });
+   158→  });
+   159→
+   160→  app.put('/api/products/:id', (req, res) => {
+   161→    const id = req.params.id;
+   162→    const index = dbProducts.findIndex(p => p.id === id);
+   163→    if (index === -1) {
+   164→      return res.status(404).json({ error: 'Product not found' });
+   165→    }
+   166→
+   167→    const updates = req.body;
+   168→    let cleanVars = dbProducts[index].variations;
+   169→    let dedupeResult = null;
+   170→
+   171→    if (updates.variations) {
+   172→      dedupeResult = deduplicateVariations(id, updates.variations);
+   173→      cleanVars = dedupeResult.cleanVariations;
+   174→    }
+   175→
+   176→    dbProducts[index] = {
+   177→      ...dbProducts[index],
+   178→      ...updates,
+   179→      variations: cleanVars,
+   180→      stock: cleanVars.length > 0 ? cleanVars.reduce((sum, v) => sum + v.stock, 0) : (updates.stock ?? dbProducts[index].stock),
+   181→      updatedAt: new Date().toISOString()
+   182→    };
+   183→
+   184→    dbAdminLogs.unshift({
+   185→      id: `log-${Date.now()}`,
+   186→      adminName: 'PlayBeat Admin',
+   187→      adminEmail: 'admin@playbeat.digital',
+   188→      action: 'Product Modified',
+   189→      targetType: 'product',
+   190→      targetId: id,
+   191→      details: `Updated fields for "${dbProducts[index].title}"`,
+   192→      timestamp: new Date().toISOString()
+   193→    });
+   194→
+   195→    res.json({ product: dbProducts[index], deduplicationInfo: dedupeResult });
+   196→  });
+   197→
+   198→  app.delete('/api/products/:id', (req, res) => {
+   199→    const id = req.params.id;
+   200→    const item = dbProducts.find(p => p.id === id);
+   201→    if (!item) {
+   202→      return res.status(404).json({ error: 'Product not found' });
+   203→    }
+   204→
+   205→    dbProducts = dbProducts.filter(p => p.id !== id);
+   206→
+   207→    dbAdminLogs.unshift({
+   208→      id: `log-${Date.now()}`,
+   209→      adminName: 'PlayBeat Admin',
+   210→      adminEmail: 'admin@playbeat.digital',
+   211→      action: 'Product Deleted',
+   212→      targetType: 'product',
+   213→      targetId: id,
+   214→      details: `Deleted product "${item.title}"`,
+   215→      timestamp: new Date().toISOString()
+   216→    });
+   217→
+   218→    res.json({ success: true, message: `Product ${id} removed` });
+   219→  });
+   220→
+   221→  // Bulk Product Updates
+   222→  app.post('/api/products/bulk-update', (req, res) => {
+   223→    const { productIds, action, value } = req.body;
+   224→    if (!Array.isArray(productIds)) {
+   225→      return res.status(400).json({ error: 'productIds array required' });
+   226→    }
+   227→
+   228→    let modifiedCount = 0;
+   229→    dbProducts = dbProducts.map(p => {
+   230→      if (!productIds.includes(p.id)) return p;
+   231→      modifiedCount++;
+   232→      if (action === 'set_status') {
+   233→        return { ...p, status: value, updatedAt: new Date().toISOString() };
+   234→      }
+   235→      if (action === 'adjust_price_percent') {
+   236→        const factor = 1 + Number(value) / 100;
+   237→        return {
+   238→          ...p,
+   239→          price: Math.max(0.99, Number((p.price * factor).toFixed(2))),
+   240→          updatedAt: new Date().toISOString()
+   241→        };
+   242→      }
+   243→      if (action === 'toggle_featured') {
+   244→        return { ...p, isFeatured: Boolean(value), updatedAt: new Date().toISOString() };
+   245→      }
+   246→      if (action === 'toggle_trending') {
+   247→        return { ...p, isTrending: Boolean(value), updatedAt: new Date().toISOString() };
+   248→      }
+   249→      return p;
+   250→    });
+   251→
+   252→    dbAdminLogs.unshift({
+   253→      id: `log-${Date.now()}`,
+   254→      adminName: 'PlayBeat Admin',
+   255→      adminEmail: 'admin@playbeat.digital',
+   256→      action: 'Bulk Product Update',
+   257→      targetType: 'product',
+   258→      details: `Bulk updated ${modifiedCount} products with action "${action}"`,
+   259→      timestamp: new Date().toISOString()
+   260→    });
+   261→
+   262→    res.json({ success: true, modifiedCount });
+   263→  });
+   264→
+   265→  // ----------------------------------------------------
+   266→  // CATEGORIES API
+   267→  // ----------------------------------------------------
+   268→  app.get('/api/categories', (req, res) => {
+   269→    res.json({ categories: dbCategories });
+   270→  });
+   271→
+   272→  app.post('/api/categories', (req, res) => {
+   273→    const newCat = req.body;
+   274→    if (!newCat.name || !newCat.slug) {
+   275→      return res.status(400).json({ error: 'Name and slug are required' });
+   276→    }
+   277→    const cat = {
+   278→      ...newCat,
+   279→      id: newCat.id || newCat.slug,
+   280→      productCount: 0,
+   281→      displayOrder: dbCategories.length + 1
+   282→    };
+   283→    dbCategories.push(cat);
+   284→    res.status(201).json({ category: cat });
+   285→  });
+   286→
+   287→  // ----------------------------------------------------
+   288→  // SMART PROJECTOR COMPARISON API
+   289→  // ----------------------------------------------------
+   290→  app.get('/api/projectors/compare', (req, res) => {
+   291→    const { ids } = req.query;
+   292→    let projectors = dbProducts.filter(p => p.productType === 'physical_projector');
+   293→    if (ids && typeof ids === 'string') {
+   294→      const idList = ids.split(',');
+   295→      projectors = projectors.filter(p => idList.includes(p.id) || idList.includes(p.slug));
+   296→    }
+   297→    res.json({ projectors });
+   298→  });
+   299→
+   300→  // ----------------------------------------------------
+   301→  // G2G / SMART PRODUCT IMPORT ENGINE API
+   302→  // ----------------------------------------------------
+   303→  app.get('/api/import/g2g-connector', (req, res) => {
+   304→    res.json({ connector: dbG2GConnector });
+   305→  });
+   306→
+   307→  app.put('/api/import/g2g-connector', (req, res) => {
+   308→    dbG2GConnector = {
+   309→      ...dbG2GConnector,
+   310→      ...req.body,
+   311→      lastSync: new Date().toISOString()
+   312→    };
+   313→    res.json({ connector: dbG2GConnector });
+   314→  });
+   315→
+   316→  // Authorized G2G Live/Simulated Catalog Sync
+   317→  app.post('/api/import/g2g-sync', (req, res) => {
+   318→    const { markupType = dbG2GConnector.markupType, markupValue = dbG2GConnector.markupValue, autoApprove = false } = req.body;
+   319→
+   320→    // Authorized feed items simulation compliant with G2G partner schema
+   321→    const authorizedG2GFeed: RawImportItem[] = [
+   322→      {
+   323→        externalId: 'g2g-feed-psn-100',
+   324→        title: 'PlayStation Store Gift Card $100 USD (USA Region Digital Code)',
+   325→        description: 'Official Sony PlayStation Network digital voucher code. Redeem on US PSN accounts for games, add-ons, PS Plus subscriptions, and movies.',
+   326→        category: 'PlayStation Network Codes',
+   327→        costPrice: 81.00,
+   328→        stock: 80,
+   329→        sku: 'G2G-PSN-USA-100',
+   330→        imageUrl: 'https://images.unsplash.com/photo-1606813907291-d86efa9b94db?auto=format&fit=crop&w=800&q=80',
+   331→        productType: 'digital',
+   332→        source: 'g2g_authorized',
+   333→        variations: [
+   334→          { type: 'Denomination', value: '$50 USD US Region', costPrice: 41.00, stock: 95 },
+   335→          { type: 'Denomination', value: '$100 USD US Region', costPrice: 81.00, stock: 80 }
+   336→        ]
+   337→      },
+   338→      {
+   339→        externalId: 'g2g-feed-xbox-gamepass',
+   340→        title: 'Xbox Game Pass Ultimate 3 Months Membership (Global Key)',
+   341→        description: 'Play hundreds of high-quality console and PC games, plus EA Play and Xbox Cloud Gaming on mobile and PC.',
+   342→        category: 'Xbox Game Pass Ultimate',
+   343→        costPrice: 22.50,
+   344→        stock: 140,
+   345→        sku: 'G2G-XBOX-GPU-3M',
+   346→        imageUrl: 'https://images.unsplash.com/photo-1605901309584-818e25960a8f?auto=format&fit=crop&w=800&q=80',
+   347→        productType: 'digital',
+   348→        source: 'g2g_authorized',
+   349→        variations: [
+   350→          { type: 'Duration', value: '1 Month Ultimate', costPrice: 8.50, stock: 180 },
+   351→          { type: 'Duration', value: '3 Months Ultimate', costPrice: 22.50, stock: 140 }
+   352→        ]
+   353→      },
+   354→      {
+   355→        externalId: 'g2g-feed-adobe-cc',
+   356→        title: 'Adobe Creative Cloud All Apps 1 Year Subscription (Direct Email Invite)',
+   357→        description: 'Get Photoshop, Illustrator, Premiere Pro, After Effects, Lightroom, and 100GB cloud storage on your own Adobe account.',
+   358→        category: 'Software',
+   359→        costPrice: 42.00,
+   360→        stock: 60,
+   361→        sku: 'G2G-ADOBE-CC-1Y',
+   362→        imageUrl: 'https://images.unsplash.com/photo-1626785774573-4b799315345d?auto=format&fit=crop&w=800&q=80',
+   363→        productType: 'digital',
+   364→        source: 'g2g_authorized',
+   365→        variations: [
+   366→          { type: 'Plan', value: '1 Year All Apps License', costPrice: 42.00, stock: 60 }
+   367→        ]
+   368→      }
+   369→    ];
+   370→
+   371→    const result = processSmartProductImport(authorizedG2GFeed, dbProducts, {
+   372→      connector: dbG2GConnector,
+   373→      markupType,
+   374→      markupValue,
+   375→      autoApprove
+   376→    });
+   377→
+   378→    // Add imported products into catalog
+   379→    dbProducts = [...result.importedProducts, ...dbProducts];
+   380→    dbImportJobs.unshift(result.importJob);
+   381→    dbG2GConnector.lastSync = new Date().toISOString();
+   382→
+   383→    dbAdminLogs.unshift({
+   384→      id: `log-${Date.now()}`,
+   385→      adminName: 'PlayBeat Admin',
+   386→      adminEmail: 'admin@playbeat.digital',
+   387→      action: 'G2G Catalog Synchronized',
+   388→      targetType: 'import',
+   389→      targetId: result.importJob.id,
+   390→      details: `Processed ${result.importJob.totalCount} items from authorized G2G partner. Imported: ${result.importJob.importedCount}, Auto-approved: ${autoApprove}`,
+   391→      timestamp: new Date().toISOString()
+   392→    });
+   393→
+   394→    res.json({
+   395→      success: true,
+   396→      importJob: result.importJob,
+   397→      importedProducts: result.importedProducts
+   398→    });
+   399→  });
+   400→
+   401→  // CSV / Custom Supplier Batch Upload
+   402→  app.post('/api/import/batch', (req, res) => {
+   403→    const { items, markupType = 'percentage', markupValue = 20, autoApprove = false, categoryId } = req.body;
+   404→    if (!Array.isArray(items) || items.length === 0) {
+   405→      return res.status(400).json({ error: 'items array is required' });
+   406→    }
+   407→
+   408→    const result = processSmartProductImport(items as RawImportItem[], dbProducts, {
+   409→      markupType,
+   410→      markupValue,
+   411→      autoApprove,
+   412→      defaultCategoryId: categoryId
+   413→    });
+   414→
+   415→    dbProducts = [...result.importedProducts, ...dbProducts];
+   416→    dbImportJobs.unshift(result.importJob);
+   417→
+   418→    dbAdminLogs.unshift({
+   419→      id: `log-${Date.now()}`,
+   420→      adminName: 'PlayBeat Admin',
+   421→      adminEmail: 'admin@playbeat.digital',
+   422→      action: 'Batch CSV Import',
+   423→      targetType: 'import',
+   424→      targetId: result.importJob.id,
+   425→      details: `Batch imported ${result.importedProducts.length} items. Duplicates detected: ${result.importJob.duplicateCount}`,
+   426→      timestamp: new Date().toISOString()
+   427→    });
+   428→
+   429→    res.json({
+   430→      success: true,
+   431→      importJob: result.importJob,
+   432→      importedProducts: result.importedProducts
+   433→    });
+   434→  });
+   435→
+   436→  app.get('/api/import/jobs', (req, res) => {
+   437→    res.json({ jobs: dbImportJobs });
+   438→  });
+   439→
+   440→  app.post('/api/import/approve/:productId', (req, res) => {
+   441→    const id = req.params.productId;
+   442→    const index = dbProducts.findIndex(p => p.id === id);
+   443→    if (index === -1) {
+   444→      return res.status(404).json({ error: 'Product not found' });
+   445→    }
+   446→    dbProducts[index].status = 'published';
+   447→    dbProducts[index].updatedAt = new Date().toISOString();
+   448→
+   449→    dbAdminLogs.unshift({
+   450→      id: `log-${Date.now()}`,
+   451→      adminName: 'PlayBeat Admin',
+   452→      adminEmail: 'admin@playbeat.digital',
+   453→      action: 'Product Approved',
+   454→      targetType: 'product',
+   455→      targetId: id,
+   456→      details: `Approved & published product "${dbProducts[index].title}"`,
+   457→      timestamp: new Date().toISOString()
+   458→    });
+   459→
+   460→    res.json({ success: true, product: dbProducts[index] });
+   461→  });
+   462→
+   463→  // ----------------------------------------------------
+   464→  // ORDERS & CHECKOUT API
+   465→  // ----------------------------------------------------
+   466→  app.get('/api/orders', (req, res) => {
+   467→    const { customerEmail, status } = req.query;
+   468→    let list = [...dbOrders];
+   469→    if (customerEmail && typeof customerEmail === 'string') {
+   470→      list = list.filter(o => o.customerEmail.toLowerCase() === customerEmail.toLowerCase());
+   471→    }
+   472→    if (status && typeof status === 'string') {
+   473→      list = list.filter(o => o.paymentStatus === status || o.fulfillmentStatus === status);
+   474→    }
+   475→    res.json({ orders: list, total: list.length });
+   476→  });
+   477→
+   478→  app.get('/api/orders/:id', (req, res) => {
+   479→    const order = dbOrders.find(o => o.id === req.params.id || o.orderNumber === req.params.id);
+   480→    if (!order) {
+   481→      return res.status(404).json({ error: 'Order not found' });
+   482→    }
+   483→    res.json({ order });
+   484→  });
+   485→
+   486→  app.post('/api/checkout', (req, res) => {
+   487→    const {
+   488→      customerId,
+   489→      customerName,
+   490→      customerEmail,
+   491→      customerPhone,
+   492→      shippingAddress,
+   493→      cartItems,
+   494→      paymentMethod,
+   495→      couponCode,
+   496→      customerNotes
+   497→    } = req.body;
+   498→
+   499→    if (!customerEmail || !Array.isArray(cartItems) || cartItems.length === 0) {
+   500→      return res.status(400).json({ error: 'Customer email and cart items are required' });
+   501→    }
+   502→
+   503→    let subtotal = 0;
+   504→    let hasPhysical = false;
+   505→    const fulfilledItems = cartItems.map((item: any) => {
+   506→      const product = dbProducts.find(p => p.id === item.productId);
+   507→      const unitPrice = item.unitPrice || product?.price || 19.99;
+   508→      const qty = item.quantity || 1;
+   509→      const itemSubtotal = unitPrice * qty;
+   510→      subtotal += itemSubtotal;
+   511→
+   512→      const isPhysical = product?.productType === 'physical_projector' || item.productType === 'physical_projector';
+   513→      if (isPhysical) hasPhysical = true;
+   514→
+   515→      // Generate digital license payload if digital
+   516→      let digitalDelivery = undefined;
+   517→      if (!isPhysical) {
+   518→        let key = product?.digitalStockKeys?.pop() || `PB-ACT-${Math.random().toString(36).substring(2, 8).toUpperCase()}-${Math.random().toString(36).substring(2, 8).toUpperCase()}`;
+   519→        digitalDelivery = {
+   520→          type: product?.instantDeliveryFormat || 'license_key',
+   521→          content: key,
+   522→          credentials: {
+   523→            username: `user_${customerEmail.split('@')[0]}`,
+   524→            password: `PB#${Math.random().toString(36).substring(2, 8)}`,
+   525→            token: key
+   526→          },
+   527→          instructions: product?.deliveryInstructions || 'Redeem directly on your platform client or service portal.',
+   528→          claimed: true
+   529→        };
+   530→      }
+   531→
+   532→      let shipment = undefined;
+   533→      if (isPhysical) {
+   534→        shipment = {
+   535→          trackingNumber: `DHL-${Math.floor(Math.random() * 90000000 + 10000000)}`,
+   536→          carrier: 'DHL Express Global Insured',
+   537→          status: 'processing',
+   538→          estimatedDelivery: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+   539→        };
+   540→      }
+   541→
+   542→      return {
+   543→        productId: item.productId,
+   544→        productTitle: item.productTitle || product?.title || 'PlayBeat Digital Product',
+   545→        productType: (isPhysical ? 'physical_projector' : 'digital') as 'physical_projector' | 'digital',
+   546→        productImage: item.productImage || product?.images?.[0] || 'https://images.unsplash.com/photo-1612287233215-648f5a2e5976?auto=format&fit=crop&w=800&q=80',
+   547→        variationId: item.variationId,
+   548→        variationTitle: item.variationTitle,
+   549→        quantity: qty,
+   550→        unitPrice,
+   551→        subtotal: itemSubtotal,
+   552→        digitalDelivery,
+   553→        shipment
+   554→      };
+   555→    });
+   556→
+   557→    let discount = 0;
+   558→    if (couponCode) {
+   559→      const coupon = dbCoupons.find(c => c.code.toUpperCase() === couponCode.toUpperCase() && c.isActive);
+   560→      if (coupon && subtotal >= coupon.minPurchase) {
+   561→        if (coupon.discountType === 'percentage') {
+   562→          discount = Math.min(coupon.maxDiscount || Infinity, (subtotal * coupon.discountValue) / 100);
+   563→        } else {
+   564→          discount = coupon.discountValue;
+   565→        }
+   566→        coupon.usageCount++;
+   567→      }
+   568→    }
+   569→
+   570→    const tax = Number((subtotal * 0.05).toFixed(2));
+   571→    const shippingFee = hasPhysical ? (subtotal > 200 ? 0 : 25) : 0;
+   572→    const total = Math.max(0, Number((subtotal - discount + tax + shippingFee).toFixed(2)));
+   573→
+   574→    const orderId = `ord-${Date.now().toString().slice(-6)}`;
+   575→    const orderNumber = `PB-${new Date().getFullYear()}-${Math.floor(Math.random() * 9000 + 1000)}`;
+   576→
+   577→    const newOrder: Order = {
+   578→      id: orderId,
+   579→      orderNumber,
+   580→      customerId: customerId || 'guest-user',
+   581→      customerName: customerName || customerEmail.split('@')[0],
+   582→      customerEmail,
+   583→      customerPhone: customerPhone || '+1 (888) 752-9232',
+   584→      shippingAddress,
+   585→      items: fulfilledItems,
+   586→      subtotal,
+   587→      discount: Number(discount.toFixed(2)),
+   588→      tax,
+   589→      shippingFee,
+   590→      total,
+   591→      paymentMethod: paymentMethod || 'stripe',
+   592→      paymentStatus: 'paid',
+   593→      paymentTransactionId: `tx_${Math.random().toString(36).substring(2, 12)}`,
+   594→      fulfillmentStatus: hasPhysical ? 'partially_fulfilled' : 'delivered_digital',
+   595→      deliveryStatus: hasPhysical ? 'dispatched' : 'instant_ready',
+   596→      couponCode,
+   597→      customerNotes,
+   598→      createdAt: new Date().toISOString(),
+   599→      updatedAt: new Date().toISOString()
+   600→    };
+   601→
+   602→    dbOrders.unshift(newOrder);
+   603→
+   604→    // Update customer spending stats if registered
+   605→    const userIndex = dbUsers.findIndex(u => u.email.toLowerCase() === customerEmail.toLowerCase());
+   606→    if (userIndex !== -1) {
+   607→      dbUsers[userIndex].totalSpent += total;
+   608→      dbUsers[userIndex].ordersCount += 1;
+   609→    }
+   610→
+   611→    dbAdminLogs.unshift({
+   612→      id: `log-${Date.now()}`,
+   613→      adminName: 'System Gateway',
+   614→      adminEmail: 'system@playbeat.digital',
+   615→      action: 'Order Placed & Paid',
+   616→      targetType: 'order',
+   617→      targetId: newOrder.id,
+   618→      details: `Order #${newOrder.orderNumber} placed by ${newOrder.customerEmail} ($${newOrder.total} via ${newOrder.paymentMethod})`,
+   619→      timestamp: new Date().toISOString()
+   620→    });
+   621→
+   622→    res.status(201).json({
+   623→      success: true,
+   624→      order: newOrder,
+   625→      digitalDeliveries: fulfilledItems.filter(i => i.digitalDelivery).map(i => i.digitalDelivery)
+   626→    });
+   627→  });
+   628→
+   629→  // Resend digital keys
+   630→  app.post('/api/orders/:id/resend-digital', (req, res) => {
+   631→    const order = dbOrders.find(o => o.id === req.params.id);
+   632→    if (!order) return res.status(404).json({ error: 'Order not found' });
+   633→    res.json({ success: true, message: `Digital delivery data dispatched to ${order.customerEmail}` });
+   634→  });
+   635→
+   636→  // Update physical shipment tracking
+   637→  app.post('/api/orders/:id/shipment', (req, res) => {
+   638→    const { trackingNumber, carrier, status } = req.body;
+   639→    const order = dbOrders.find(o => o.id === req.params.id);
+   640→    if (!order) return res.status(404).json({ error: 'Order not found' });
+   641→
+   642→    order.items = order.items.map(item => {
+   643→      if (item.productType === 'physical_projector') {
+   644→        return {
+   645→          ...item,
+   646→          shipment: {
+   647→            trackingNumber: trackingNumber || item.shipment?.trackingNumber || 'DHL-PB-0000',
+   648→            carrier: carrier || item.shipment?.carrier || 'DHL Express',
+   649→            status: status || 'in_transit',
+   650→            estimatedDelivery: item.shipment?.estimatedDelivery || '2026-08-25'
+   651→          }
+   652→        };
+   653→      }
+   654→      return item;
+   655→    });
+   656→
+   657→    order.deliveryStatus = status === 'delivered' ? 'delivered' : 'in_transit';
+   658→    order.fulfillmentStatus = 'shipped_physical';
+   659→    order.updatedAt = new Date().toISOString();
+   660→
+   661→    dbAdminLogs.unshift({
+   662→      id: `log-${Date.now()}`,
+   663→      adminName: 'PlayBeat Admin',
+   664→      adminEmail: 'admin@playbeat.digital',
+   665→      action: 'Shipment Updated',
+   666→      targetType: 'order',
+   667→      targetId: order.id,
+   668→      details: `Updated shipment tracking for order #${order.orderNumber} (${carrier}: ${trackingNumber})`,
+   669→      timestamp: new Date().toISOString()
+   670→    });
+   671→
+   672→    res.json({ success: true, order });
+   673→  });
+   674→
+   675→  // ----------------------------------------------------
+   676→  // ADMIN ANALYTICS & STATS
+   677→  // ----------------------------------------------------
+   678→  app.get('/api/admin/metrics', (req, res) => {
+   679→    const totalRevenue = dbOrders.reduce((sum, o) => sum + (o.paymentStatus === 'paid' ? o.total : 0), 0);
+   680→    const totalOrders = dbOrders.length;
+   681→    const totalCustomers = dbUsers.length + 185; // Active registered base
+   682→    const totalProducts = dbProducts.length;
+   683→    const digitalDeliveriesCount = dbOrders.reduce((sum, o) => sum + o.items.filter(i => i.productType === 'digital').length, 0);
+   684→    const physicalShipmentsCount = dbOrders.reduce((sum, o) => sum + o.items.filter(i => i.productType === 'physical_projector').length, 0);
+   685→    const lowStockCount = dbProducts.filter(p => p.stock <= p.lowStockThreshold).length;
+   686→
+   687→    // Monthly chart mock
+   688→    const revenueTrend = [
+   689→      { date: 'Aug 14', revenue: 4200, orders: 38, visitors: 1820 },
+   690→      { date: 'Aug 15', revenue: 5800, orders: 49, visitors: 2240 },
+   691→      { date: 'Aug 16', revenue: 7100, orders: 62, visitors: 2890 },
+   692→      { date: 'Aug 17', revenue: 6400, orders: 54, visitors: 2510 },
+   693→      { date: 'Aug 18', revenue: 8900, orders: 74, visitors: 3400 },
+   694→      { date: 'Aug 19', revenue: 11200, orders: 91, visitors: 4100 },
+   695→      { date: 'Aug 20', revenue: 9800, orders: 83, visitors: 3950 }
+   696→    ];
+   697→
+   698→    const categoryBreakdown = [
+   699→      { name: 'Smart Projectors', value: 42, color: '#EF4444' },
+   700→      { name: 'Gaming & Keys', value: 24, color: '#9EADC8' },
+   701→      { name: 'IPTV Subscriptions', value: 16, color: '#4B5563' },
+   702→      { name: 'SaaS & Software', value: 12, color: '#374151' },
+   703→      { name: 'Gift Cards', value: 6, color: '#1F2937' }
+   704→    ];
+   705→
+   706→    res.json({
+   707→      metrics: {
+   708→        totalRevenue,
+   709→        todaysSales: 2489.90,
+   710→        totalOrders,
+   711→        totalCustomers,
+   712→        totalProducts,
+   713→        digitalDeliveriesCount,
+   714→        physicalShipmentsCount,
+   715→        lowStockCount,
+   716→        profitMarginPercent: 34.2,
+   717→        conversionRatePercent: 4.8
+   718→      },
+   719→      revenueTrend,
+   720→      categoryBreakdown
+   721→    });
+   722→  });
+   723→
+   724→  app.get('/api/admin/logs', (req, res) => {
+   725→    res.json({ logs: dbAdminLogs });
+   726→  });
+   727→
+   728→  // ----------------------------------------------------
+   729→  // CONTENT BUILDER API
+   730→  // ----------------------------------------------------
+   731→  app.get('/api/content', (req, res) => {
+   732→    res.json({ content: dbContent });
+   733→  });
+   734→
+   735→  app.put('/api/content', (req, res) => {
+   736→    dbContent = { ...dbContent, ...req.body };
+   737→    dbAdminLogs.unshift({
+   738→      id: `log-${Date.now()}`,
+   739→      adminName: 'PlayBeat Admin',
+   740→      adminEmail: 'admin@playbeat.digital',
+   741→      action: 'Content Updated',
+   742→      targetType: 'content',
+   743→      details: 'Updated storefront homepage banners and announcement configuration',
+   744→      timestamp: new Date().toISOString()
+   745→    });
+   746→    res.json({ content: dbContent });
+   747→  });
+   748→
+   749→  // ----------------------------------------------------
+   750→  // COUPONS API
+   751→  // ----------------------------------------------------
+   752→  app.get('/api/coupons', (req, res) => {
+   753→    res.json({ coupons: dbCoupons });
+   754→  });
+   755→
+   756→  app.post('/api/coupons/validate', (req, res) => {
+   757→    const { code, cartAmount } = req.body;
+   758→    if (!code) return res.status(400).json({ valid: false, message: 'Code is required' });
+   759→    const coupon = dbCoupons.find(c => c.code.toUpperCase() === code.toUpperCase() && c.isActive);
+   760→    if (!coupon) {
+   761→      return res.status(404).json({ valid: false, message: 'Invalid or expired coupon code' });
+   762→    }
+   763→    if (cartAmount < coupon.minPurchase) {
+   764→      return res.status(400).json({ valid: false, message: `Minimum purchase of $${coupon.minPurchase} required` });
+   765→    }
+   766→    let discount = 0;
+   767→    if (coupon.discountType === 'percentage') {
+   768→      discount = (cartAmount * coupon.discountValue) / 100;
+   769→      if (coupon.maxDiscount) discount = Math.min(coupon.maxDiscount, discount);
+   770→    } else {
+   771→      discount = coupon.discountValue;
+   772→    }
+   773→    res.json({ valid: true, coupon, discountAmount: Number(discount.toFixed(2)) });
+   774→  });
+   775→
+   776→  // ----------------------------------------------------
+   777→  // AUTH API
+   778→  // ----------------------------------------------------
+   779→  app.post('/api/auth/login', (req, res) => {
+   780→    const { email, password } = req.body;
+   781→    const user = dbUsers.find(u => u.email.toLowerCase() === email?.toLowerCase());
+   782→    if (user) {
+   783→      return res.json({
+   784→        success: true,
+   785→        user,
+   786→        token: `pb_jwt_${user.id}_${Date.now()}`
+   787→      });
+   788→    }
+   789→    // Auto register as customer if not found for testing demo
+   790→    const newUser: User = {
+   791→      id: `usr-${Date.now()}`,
+   792→      name: email.split('@')[0],
+   793→      email,
+   794→      role: email.includes('admin') ? 'super_admin' : 'customer',
+   795→      twoFactorEnabled: false,
+   796→      addresses: [],
+   797→      totalSpent: 0,
+   798→      ordersCount: 0,
+   799→      wishlist: [],
+   800→      status: 'active',
+   801→      createdAt: new Date().toISOString()
+   802→    };
+   803→    dbUsers.push(newUser);
+   804→    res.json({
+   805→      success: true,
+   806→      user: newUser,
+   807→      token: `pb_jwt_${newUser.id}_${Date.now()}`
+   808→    });
+   809→  });
+   810→
+   811→  // ----------------------------------------------------
+   812→  // VITE MIDDLEWARE (DEV) / STATIC HANDLER (PROD)
+   813→  // ----------------------------------------------------
+   814→  if (process.env.NODE_ENV !== 'production') {
+   815→    const vite = await createViteServer({
+   816→      server: { middlewareMode: true },
+   817→      appType: 'spa'
+   818→    });
+   819→    app.use(vite.middlewares);
+   820→  } else {
+   821→    const distPath = path.join(process.cwd(), 'dist');
+   822→    app.use(express.static(distPath));
+   823→    app.get('*', (req, res) => {
+   824→      res.sendFile(path.join(distPath, 'index.html'));
+   825→    });
+   826→  }
+   827→
+   828→  app.listen(PORT, '0.0.0.0', () => {
+   829→    console.log(`[PlayBeat Digital] Full-Stack server booted on http://0.0.0.0:${PORT}`);
+   830→  });
+   831→}
+   832→
+   833→startServer().catch(err => {
+   834→  console.error('Failed to start server:', err);
+   835→});
+   836→

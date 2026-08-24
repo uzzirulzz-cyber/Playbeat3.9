@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+build/
+dist/
+out/
+coverage/
+*.tsbuildinfo
+
+# Environment — never commit real secrets
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+.env*.local
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+dev.log
+
+# Editor / OS files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+Thumbs.db
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+db/
+
+# Runtime
+.dev.pid
+*.pid
+.history/
+
+# Vite cache
+.vite/

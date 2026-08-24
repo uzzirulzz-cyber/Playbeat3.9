@@ -1,0 +1,1100 @@
+===== AccountManagement.tsx =====
+import React, { useState, useEffect } from 'react';
+import { useStore } from '../../context/StoreContext';
+import { User, Role } from '../../types';
+import {
+  Users, Search, Ban, CheckCircle2, KeyRound, Trash2, X, Eye, EyeOff,
+  Mail, ShoppingBag, DollarSign, Clock, AlertCircle, Loader2,
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+
+const ROLE_LABELS: Record<Role, string> = {
+  super_admin: 'Super Admin',
+  admin: 'Admin',
+  product_manager: 'Product Manager',
+  order_manager: 'Order Manager',
+  finance_manager: 'Finance Manager',
+  support_agent: 'Support Agent',
+  content_manager: 'Content Manager',
+  marketing_manager: 'Marketing Manager',
+  read_only: 'Read Only',
+  customer: 'Customer',
+};
+
+const formatDate = (iso?: string): string => {
+  if (!iso) return 'never';
+  return new Date(iso).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+};
+
+const timeAgo = (iso?: string): string => {
+  if (!iso) return 'never';
+  const diff = Date.now() - new Date(iso).getTime();
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  if (days < 1) return 'today';
+  if (days < 30) return `${days}d ago`;
+  return `${Math.floor(days / 30)}mo ago`;
+};
+
+===== AdminLoginGate.tsx =====
+import React, { useState, useRef } from 'react';
+import { useStore } from '../../context/StoreContext';
+import { useAuthStore } from '../../store/useAuthStore';
+import {
+  Shield, Mail, Lock, Eye, EyeOff, Loader2, AlertCircle, ArrowRight,
+} from 'lucide-react';
+import { motion } from 'motion/react';
+
+/**
+ * Admin Login Gate — password-protects the /admin route.
+ *
+ * SECURITY (per operator policy, Aug 2026):
+ *   - Email and password fields are BLANK on every page load. The user must
+ *     type both fields manually each time.
+ *   - autoComplete="off" plus non-standard field names to suppress browser
+ *     password managers from saving or pre-filling admin credentials.
+ *   - No hardcoded credential fallback in the browser. Every login attempt
+ *     goes through POST /api/auth/login. The server still has a hardcoded
+ *     admin fallback for cold-start resilience, but the browser never sees
+ *     or stores the password.
+ *   - No credential hint is rendered anywhere in the UI.
+ */
+export const AdminLoginGate: React.FC = () => {
+  const { setCurrentUser, addToast, setActiveView } = useStore();
+
+  // Both fields start empty — no prefilled email, no saved password.
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  // Force a remount of the password input on every submit attempt — this
+  // reliably clears the value across all browsers (Chrome/Firefox/Safari)
+  // and also defeats the browser's autofill cache that lingers even when
+  // autoComplete="off" is set.
+  const [pwKey, setPwKey] = useState(0);
+  const formRef = useRef<HTMLFormElement>(null);
+  const [showPassword, setShowPassword] = useState(false);
+
+===== AdminRolesView.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import type { Role } from '../../types';
+import {
+  Shield,
+  UserCheck,
+  Key,
+  Lock,
+  Smartphone,
+  History,
+  CheckCircle2,
+  AlertCircle,
+  Plus,
+  Trash2,
+  Edit2
+} from 'lucide-react';
+
+export const AdminRolesView: React.FC = () => {
+  const { currentUser, switchUserRole, adminLogs, addToast } = useStore();
+  const [selectedRole, setSelectedRole] = useState<Role>(currentUser.role);
+
+  const roleDefinitions: { role: Role; title: string; description: string; permissions: string[] }[] = [
+    {
+      role: 'super_admin',
+      title: 'Super Administrator (Root)',
+      description: 'Unrestricted full access to store, finances, API keys, database, server controls, and team accounts.',
+      permissions: ['Full Access', 'Financial Balances', 'Product Deletions', 'API Credentials', 'User Roles', 'Server Health']
+    },
+    {
+      role: 'admin',
+      title: 'Administrator',
+      description: 'Manage products, orders, customers, marketing campaigns, and supplier bridges.',
+      permissions: ['Product Management', 'Order Management', 'Customer CRM', 'Marketing & TikTok', 'G2G Sync']
+    },
+    {
+
+===== AnalyticsTraffic.tsx =====
+import React from 'react';
+import { useStore } from '../../context/StoreContext';
+import { TrendingUp, TrendingDown, Minus, Users, Globe, Filter, ArrowRight } from 'lucide-react';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Cell, AreaChart, Area } from 'recharts';
+
+export const AnalyticsTraffic: React.FC = () => {
+  const { analyticsMetrics, funnelSteps, products } = useStore();
+
+  const formatValue = (m: { label: string; value: number }): string => {
+    if (m.label.includes('Duration')) {
+      const mins = Math.floor(m.value / 60); const secs = m.value % 60;
+      return `${mins}m ${secs}s`;
+    }
+    if (m.label.includes('Rate')) return `${m.value}%`;
+    return m.value.toLocaleString();
+  };
+
+  // Top products by units sold
+  const topProducts = [...products].sort((a, b) => (b.totalSold || 0) - (a.totalSold || 0)).slice(0, 8);
+
+  // Build revenue chart data from existing orders
+  const ordersByDay: Record<string, number> = {};
+  // Use the last 7 days as buckets — if no real orders exist, fall back to mock buckets
+  const last7Days = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(); d.setDate(d.getDate() - (6 - i)); return d.toISOString().split('T')[0];
+  });
+  last7Days.forEach(day => { ordersByDay[day] = 0; });
+
+  return (
+    <div className="space-y-5">
+      {/* Header */}
+      <div className="admin-card p-5">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center">
+            <TrendingUp className="w-5 h-5 text-blue-400" />
+
+===== ComingSoonView.tsx =====
+import React from 'react';
+import { useStore } from '../../context/StoreContext';
+import { Sparkles, Construction, ArrowRight, Bell } from 'lucide-react';
+
+interface ComingSoonViewProps {
+  title: string;
+  description: string;
+  icon?: React.ComponentType<{ className?: string }>;
+  features?: string[];
+}
+
+/**
+ * Placeholder view for admin menu items that don't have a functional page yet
+ * (e.g. IPTV M3U Servers, WooCommerce Bridge, Subscriptions, Support Tickets, etc.)
+ *
+ * Shows a clear "Coming Soon" state with what the page will eventually offer,
+ * so admins always have a sense of what's planned without seeing broken/empty UI.
+ */
+export const ComingSoonView: React.FC<ComingSoonViewProps> = ({
+  title,
+  description,
+  icon: Icon = Construction,
+  features = [],
+}) => {
+  const { addToast } = useStore();
+
+  const handleNotify = () => {
+    addToast('info', 'Subscribed', `We'll notify you when "${title}" ships.`);
+  };
+
+  return (
+    <div className="space-y-5">
+      {/* Header strip */}
+      <div className="admin-card p-6 sm:p-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5">
+
+===== ContentManager.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import { PromoCoupon } from '../../types';
+import {
+  Sparkles,
+  Megaphone,
+  Tag,
+  Plus,
+  Trash2,
+  Save,
+  CheckCircle2,
+  Percent,
+  Flame
+} from 'lucide-react';
+
+export const ContentManager: React.FC = () => {
+  const { content, updateContent, coupons, addCoupon, deleteCoupon, addToast } = useStore();
+
+  // Announcement Bar state
+  const [announcementText, setAnnouncementText] = useState(content.announcementBar.text);
+  const [announcementBadge, setAnnouncementBadge] = useState(content.announcementBar.badgeText);
+  const [announcementEnabled, setAnnouncementEnabled] = useState(content.announcementBar.enabled);
+
+  // Hero state
+  const eadline, setHeadline] = useState(content.heroBanner.headline);
+  const [subheadline, setSubheadline] = useState(content.heroBanner.subheadline);
+  const ighlightBadge, setHighlightBadge] = useState(content.heroBanner.highlightBadge);
+  const [ctaText, setCtaText] = useState(content.heroBanner.ctaText);
+
+  // New Coupon form
+  const [couponCode, setCouponCode] = useState('');
+  const [discountValue, setDiscountValue] = useState(15);
+  const [discountType, setDiscountType] = useState<'percentage' | 'fixed'>('percentage');
+
+  const handleSaveStoreContent = (e: React.FormEvent) => {
+
+===== CustomerAccounts.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import { User } from '../../types';
+import { Users, Search, Mail, ShoppingBag, Heart, DollarSign, MapPin, Clock } from 'lucide-react';
+
+const formatDate = (iso: string): string => {
+  return new Date(iso).toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+};
+
+const timeAgo = (iso: string): string => {
+  if (!iso) return 'never';
+  const diff = Date.now() - new Date(iso).getTime();
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  if (days < 1) return 'today';
+  if (days < 30) return `${days}d ago`;
+  return `${Math.floor(days / 30)}mo ago`;
+};
+
+export const CustomerAccounts: React.FC = () => {
+  const { products, orders, formatPrice } = useStore();
+  const [search, setSearch] = useState('');
+  const [selectedCustomer, setSelectedCustomer] = useState<User | null>(null);
+
+  // Build a customer view by combining users + their orders + wishlist items
+  // For this demo we synthesize customer records from existing orders + the INITIAL_USERS
+  // (the user list is exposed via currentUser's auth role-switcher, but for this directory
+  // we use a derived list of unique customers from orders).
+  const customersFromOrders = orders.reduce((acc, order) => {
+    if (!acc.find(c => c.email === order.customerEmail)) {
+      acc.push({
+        id: `cust-${order.customerEmail}`,
+        name: order.customerName,
+        email: order.customerEmail,
+        phone: order.customerPhone,
+        ordersCount: orders.filter(o => o.customerEmail === order.customerEmail).length,
+
+===== DiscountsCoupons.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import { Coupon } from '../../types';
+import { Plus, Tag, Trash2, X, AlertCircle, Copy, TrendingUp } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+
+const timeAgo = (iso: string): string => {
+  const diff = Date.now() - new Date(iso).getTime();
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  if (days < 1) return 'today';
+  if (days < 30) return `${days}d ago`;
+  return `${Math.floor(days / 30)}mo ago`;
+};
+
+export const DiscountsCoupons: React.FC = () => {
+  const { coupons, addCoupon, deleteCoupon, addToast, formatPrice } = useStore();
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [newCoupon, setNewCoupon] = useState({
+    code: '', discountType: 'percentage' as 'percentage' | 'fixed', discountValue: 15, minOrderAmount: 0, maxUsage: 100, expiryDate: '',
+  });
+
+  const handleCreate = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCoupon.code) { addToast('error', 'Missing Code', 'Promo code is required.'); return; }
+    const coupon: Coupon = {
+      id: `coupon-${Date.now()}`,
+      code: newCoupon.code.toUpperCase(),
+      discountType: newCoupon.discountType,
+      discountValue: Number(newCoupon.discountValue),
+      minOrderAmount: Number(newCoupon.minOrderAmount) || undefined,
+      maxUsage: Number(newCoupon.maxUsage) || undefined,
+      usageCount: 0,
+      isActive: true,
+      status: 'active',
+      expiresAt: newCoupon.expiryDate ? new Date(newCoupon.expiryDate).toISOString() : undefined,
+
+===== EmailSmsCampaigns.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import { CampaignStatus, CampaignChannel, MarketingCampaign } from '../../types';
+import { Send, Mail, MessageSquare, Layers, Users, MousePointerClick, AlertTriangle, Play, Pause, Eye } from 'lucide-react';
+
+const STATUS_META: Record<CampaignStatus, { pill: string; label: string }> = {
+  draft: { pill: 'admin-pill-amber', label: 'Draft' },
+  scheduled: { pill: 'admin-pill-blue', label: 'Scheduled' },
+  sending: { pill: 'admin-pill-purple', label: 'Sending' },
+  sent: { pill: 'admin-pill-green', label: 'Sent' },
+  paused: { pill: 'admin-pill-red', label: 'Paused' },
+};
+
+const CHANNEL_META: Record<CampaignChannel, { icon: React.ComponentType<{ className?: string }>; label: string; color: string }> = {
+  email: { icon: Mail, label: 'Email', color: 'text-blue-400' },
+  sms: { icon: MessageSquare, label: 'SMS', color: 'text-emerald-400' },
+  both: { icon: Layers, label: 'Email + SMS', color: 'text-purple-400' },
+};
+
+const TRIGGER_LABEL: Record<string, string> = {
+  manual: 'Manual Blast',
+  abandoned_cart: 'Abandoned Cart',
+  post_purchase: 'Post-Purchase',
+  win_back: 'Win-Back',
+  welcome: 'Welcome Sequence',
+};
+
+const formatDate = (iso?: string): string => iso ? new Date(iso).toLocaleString('en-US', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
+
+export const EmailSmsCampaigns: React.FC = () => {
+  const { campaigns, pauseCampaign, resumeCampaign, addToast } = useStore();
+  const [statusFilter, setStatusFilter] = useState<'all' | CampaignStatus>('all');
+
+  const filtered = statusFilter === 'all' ? campaigns : campaigns.filter(c => c.status === statusFilter);
+
+
+===== FinancialBalance.tsx =====
+import React from 'react';
+import { useStore } from '../../context/StoreContext';
+import { Wallet, CreditCard, Smartphone, Bitcoin, Citrus, TrendingUp, Clock, ArrowRight } from 'lucide-react';
+
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  CreditCard, Wallet, Smartphone, Bitcoin, Citrus,
+};
+
+const formatCurrency = (amount: number, currency: string): string => {
+  if (currency === 'PKR') return `Rs ${amount.toLocaleString('en-PK')}`;
+  if (currency === 'USDT') return `${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT`;
+  return `$${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+};
+
+const daysUntil = (iso: string): number => {
+  const diff = new Date(iso).getTime() - Date.now();
+  return Math.ceil(diff / (1000 * 60 * 60 * 24));
+};
+
+export const FinancialBalance: React.FC = () => {
+  const { gatewayBalances, orders } = useStore();
+
+  // Compute total available across USD-equivalent balances
+  // For simplicity in this demo we sum USD + USDT amounts and treat PKR separately
+  const usdTotal = gatewayBalances
+    .filter(g => g.currency === 'USD' || g.currency === 'USDT')
+    .reduce((sum, g) => sum + g.available, 0);
+  const usdPending = gatewayBalances
+    .filter(g => g.currency === 'USD' || g.currency === 'USDT')
+    .reduce((sum, g) => sum + g.pending, 0);
+  const pkrTotal = gatewayBalances
+    .filter(g => g.currency === 'PKR')
+    .reduce((sum, g) => sum + g.available, 0);
+  const pkrPending = gatewayBalances
+    .filter(g => g.currency === 'PKR')
+
+===== FinancialPaymentManager.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import {
+  CreditCard,
+  DollarSign,
+  TrendingUp,
+  ArrowUpRight,
+  ArrowDownLeft,
+  CheckCircle2,
+  AlertCircle,
+  Clock,
+  ShieldCheck,
+  Building,
+  Smartphone,
+  Bitcoin,
+  RefreshCw,
+  Download,
+  Filter,
+  Check,
+  X
+} from 'lucide-react';
+
+interface Transaction {
+  id: string;
+  orderId: string;
+  gateway: 'jazzcash' | 'easypaisa' | 'stripe' | 'lemonsqueezy' | 'bank_transfer' | 'crypto_usdt';
+  amount: number;
+  fee: number;
+  net: number;
+  currency: string;
+  customer: string;
+  status: 'settled' | 'pending_verification' | 'disputed' | 'refunded';
+  proofUrl?: string;
+  createdAt: string;
+}
+
+===== G2GConnectorView.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import {
+  Server,
+  RefreshCw,
+  Zap,
+  CheckCircle2,
+  AlertCircle,
+  Play,
+  TrendingUp,
+  Percent,
+  Lock,
+  Globe,
+  Sliders,
+  Sparkles,
+  Layers
+} from 'lucide-react';
+
+export const G2GConnectorView: React.FC = () => {
+  const { g2gSettings, updateG2GSettings, syncG2GCatalog, addToast, formatPrice } = useStore();
+
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [apiKey, setApiKey] = useState(g2gSettings.apiKey);
+  const arginPercent, setMarginPercent] = useState(g2gSettings.marginMarkupPercent);
+  const [environment, setEnvironment] = useState(g2gSettings.environment);
+  const [autoSync, setAutoSync] = useState(g2gSettings.autoSync);
+  const [currency, setCurrency] = useState(g2gSettings.currency);
+
+  const handleSaveSettings = (e: React.FormEvent) => {
+    e.preventDefault();
+    updateG2GSettings({
+      apiKey,
+      marginMarkupPercent: Number(marginPercent),
+      environment,
+      autoSync,
+
+===== IptvM3uManager.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import { IptvServer, IptvServerStatus } from '../../types';
+import {
+  Plus,
+  Tv,
+  Activity,
+  Users,
+  Globe,
+  Zap,
+  RefreshCw,
+  Trash2,
+  Key,
+  Power,
+  Copy,
+  X,
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  Server,
+  Loader2,
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+
+const STATUS_COLORS: Record<IptvServerStatus, { dot: string; pill: string; label: string }> = {
+  online: { dot: 'bg-emerald-400', pill: 'admin-pill-green', label: 'Online' },
+  offline: { dot: 'bg-red-400', pill: 'admin-pill-red', label: 'Offline' },
+  degraded: { dot: 'bg-amber-400', pill: 'admin-pill-amber', label: 'Degraded' },
+};
+
+const timeAgo = (iso: string): string => {
+  const diff = Date.now() - new Date(iso).getTime();
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 1) return 'just now';
+  if (minutes < 60) return `${minutes}m ago`;
+
+===== JazzCashMerchant.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import { JazzCashTxStatus } from '../../types';
+import { Smartphone, Search, CheckCircle2, XCircle, Clock, RefreshCcw, Wallet, CreditCard, Building2, QrCode } from 'lucide-react';
+
+const STATUS_META: Record<JazzCashTxStatus, { pill: string; label: string; icon: React.ComponentType<{ className?: string }>; color: string }> = {
+  success: { pill: 'admin-pill-green', label: 'Success', icon: CheckCircle2, color: 'text-emerald-400' },
+  failed: { pill: 'admin-pill-red', label: 'Failed', icon: XCircle, color: 'text-red-400' },
+  pending: { pill: 'admin-pill-amber', label: 'Pending', icon: Clock, color: 'text-amber-400' },
+  refunded: { pill: 'admin-pill-purple', label: 'Refunded', icon: RefreshCcw, color: 'text-purple-400' },
+};
+
+const METHOD_META: Record<string, { icon: React.ComponentType<{ className?: string }>; label: string }> = {
+  wallet: { icon: Wallet, label: 'Wallet' },
+  card: { icon: CreditCard, label: 'Card' },
+  iban: { icon: Building2, label: 'IBAN' },
+  qr: { icon: QrCode, label: 'QR' },
+};
+
+const formatDate = (iso: string): string => {
+  return new Date(iso).toLocaleString('en-US', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+};
+
+export const JazzCashMerchant: React.FC = () => {
+  const { jazzcashTransactions, currentUser } = useStore();
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | JazzCashTxStatus>('all');
+
+  const filtered = jazzcashTransactions.filter(tx => {
+    if (statusFilter !== 'all' && tx.status !== statusFilter) return false;
+    if (search) {
+      const q = search.toLowerCase();
+      return tx.reference.toLowerCase().includes(q) ||
+             tx.customerName.toLowerCase().includes(q) ||
+             tx.customerEmail.toLowerCase().includes(q);
+
+===== LicenseVaultManager.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import {
+  Key,
+  ShieldCheck,
+  Eye,
+  EyeOff,
+  Copy,
+  Plus,
+  Download,
+  Upload,
+  CheckCircle2,
+  AlertTriangle,
+  Clock,
+  Search,
+  Filter,
+  RefreshCw,
+  Lock,
+  FileText
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+
+interface VaultKeyRecord {
+  id: string;
+  productId: string;
+  productTitle: string;
+  type: 'license_key' | 'account_credentials' | 'activation_token';
+  secretPayload: string;
+  status: 'available' | 'reserved' | 'dispatched' | 'expired';
+  customerEmail?: string;
+  orderNumber?: string;
+  assignedAt?: string;
+  expiresAt?: string;
+  batchTag: string;
+}
+
+===== MarketingAutomationView.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import {
+  Megaphone,
+  Share2,
+  Mail,
+  MessageSquare,
+  Sparkles,
+  TrendingUp,
+  Tag,
+  Plus,
+  Trash2,
+  Send,
+  CheckCircle2,
+  Clock,
+  Flame,
+  Users,
+  Copy
+} from 'lucide-react';
+import { motion } from 'motion/react';
+
+export const MarketingAutomationView: React.FC = () => {
+  const { coupons, addCoupon, deleteCoupon, addToast, formatPrice } = useStore();
+  const [activeTab, setActiveTab] = useState<'campaigns' | 'tiktok' | 'abandoned' | 'coupons'>('tiktok');
+  const [newCouponCode, setNewCouponCode] = useState('');
+  const [newCouponDiscount, setNewCouponDiscount] = useState(15);
+
+  const [tiktokLeads] = useState([
+    { id: 'tt-1', username: '@tech_guru_pk', campaign: '4K Laser Projector Showcase', views: '284K', conversions: 42, revenue: 14700, status: 'Viral' },
+    { id: 'tt-2', username: '@digital_deals_hub', campaign: 'Windows 11 Pro Flash Drop', views: '112K', conversions: 89, revenue: 1779, status: 'Active' },
+    { id: 'tt-3', username: '@stream_central', campaign: 'IPTV 4K Ultra 2026 Test', views: '94K', conversions: 65, revenue: 5850, status: 'Active' }
+  ]);
+
+  const [abandonedCarts] = useState([
+    { id: 'ac-1', email: 'hamza.dev@gmail.com', items: '4K Cinema Laser Projector (x1)', total: 499.99, abandonedAt: '42 mins ago', recoverySent: true, status: 'Email + SMS Dispatched' },
+
+===== NavigationManager.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import { NavItem } from '../../types';
+import {
+  Compass,
+  Plus,
+  Trash2,
+  Edit2,
+  Check,
+  X,
+  Eye,
+  EyeOff,
+  MoveUp,
+  MoveDown,
+  Sparkles,
+  Flame,
+  Clock,
+  TrendingUp,
+  Award,
+  Projector,
+  ExternalLink,
+  Layers,
+  HelpCircle,
+  RotateCcw
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+
+export const NavigationManager: React.FC = () => {
+  const {
+    navItems,
+    setNavItems,
+    addNavItem,
+    updateNavItem,
+    deleteNavItem,
+    reorderNavItems,
+
+===== OrderManagement.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import { Order, OrderStatus } from '../../types';
+import {
+  Package,
+  Search,
+  CheckCircle2,
+  Clock,
+  Truck,
+  Zap,
+  Key,
+  Copy,
+  ExternalLink,
+  ChevronDown,
+  DollarSign
+} from 'lucide-react';
+
+export const OrderManagement: React.FC = () => {
+  const { orders, updateOrderStatus, formatPrice, addToast } = useStore();
+  const [search, setSearch] = useState('');
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+
+  const filteredOrders = orders.filter(o => {
+    if (!search.trim()) return true;
+    const q = search.toLowerCase();
+    return o.id.toLowerCase().includes(q) || o.customerName.toLowerCase().includes(q) || o.customerEmail.toLowerCase().includes(q);
+  });
+
+  const handleStatusChange = (orderId: string, newStatus: OrderStatus) => {
+    updateOrderStatus(orderId, newStatus);
+    addToast('success', 'Order Updated', `Order #${orderId} status changed to ${newStatus}.`);
+  };
+
+  return (
+    <div className="space-y-6">
+
+===== PaymentProofs.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import { ProofStatus, PaymentProof } from '../../types';
+import { FileCheck, CheckCircle2, XCircle, Clock, Upload, FileText, AlertCircle, Link2, Search } from 'lucide-react';
+
+const STATUS_META: Record<ProofStatus, { pill: string; label: string; icon: React.ComponentType<{ className?: string }> }> = {
+  pending_review: { pill: 'admin-pill-amber', label: 'Pending Review', icon: Clock },
+  approved: { pill: 'admin-pill-green', label: 'Approved', icon: CheckCircle2 },
+  rejected: { pill: 'admin-pill-red', label: 'Rejected', icon: XCircle },
+  linked: { pill: 'admin-pill-blue', label: 'Linked to Order', icon: Link2 },
+};
+
+const formatDate = (iso: string): string => {
+  return new Date(iso).toLocaleString('en-US', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+};
+
+export const PaymentProofs: React.FC = () => {
+  const { paymentProofs, approvePaymentProof, rejectPaymentProof, currentUser, addToast } = useStore();
+  const [statusFilter, setStatusFilter] = useState<'all' | ProofStatus>('pending_review');
+  const [search, setSearch] = useState('');
+
+  const filtered = paymentProofs.filter(p => {
+    if (statusFilter !== 'all' && p.status !== statusFilter) return false;
+    if (search) {
+      const q = search.toLowerCase();
+      return p.customerName.toLowerCase().includes(q) ||
+             p.customerEmail.toLowerCase().includes(q) ||
+             (p.orderId || '').toLowerCase().includes(q);
+    }
+    return true;
+  });
+
+  const stats = {
+    total: paymentProofs.length,
+    pending: paymentProofs.filter(p => p.status === 'pending_review').length,
+
+===== SecurityAuditLogs.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import { ShieldAlert, Activity, Lock, Key, RefreshCw, AlertTriangle, CheckCircle2, XCircle, Shield, Eye } from 'lucide-react';
+
+const formatDate = (iso: string): string => {
+  return new Date(iso).toLocaleString('en-US', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+};
+
+const daysSince = (iso: string): number => {
+  return Math.floor((Date.now() - new Date(iso).getTime()) / (1000 * 60 * 60 * 24));
+};
+
+const daysUntil = (lastRotated: string, intervalDays: number): number => {
+  const nextDue = new Date(lastRotated).getTime() + intervalDays * 24 * 60 * 60 * 1000;
+  return Math.ceil((nextDue - Date.now()) / (1000 * 60 * 60 * 24));
+};
+
+export const SecurityAuditLogs: React.FC = () => {
+  const { adminLogs, loginAttempts, secretRotations, rotateSecret, addToast } = useStore();
+  const [logTab, setLogTab] = useState<'audit' | 'logins' | 'secrets'>('audit');
+
+  // Stats
+  const failedLogins = loginAttempts.filter(l => !l.success).length;
+  const successLogins = loginAttempts.filter(l => l.success).length;
+  const overdueSecrets = secretRotations.filter(s => s.isOverdue).length;
+
+  // Group audit logs by action type for a quick overview
+  const auditByType = adminLogs.reduce((acc, log) => {
+    const type = log.targetType;
+    if (!acc[type]) acc[type] = 0;
+    acc[type]++;
+    return acc;
+  }, {} as Record<string, number>);
+
+  return (
+
+===== SmartProjectorsManager.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import { Product } from '../../types';
+import {
+  Projector,
+  Plus,
+  Tv,
+  Cpu,
+  Truck,
+  Sparkles,
+  ShieldCheck,
+  CheckCircle,
+  Package,
+  Layers,
+  Edit,
+  Trash2,
+  Sliders,
+  DollarSign,
+  AlertCircle
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+
+export const SmartProjectorsManager: React.FC = () => {
+  const { products, addProduct, updateProduct, deleteProduct, formatPrice, addToast } = useStore();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [filterBrand, setFilterBrand] = useState('all');
+
+  const projectorProducts = products.filter(p => p.productType === 'physical_projector');
+
+  const [form, setForm] = useState({
+    title: '',
+    brand: 'PlayBeat Vision',
+    sku: 'PB-PROJ-4K-',
+    price: 499.99,
+    compareAtPrice: 699.99,
+
+===== SocialAutomation.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import { SocialPlatform, PostStatus, ScheduledPost } from '../../types';
+import { Bot, Plus, Trash2, X, Calendar, CheckCircle2, AlertCircle, Clock, XCircle, Heart, MessageCircle, Share2, Send } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+
+const PLATFORM_META: Record<SocialPlatform, { label: string; color: string; icon: string }> = {
+  tiktok: { label: 'TikTok', color: 'bg-black text-white border border-pink-500/40', icon: '🎵' },
+  instagram: { label: 'Instagram', color: 'bg-gradient-to-br from-purple-500 to-pink-500 text-white', icon: '📸' },
+  x: { label: 'X (Twitter)', color: 'bg-black text-white', icon: '✕' },
+  facebook: { label: 'Facebook', color: 'bg-blue-600 text-white', icon: '📘' },
+  linkedin: { label: 'LinkedIn', color: 'bg-blue-700 text-white', icon: '💼' },
+};
+
+const STATUS_META: Record<PostStatus, { pill: string; label: string; icon: React.ComponentType<{ className?: string }> }> = {
+  draft: { pill: 'admin-pill-amber', label: 'Draft', icon: Clock },
+  scheduled: { pill: 'admin-pill-blue', label: 'Scheduled', icon: Calendar },
+  publishing: { pill: 'admin-pill-purple', label: 'Publishing', icon: Send },
+  published: { pill: 'admin-pill-green', label: 'Published', icon: CheckCircle2 },
+  failed: { pill: 'admin-pill-red', label: 'Failed', icon: XCircle },
+};
+
+const formatDateTime = (iso: string): string => {
+  const d = new Date(iso);
+  return d.toLocaleString('en-US', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+};
+
+export const SocialAutomation: React.FC = () => {
+  const { scheduledPosts, schedulePost, deleteScheduledPost, addToast } = useStore();
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [newPost, setNewPost] = useState({
+    content: '', platforms: ['tiktok'] as SocialPlatform[], scheduledAt: '', hashtags: '',
+  });
+
+  const handleCreate = (e: React.FormEvent) => {
+
+===== SubscriptionsManager.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import { BillingCycle, CustomerSubscriptionStatus, SubscriptionPlan } from '../../types';
+import {
+  Plus,
+  CreditCard,
+  TrendingUp,
+  Users,
+  AlertTriangle,
+  RefreshCw,
+  Archive,
+  X,
+  Loader2,
+  Calendar,
+  Repeat,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Ban,
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+
+const SUB_STATUS_META: Record<CustomerSubscriptionStatus, { pill: string; label: string; icon: React.ComponentType<{ className?: string }> }> = {
+  active: { pill: 'admin-pill-green', label: 'Active', icon: CheckCircle2 },
+  trialing: { pill: 'admin-pill-blue', label: 'Trialing', icon: Clock },
+  past_due: { pill: 'admin-pill-amber', label: 'Past Due', icon: AlertTriangle },
+  cancelled: { pill: 'admin-pill-red', label: 'Cancelled', icon: Ban },
+  expired: { pill: 'admin-pill-red', label: 'Expired', icon: XCircle },
+};
+
+const BILLING_LABEL: Record<BillingCycle, string> = {
+  weekly: 'Weekly',
+  monthly: 'Monthly',
+  yearly: 'Yearly',
+};
+
+===== SuperAgentManagement.tsx =====
+import React, { useState, useEffect } from 'react';
+import { useStore } from '../../context/StoreContext';
+import { User, Role } from '../../types';
+import {
+  Shield, Plus, Ban, CheckCircle2, KeyRound, Trash2, X, Eye, EyeOff,
+  Search, Mail, Lock, AlertCircle, Loader2, UserCheck, Crown,
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+
+const ADMIN_ROLES: { role: Role; label: string; desc: string }[] = [
+  { role: 'super_admin', label: 'Super Admin', desc: 'Full platform access — can manage other admins' },
+  { role: 'admin', label: 'Admin', desc: 'Full platform access — cannot manage other admins' },
+  { role: 'product_manager', label: 'Product Manager', desc: 'Catalog, pricing, variant protection & import queues' },
+  { role: 'order_manager', label: 'Order Manager', desc: 'Order fulfillment, digital keys dispatch & DHL tracking' },
+  { role: 'finance_manager', label: 'Finance Manager', desc: 'Payment gateways, settlements & financial reports' },
+  { role: 'support_agent', label: 'Support Agent', desc: 'Handle customer tickets and order inquiries' },
+  { role: 'content_manager', label: 'Content Manager', desc: 'Banners, copy editor, homepage content' },
+  { role: 'marketing_manager', label: 'Marketing Manager', desc: 'TikTok leads, social automation, email campaigns' },
+  { role: 'read_only', label: 'Read Only', desc: 'View-only access — no data modifications' },
+];
+
+const ROLE_COLORS: Record<string, string> = {
+  super_admin: 'admin-pill-purple',
+  admin: 'admin-pill-blue',
+  product_manager: 'admin-pill-green',
+  order_manager: 'admin-pill-green',
+  finance_manager: 'admin-pill-amber',
+  support_agent: 'admin-pill-blue',
+  content_manager: 'admin-pill-green',
+  marketing_manager: 'admin-pill-amber',
+  read_only: 'admin-pill-amber',
+  customer: 'admin-pill-green',
+};
+
+const formatDate = (iso?: string): string => {
+
+===== SupportTickets.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import { TicketPriority, TicketStatus, TicketChannel, SupportTicket } from '../../types';
+import { Ticket, Mail, MessageCircle, Smartphone, AtSign, AlertTriangle, Clock, CheckCircle2, User, Inbox } from 'lucide-react';
+
+const PRIORITY_META: Record<TicketPriority, { pill: string; label: string; color: string }> = {
+  low: { pill: 'admin-pill-blue', label: 'Low', color: 'text-blue-400' },
+  normal: { pill: 'admin-pill-green', label: 'Normal', color: 'text-emerald-400' },
+  high: { pill: 'admin-pill-amber', label: 'High', color: 'text-amber-400' },
+  urgent: { pill: 'admin-pill-red', label: 'Urgent', color: 'text-red-400' },
+};
+
+const STATUS_META: Record<TicketStatus, { pill: string; label: string }> = {
+  open: { pill: 'admin-pill-blue', label: 'Open' },
+  in_progress: { pill: 'admin-pill-amber', label: 'In Progress' },
+  waiting_on_customer: { pill: 'admin-pill-purple', label: 'Waiting on Customer' },
+  resolved: { pill: 'admin-pill-green', label: 'Resolved' },
+  closed: { pill: 'admin-pill-red', label: 'Closed' },
+};
+
+const CHANNEL_META: Record<TicketChannel, { icon: React.ComponentType<{ className?: string }>; label: string }> = {
+  email: { icon: Mail, label: 'Email' },
+  whatsapp: { icon: MessageCircle, label: 'WhatsApp' },
+  in_app: { icon: Smartphone, label: 'In-App' },
+  social: { icon: AtSign, label: 'Social' },
+};
+
+const timeAgo = (iso: string): string => {
+  const diff = Date.now() - new Date(iso).getTime();
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(hours / 24)}d ago`;
+};
+
+===== SystemStatusView.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import {
+  Server,
+  Activity,
+  CheckCircle2,
+  AlertTriangle,
+  RefreshCw,
+  Zap,
+  Globe,
+  Database,
+  Radio,
+  MessageCircle,
+  Mail,
+  ShieldCheck,
+  Cpu,
+  Clock,
+  HardDrive
+} from 'lucide-react';
+
+interface ServiceHealth {
+  name: string;
+  category: 'core' | 'database' | 'gateway' | 'communication' | 'streaming';
+  status: 'operational' | 'degraded' | 'maintenance' | 'offline';
+  latencyMs: number;
+  uptimePercent: number;
+  lastChecked: string;
+  details: string;
+}
+
+export const SystemStatusView: React.FC = () => {
+  const { addToast } = useStore();
+  const [isPinging, setIsPinging] = useState(false);
+
+  const [services, setServices] = useState<ServiceHealth[]>([
+
+===== TikTokLeadsEngine.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import { LeadStatus, TikTokLead } from '../../types';
+import { Music2, Users, DollarSign, TrendingUp, Mail, Phone, ArrowRight, CheckCircle2, XCircle, Clock } from 'lucide-react';
+
+const STATUS_META: Record<LeadStatus, { pill: string; label: string }> = {
+  new: { pill: 'admin-pill-blue', label: 'New' },
+  contacted: { pill: 'admin-pill-amber', label: 'Contacted' },
+  qualified: { pill: 'admin-pill-purple', label: 'Qualified' },
+  converted: { pill: 'admin-pill-green', label: 'Converted' },
+  lost: { pill: 'admin-pill-red', label: 'Lost' },
+};
+
+const timeAgo = (iso: string): string => {
+  if (!iso) return 'never';
+  const diff = Date.now() - new Date(iso).getTime();
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  if (hours < 1) return 'just now';
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(hours / 24)}d ago`;
+};
+
+export const TikTokLeadsEngine: React.FC = () => {
+  const { tiktokLeads, updateLeadStatus, addToast } = useStore();
+  const [statusFilter, setStatusFilter] = useState<'all' | LeadStatus>('all');
+
+  const filtered = statusFilter === 'all' ? tiktokLeads : tiktokLeads.filter(l => l.status === statusFilter);
+
+  // Stats
+  const totalLeads = tiktokLeads.length;
+  const newLeads = tiktokLeads.filter(l => l.status === 'new').length;
+  const converted = tiktokLeads.filter(l => l.status === 'converted').length;
+  const totalCost = tiktokLeads.reduce((sum, l) => sum + l.costPerLead, 0);
+  const avgCpl = totalLeads > 0 ? totalCost / totalLeads : 0;
+  const conversionRate = totalLeads > 0 ? (converted / totalLeads) * 100 : 0;
+
+===== WebsiteBuilderCMS.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import { WebsitePage, PageStatus } from '../../types';
+import {
+  Plus, Globe, FileText, Trash2, Eye, Send, Layers, Search,
+  ExternalLink, X, Calendar, CheckCircle2, Clock, AlertCircle,
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+
+const STATUS_META: Record<PageStatus, { pill: string; label: string; icon: React.ComponentType<{ className?: string }> }> = {
+  published: { pill: 'admin-pill-green', label: 'Published', icon: CheckCircle2 },
+  draft: { pill: 'admin-pill-amber', label: 'Draft', icon: FileText },
+  scheduled: { pill: 'admin-pill-blue', label: 'Scheduled', icon: Clock },
+};
+
+const timeAgo = (iso: string): string => {
+  const diff = Date.now() - new Date(iso).getTime();
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  return `${Math.floor(hours / 24)}d ago`;
+};
+
+export const WebsiteBuilderCMS: React.FC = () => {
+  const { websitePages, blockLibrary, createWebsitePage, publishWebsitePage, deleteWebsitePage, addToast } = useStore();
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [newPage, setNewPage] = useState({ title: '', slug: '/', seoTitle: '', seoDescription: '', canonicalUrl: '' });
+
+  const filtered = websitePages.filter(p =>
+    !search || p.title.toLowerCase().includes(search.toLowerCase()) || p.slug.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const handleCreate = (e: React.FormEvent) => {
+
+===== WooCommerceBridge.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import { WooCommerceConnection, WooCommerceConnectionStatus, SyncConflict } from '../../types';
+import {
+  Plus,
+  Link2,
+  RefreshCw,
+  Trash2,
+  Globe,
+  Package,
+  ShoppingCart,
+  AlertTriangle,
+  Check,
+  X,
+  Loader2,
+  ArrowRight,
+  ArrowLeft,
+  ShoppingBag,
+  Settings,
+  Power,
+  ChevronRight,
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+
+const STATUS_META: Record<WooCommerceConnectionStatus, { pill: string; label: string; dot: string }> = {
+  connected: { pill: 'admin-pill-green', label: 'Connected', dot: 'bg-emerald-400' },
+  disconnected: { pill: 'admin-pill-red', label: 'Disconnected', dot: 'bg-red-400' },
+  syncing: { pill: 'admin-pill-blue', label: 'Syncing', dot: 'bg-blue-400 animate-pulse' },
+  error: { pill: 'admin-pill-amber', label: 'Error', dot: 'bg-amber-400' },
+};
+
+const timeAgo = (iso: string): string => {
+  const diff = Date.now() - new Date(iso).getTime();
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 1) return 'just now';
+
+===== DashboardOverview.tsx =====
+import React, { useState } from 'react';
+import { useStore } from '../../context/StoreContext';
+import {
+  DollarSign,
+  ShoppingCart,
+  Layers,
+  Server,
+  Zap,
+  Truck,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle2,
+  ArrowUpRight,
+  ShieldCheck,
+  Flame,
+  Compass,
+  Key,
+  Projector,
+  Clock,
+  Activity,
+  CreditCard,
+  BarChart3,
+  LineChart,
+  PieChart,
+  ArrowRight
+} from 'lucide-react';
