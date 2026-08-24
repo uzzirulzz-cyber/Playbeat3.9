@@ -89,7 +89,7 @@ export const Footer: React.FC = () => {
             </div>
             <div>
               <div className="text-xs sm:text-sm font-bold text-white font-display">256-Bit SSL Encrypted</div>
-              <div className="text-[11px] text-zinc-400 font-mono mt-0.5">Stripe, PayPal, Crypto</div>
+              <div className="text-[11px] text-zinc-400 font-mono mt-0.5">Protected checkout & verified processing</div>
             </div>
           </div>
         </div>
@@ -270,19 +270,6 @@ export const Footer: React.FC = () => {
             Terms of Service
           </a>
 
-          <div className="flex items-center gap-3 text-zinc-400 font-mono text-[11px] tracking-wider uppercase">
-            <span>STRIPE</span>
-            <span>•</span>
-            <span>LEMON SQUEEZY</span>
-            <span>•</span>
-            <span>PAYPAL</span>
-            <span>•</span>
-            <span>JAZZCASH</span>
-            <span>•</span>
-            <span>EASYPAISA</span>
-            <span>•</span>
-            <span>USDT / WEB3</span>
-          </div>
         </div>
       </div>
     </footer>

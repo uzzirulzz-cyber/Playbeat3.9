@@ -379,24 +379,6 @@ export const Header: React.FC = () => {
 
         {/* 4. ACTIONS & SHORTCUTS */}
         <div className="header-actions flex items-center gap-3 lg:gap-4">
-          {/* DESKTOP AUTH ACTIONS — kept with the right-side controls */}
-          {currentUser.id === 'guest' && (
-            <div className="header-auth-actions hidden md:flex items-center gap-2">
-              <button
-                onClick={() => { setAuthMode('login'); setIsAuthModalOpen(true); }}
-                className="px-3 py-2 rounded-lg text-[10px] font-bold uppercase tracking-wider text-emerald-400 hover:bg-emerald-500/10 border border-emerald-500/30 transition-all"
-              >
-                Sign In
-              </button>
-              <button
-                onClick={() => { setAuthMode('signup'); setIsAuthModalOpen(true); }}
-                className="btn-glossy btn-glossy-yellow btn-glossy-sm !px-3 !py-2 !text-[10px]"
-              >
-                Sign Up
-              </button>
-            </div>
-          )}
-
           {/* CURRENCY SELECTOR */}
           <div className="relative hidden lg:block">
             <button
@@ -465,15 +447,7 @@ export const Header: React.FC = () => {
           </button>
 
           {/* USER ACCOUNT BUTTON — guests see sign-up, members see their profile */}
-          {currentUser.id === 'guest' ? (
-            <button
-              onClick={() => { setAuthMode('signup'); setIsAuthModalOpen(true); }}
-              className="hidden sm:inline-flex items-center gap-2 rounded-xl border border-[#FFC928]/40 bg-[#FFC928]/10 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-[#FFD75A] transition-all hover:-translate-y-0.5 hover:bg-[#FFC928]/20"
-            >
-              <User className="w-3.5 h-3.5" />
-              Create Account
-            </button>
-          ) : (
+          {currentUser.id !== 'guest' && (
           <div className="header-profile relative">
             <button
               onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
