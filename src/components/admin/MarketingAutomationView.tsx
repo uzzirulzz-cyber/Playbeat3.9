@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useStore } from '../../context/StoreContext';
 import {
   Megaphone,
@@ -20,22 +20,34 @@ import {
 import { motion } from 'motion/react';
 
 export const MarketingAutomationView: React.FC = () => {
-  const { coupons, addCoupon, deleteCoupon, addToast, formatPrice } = useStore();
+  const { coupons, addCoupon, deleteCoupon, addToast, formatPrice, growthAutomationEnabled, setGrowthAutomationEnabled, resetGrowthAutomation, growthAutomationResetAt } = useStore();
   const [activeTab, setActiveTab] = useState<'campaigns' | 'tiktok' | 'abandoned' | 'coupons'>('tiktok');
   const [newCouponCode, setNewCouponCode] = useState('');
   const [newCouponDiscount, setNewCouponDiscount] = useState(15);
 
-  const [tiktokLeads] = useState([
+  const [tiktokLeads, setTiktokLeads] = useState([
     { id: 'tt-1', username: '@tech_guru_pk', campaign: '4K Laser Projector Showcase', views: '284K', conversions: 42, revenue: 14700, status: 'Viral' },
     { id: 'tt-2', username: '@digital_deals_hub', campaign: 'Windows 11 Pro Flash Drop', views: '112K', conversions: 89, revenue: 1779, status: 'Active' },
     { id: 'tt-3', username: '@stream_central', campaign: 'IPTV 4K Ultra 2026 Test', views: '94K', conversions: 65, revenue: 5850, status: 'Active' }
   ]);
 
-  const [abandonedCarts] = useState([
+  const [abandonedCarts, setAbandonedCarts] = useState([
     { id: 'ac-1', email: 'hamza.dev@gmail.com', items: '4K Cinema Laser Projector (x1)', total: 499.99, abandonedAt: '42 mins ago', recoverySent: true, status: 'Email + SMS Dispatched' },
     { id: 'ac-2', email: 'sara_v@studio.net', items: 'Canva Pro 1Y + Windows 11 Pro', total: 49.98, abandonedAt: '2 hours ago', recoverySent: true, status: 'Coupon PLAYBEAT10 Applied' },
     { id: 'ac-3', email: 'kareem.t@outlook.com', items: 'Steam $100 Card (x2)', total: 199.98, abandonedAt: '5 hours ago', recoverySent: false, status: 'Pending Trigger' }
   ]);
+
+  useEffect(() => {
+    if (growthAutomationResetAt > 0) {
+      setTiktokLeads([]);
+      setAbandonedCarts([]);
+    }
+  }, [growthAutomationResetAt]);
+
+  const handleReset = () => {
+    if (!window.confirm('Reset TikTok leads, social posts, campaigns, abandoned carts, and promo codes?')) return;
+    resetGrowthAutomation();
+  };
 
   const handleCreateCoupon = (e: React.FormEvent) => {
     e.preventDefault();
@@ -70,7 +82,16 @@ export const MarketingAutomationView: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap justify-end">
+          <button
+            onClick={() => setGrowthAutomationEnabled(!growthAutomationEnabled)}
+            className={`px-3 py-2 rounded-xl text-xs font-bold font-mono uppercase tracking-wider transition-all border ${growthAutomationEnabled ? 'bg-emerald-500/15 text-emerald-300 border-emerald-400/30' : 'bg-slate-500/10 text-slate-400 border-slate-500/30'}`}
+          >
+            {growthAutomationEnabled ? 'Automation Enabled' : 'Automation Disabled'}
+          </button>
+          <button onClick={handleReset} className="px-3 py-2 rounded-xl text-xs font-bold font-mono uppercase tracking-wider text-red-300 border border-red-400/30 hover:bg-red-500/10 transition-all">
+            Reset Engine
+          </button>
           {(['tiktok', 'abandoned', 'coupons'] as const).map((tab) => (
             <button
               key={tab}

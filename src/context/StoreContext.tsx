@@ -265,6 +265,10 @@ export interface StoreContextType {
   campaigns: MarketingCampaign[];
   pauseCampaign: (id: string) => void;
   resumeCampaign: (id: string) => void;
+  growthAutomationEnabled: boolean;
+  setGrowthAutomationEnabled: (enabled: boolean) => void;
+  resetGrowthAutomation: () => void;
+  growthAutomationResetAt: number;
 
   // ====== Financial Balance ======
   gatewayBalances: GatewayBalance[];
@@ -366,6 +370,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // ====== Email & SMS Campaigns state ======
   const [campaigns, setCampaigns] = useState<MarketingCampaign[]>(isZeroState ? [] : INITIAL_CAMPAIGNS);
+  const [growthAutomationEnabled, setGrowthAutomationEnabledState] = useState<boolean>(() => {
+    try { return localStorage.getItem('playbeat-growth-automation-enabled') !== 'false'; } catch { return true; }
+  });
+  const [growthAutomationResetAt, setGrowthAutomationResetAt] = useState(0);
 
   // ====== Financial Balance state (read-only balances) ======
   const [gatewayBalances, setGatewayBalances] = useState<GatewayBalance[]>(isZeroState ? [] : INITIAL_GATEWAY_BALANCES);
@@ -1105,6 +1113,20 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if (target) addToast('success', 'Campaign Resumed', `${target.name} is now sending.`);
   };
 
+  const setGrowthAutomationEnabled = (enabled: boolean) => {
+    setGrowthAutomationEnabledState(enabled);
+    try { localStorage.setItem('playbeat-growth-automation-enabled', String(enabled)); } catch { /* keep session state */ }
+  };
+
+  const resetGrowthAutomation = () => {
+    setScheduledPosts([]);
+    setTiktokLeads([]);
+    setCampaigns([]);
+    setCoupons([]);
+    setGrowthAutomationResetAt(Date.now());
+    addToast('success', 'Growth Automation Reset', 'TikTok leads, social posts, campaigns, and promo codes were cleared.');
+  };
+
   // =========================================================
   // Payment Proofs
   // =========================================================
@@ -1443,6 +1465,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         campaigns,
         pauseCampaign,
         resumeCampaign,
+        growthAutomationEnabled,
+        setGrowthAutomationEnabled,
+        resetGrowthAutomation,
+        growthAutomationResetAt,
 
         // Financial Balance
         gatewayBalances,
