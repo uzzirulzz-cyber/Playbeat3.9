@@ -39,12 +39,14 @@ export const ProductManagement: React.FC = () => {
   // CSV import — handles both simple CSV and WooCommerce export format
   // Supports quoted fields with embedded commas/newlines
   const handleCsvUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
     setCsvUploading(true);
 
     try {
-      const text = await file.text();
+      // Read every selected CSV and combine them. Each file may include its
+      // own header; repeated headers are filtered out below.
+      const text = (await Promise.all(files.map((file) => file.text()))).join('\n');
       // Remove BOM
       const cleanText = text.replace(/^\uFEFF/, '');
 
@@ -86,9 +88,18 @@ export const ProductManagement: React.FC = () => {
         return;
       }
 
-      // Parse header — strip quotes and lowercase
-      const headers = rows[0].map(h => h.trim().replace(/^"|"$/g, '').toLowerCase());
-      const titleHeader = headers.includes('name') || headers.includes('title');
+      // Normalize headers from WooCommerce, Shopify, supplier exports, and
+      // simple CSV files (BOM, quotes, underscores, and spacing are ignored).
+      const normalizeHeader = (header: string) => header
+        .replace(/^\uFEFF/, '')
+        .trim()
+        .replace(/^"|"$/g, '')
+        .toLowerCase()
+        .replace(/[_-]+/g, ' ')
+        .replace(/\s+/g, ' ');
+      const headers = rows[0].map(normalizeHeader);
+      const titleHeaders = ['name', 'title', 'product name', 'product title', 'item name', 'post title'];
+      const titleHeader = titleHeaders.some((header) => headers.includes(header));
       if (!titleHeader) {
         addToast('error', 'CSV Invalid', 'CSV must include a Name or Title column.');
         setCsvUploading(false);
@@ -117,14 +128,14 @@ export const ProductManagement: React.FC = () => {
         const row: Record<string, string> = {};
         headers.forEach((h, i) => { row[h] = (cols[i] || '').trim(); });
         return row;
-      });
+      }).filter((row) => row['sku']?.toLowerCase() !== 'sku');
 
       const parentRows = records.filter((row) => (row['type'] || '').toLowerCase() !== 'variation' || !row['parent']);
 
       // Parse each parent product and attach its WooCommerce variations.
       const items = parentRows.map((row, idx) => {
 
-        const name = row['name'] || row['title'] || 'Untitled Product';
+        const name = row['name'] || row['title'] || row['product name'] || row['product title'] || row['item name'] || row['post title'] || 'Untitled Product';
         const sku = row['sku'] || `PB-${row['id'] || Date.now()}-${idx}`;
         const shortDesc = row['short description'] || row['shortdescription'] || '';
         const desc = (row['description'] || shortDesc).replace(/<[^>]+>/g, '').substring(0, 500);
@@ -418,6 +429,7 @@ export const ProductManagement: React.FC = () => {
             ref={fileInputRef}
             type="file"
             accept=".csv,text/csv"
+            multiple
             onChange={handleCsvUpload}
             className="hidden"
           />
