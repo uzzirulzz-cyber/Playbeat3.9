@@ -1,4 +1,5 @@
 import type { Category, Product } from '../types';
+import { IMPORTED_PRODUCTS } from './importedProducts';
 
 const now = '2026-08-23T00:00:00Z';
 
@@ -129,4 +130,5 @@ export const CUSTOM_PRODUCTS: Product[] = [
   product('P-1006', 'Sports Pack Add-on', 'ADD-SPORT', 'addons', 'Add-ons', 800, 9999, 154, 'Add premium sports coverage to your entertainment package.', ['Sports', 'Add-on', 'Live TV']),
   product('P-1007', 'Disney+ 1M', 'SUB-DZ1', 'streaming', 'Streaming Subscriptions', 750, 9999, 142, 'One month of Disney+ entertainment access for the whole family.', ['Disney+', 'Streaming', '1 Month']),
   product('P-1008', 'Premium VOD Add-on', 'ADD-VOD', 'addons', 'Add-ons', 600, 9999, 88, 'Expand your package with premium video-on-demand content.', ['VOD', 'Movies', 'Add-on']),
+  ...IMPORTED_PRODUCTS,
 ];
