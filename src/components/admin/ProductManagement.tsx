@@ -135,11 +135,13 @@ export const ProductManagement: React.FC = () => {
         if (attrValues) {
           const parts = attrValues.split('|').map(v => v.trim()).filter(Boolean);
           if (parts.length > 0) {
-            variations = parts.map(val => ({
+            const baseStock = Math.floor(stock / parts.length);
+            const remainder = stock % parts.length;
+            variations = parts.map((val, variationIndex) => ({
               type: row['attribute 1 name'] || 'Denomination',
               value: val,
               costPrice: price * 0.8,
-              stock: 100,
+              stock: baseStock + (variationIndex < remainder ? 1 : 0),
             }));
           }
         }
@@ -192,6 +194,7 @@ export const ProductManagement: React.FC = () => {
               price: item.csvPrice,
               costPrice: item.costPrice,
               stock: item.stock,
+              categoryId: item.category,
               images: item.imageUrl ? [item.imageUrl] : existing.images,
               status: 'published',
             }),

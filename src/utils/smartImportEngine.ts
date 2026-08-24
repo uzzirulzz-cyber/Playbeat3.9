@@ -206,8 +206,19 @@ export function processSmartProductImport(
       const totalStock = dedupeResult.cleanVariations.reduce((sum, v) => sum + v.stock, 0);
 
       // Determine category mapping
-      let categoryId = options.defaultCategoryId || 'gaming';
-      let categoryName = 'Gaming & Keys';
+      let categoryId = options.defaultCategoryId || item.category || 'gaming';
+      const categoryNames: Record<string, string> = {
+        'gift-cards': 'Gift Cards',
+        gaming: 'Gaming & Keys',
+        software: 'Digital Licenses',
+        saas: 'SaaS & AI Tools',
+        streaming: 'Streaming Subscriptions',
+        iptv: 'IPTV Subscriptions',
+        'smart-projectors': 'Smart Projectors',
+        'game-coaching': 'Game Coaching',
+        'gamepal-companion': 'GamePal Companions',
+      };
+      let categoryName = categoryNames[categoryId] || categoryId;
       if (options.connector?.categoryMappings && item.category) {
         const mapping = options.connector.categoryMappings.find(
           m => m.externalCategory.toLowerCase() === item.category?.toLowerCase()
