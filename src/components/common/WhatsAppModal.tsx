@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
-import { X, MessageCircle, Send, CheckCircle2 } from 'lucide-react';
+import { X, MessageCircle, Send, CheckCircle2, ExternalLink } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+
+const WHATSAPP_CONTACTS = [
+  { label: '+92 334 1079333', href: 'https://wa.me/923341079333?text=Hello%20PlayBeat%20Digital%20Team!' },
+  { label: '+92 319 9980011', href: 'https://wa.me/923199980011?text=Hello%20PlayBeat%20Digital%20Team!' },
+];
 
 export const WhatsAppModal: React.FC = () => {
   const { isWhatsAppModalOpen, setIsWhatsAppModalOpen, createSupportTicket } = useStore();
@@ -60,6 +65,24 @@ export const WhatsAppModal: React.FC = () => {
 
             {/* Form */}
             <form onSubmit={handleStartChat} className="mt-4 space-y-4">
+              <div className="rounded-xl border border-emerald-400/20 bg-gradient-to-br from-emerald-500/10 to-teal-500/5 p-3">
+                <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-emerald-300">Direct WhatsApp Lines</div>
+                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  {WHATSAPP_CONTACTS.map((contact) => (
+                    <a
+                      key={contact.href}
+                      href={contact.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="group flex items-center justify-between rounded-lg border border-emerald-300/20 bg-black/20 px-3 py-2 text-xs font-semibold text-emerald-100 transition-all hover:border-emerald-300/60 hover:bg-emerald-400/10"
+                    >
+                      <span>{contact.label}</span>
+                      <ExternalLink className="h-3.5 w-3.5 text-emerald-300 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+                    </a>
+                  ))}
+                </div>
+              </div>
+
               <div>
                 <label className="block text-xs font-semibold text-neutral-300 mb-1.5">Support Subject</label>
                 <select

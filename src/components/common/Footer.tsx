@@ -26,8 +26,14 @@ export const Footer: React.FC = () => {
       className: 'bg-[#0ea5e9]/10 text-[#7dd3fc] border border-[#0ea5e9]/30',
     },
     {
-      label: 'WhatsApp @playbeatdigital1',
-      href: 'https://wa.me/923000000000?text=Hello%20PlayBeat%20Digital%20Team!',
+      label: 'WhatsApp +92 334 1079333',
+      href: 'https://wa.me/923341079333?text=Hello%20PlayBeat%20Digital%20Team!',
+      icon: MessageCircle,
+      className: 'bg-[#22c55e]/10 text-[#86efac] border border-[#22c55e]/30',
+    },
+    {
+      label: 'WhatsApp +92 319 9980011',
+      href: 'https://wa.me/923199980011?text=Hello%20PlayBeat%20Digital%20Team!',
       icon: MessageCircle,
       className: 'bg-[#22c55e]/10 text-[#86efac] border border-[#22c55e]/30',
     },
@@ -110,10 +116,12 @@ export const Footer: React.FC = () => {
           <div className="flex flex-wrap items-center gap-2 pt-2">
             <button
               onClick={() => setIsWhatsAppModalOpen(true)}
-              className="btn-glossy btn-glossy-blue btn-glossy-sm flex items-center gap-2"
+              className="group relative inline-flex items-center gap-2 overflow-hidden rounded-xl border border-emerald-300/40 bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-400 px-4 py-2.5 text-xs font-bold text-white shadow-[0_10px_28px_rgba(16,185,129,0.24)] transition-all duration-300 hover:-translate-y-0.5 hover:border-white/60 hover:shadow-[0_14px_34px_rgba(16,185,129,0.38)]"
             >
-              <MessageCircle className="w-4 h-4 text-emerald-400" />
-              <span>WhatsApp VIP</span>
+              <span className="absolute inset-x-0 top-0 h-px bg-white/70" />
+              <MessageCircle className="w-4 h-4 text-white transition-transform group-hover:scale-110" />
+              <span>Contact VIP Concierge</span>
+              <span className="rounded-full bg-white/20 px-1.5 py-0.5 text-[9px] uppercase tracking-wider">24/7</span>
             </button>
 
             {directChannels.map(({ label, href, icon: Icon, className }) => (
