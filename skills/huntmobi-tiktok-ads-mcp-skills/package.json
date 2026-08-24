@@ -1,0 +1,25 @@
+{
+  "name": "huntmobi-tiktok-ads-mcp-skills",
+  "version": "2.0.1",
+  "description": "TikTok Ads MCP Skills Suite — Access, Account Insights, Campaign Intelligence, Creative Library, Keyword & Targeting, Benchmark Plus. Zero-dependency MCP orchestration blueprints for TikTok advertising teams.",
+  "main": "lib/mcp-client.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "tiktok",
+    "ads",
+    "mcp",
+    "advertising",
+    "marketing",
+    "campaign",
+    "creative",
+    "targeting",
+    "benchmark"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/huntmobi/tiktok-ads-mcp-skills"
+  }
+}
