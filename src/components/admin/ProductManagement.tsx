@@ -50,6 +50,14 @@ export const ProductManagement: React.FC = () => {
       // Remove BOM
       const cleanText = text.replace(/^\uFEFF/, '');
 
+      // Accept standard comma CSV plus semicolon and tab-delimited exports.
+      // Looking only at the first line avoids counting commas inside quoted
+      // product descriptions.
+      const firstLine = cleanText.split(/\r?\n/, 1)[0] || '';
+      const delimiters = [',', ';', '\t'];
+      const delimiter = delimiters.reduce((best, candidate) =>
+        (firstLine.split(candidate).length > firstLine.split(best).length ? candidate : best), ',');
+
       // Parse CSV with proper quote handling
       const rows: string[][] = [];
       let currentRow: string[] = [];
@@ -65,6 +73,9 @@ export const ProductManagement: React.FC = () => {
           } else {
             inQuotes = !inQuotes;
           }
+        } else if (char === delimiter && !inQuotes) {
+          currentRow.push(currentField);
+          currentField = '';
         } else if (char === '\n' && !inQuotes) {
           currentRow.push(currentField);
           if (currentRow.some(f => f.trim())) rows.push(currentRow);
@@ -97,8 +108,18 @@ export const ProductManagement: React.FC = () => {
         .toLowerCase()
         .replace(/[_-]+/g, ' ')
         .replace(/\s+/g, ' ');
-      const headers = rows[0].map(normalizeHeader);
       const titleHeaders = ['name', 'title', 'product name', 'product title', 'item name', 'post title'];
+      const headerIndex = rows.findIndex((row) => {
+        const candidateHeaders = row.map(normalizeHeader);
+        return candidateHeaders.includes('sku') && titleHeaders.some((header) => candidateHeaders.includes(header));
+      });
+      if (headerIndex < 0) {
+        addToast('error', 'CSV Invalid', 'Could not find a product header row. Include SKU and Name or Title columns.');
+        setCsvUploading(false);
+        e.target.value = '';
+        return;
+      }
+      const headers = rows[headerIndex].map(normalizeHeader);
       const titleHeader = titleHeaders.some((header) => headers.includes(header));
       if (!titleHeader) {
         addToast('error', 'CSV Invalid', 'CSV must include a Name or Title column.');
@@ -124,7 +145,7 @@ export const ProductManagement: React.FC = () => {
 
       // Normalize rows first so WooCommerce exports can be grouped by their
       // parent SKU instead of importing every variation as a new product.
-      const records = rows.slice(1).map((cols) => {
+      const records = rows.slice(headerIndex + 1).map((cols) => {
         const row: Record<string, string> = {};
         headers.forEach((h, i) => { row[h] = (cols[i] || '').trim(); });
         return row;
