@@ -17,6 +17,7 @@ import {
   ExternalLink,
   Eye,
   Upload,
+  X,
   RotateCcw,
   LogOut,
   Loader2,
@@ -33,6 +34,10 @@ export const ProductManagement: React.FC = () => {
   const [isResetting, setIsResetting] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [csvUploading, setCsvUploading] = useState(false);
+  const [pendingCsvItems, setPendingCsvItems] = useState<any[]>([]);
+  const [pendingCsvFiles, setPendingCsvFiles] = useState<File[]>([]);
+  const [pendingCsvSummary, setPendingCsvSummary] = useState({ updates: 0, newProducts: 0 });
+  const csvReviewMode = React.useRef(false);
   const [isMigratingVars, setIsMigratingVars] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
@@ -228,6 +233,21 @@ export const ProductManagement: React.FC = () => {
       const updates = items.filter((item) => existingBySku.has(item.sku.toLowerCase()));
       const newItems = items.filter((item) => !existingBySku.has(item.sku.toLowerCase()));
 
+      // Stop after parsing so admins can review the incoming catalog before
+      // existing products are changed or new products are added.
+      if (!csvReviewMode.current) {
+        setPendingCsvItems(items);
+        setPendingCsvFiles(files);
+        setPendingCsvSummary({ updates: updates.length, newProducts: newItems.length });
+        addToast('info', 'CSV Ready for Review', `${items.length} products loaded. Review the list, then confirm adding them.`);
+        setCsvUploading(false);
+        e.target.value = '';
+        return;
+      }
+      csvReviewMode.current = false;
+      setPendingCsvItems([]);
+      setPendingCsvFiles([]);
+      setPendingCsvSummary({ updates: 0, newProducts: 0 });
       addToast('info', 'CSV Parsed', `${items.length} products found: ${updates.length} updates and ${newItems.length} new products.`);
 
       let updatedCount = 0;
@@ -299,6 +319,22 @@ export const ProductManagement: React.FC = () => {
     }
     setCsvUploading(false);
     e.target.value = '';
+  };
+
+  const confirmCsvImport = async () => {
+    if (pendingCsvFiles.length === 0 || csvUploading) return;
+    csvReviewMode.current = true;
+    setCsvUploading(true);
+    const files = pendingCsvFiles;
+    await handleCsvUpload({ target: { files, value: '' } } as unknown as React.ChangeEvent<HTMLInputElement>);
+  };
+
+  const cancelCsvImport = () => {
+    csvReviewMode.current = false;
+    setPendingCsvItems([]);
+    setPendingCsvFiles([]);
+    setPendingCsvSummary({ updates: 0, newProducts: 0 });
+    addToast('info', 'CSV Review Cancelled', 'No products were changed.');
   };
 
   // Reset database
@@ -434,6 +470,65 @@ export const ProductManagement: React.FC = () => {
       {/* Top Header & Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-xl pb-panel shadow-lg">
         <div>
+
+        {pendingCsvItems.length > 0 && (
+          <div className="rounded-xl pb-panel overflow-hidden border border-amber-500/30 shadow-lg">
+            <div className="p-5 border-b border-amber-500/20 bg-amber-500/[0.06]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <span className="pb-eyebrow text-amber-300">CSV Review Required</span>
+                  <h3 className="text-lg font-bold text-white mt-1">Review imported products before adding</h3>
+                  <p className="text-xs text-[var(--pb-silver-3)] mt-1">
+                    {pendingCsvItems.length} products loaded · {pendingCsvSummary.newProducts} new · {pendingCsvSummary.updates} existing SKU updates.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button onClick={cancelCsvImport} className="pb-btn pb-btn-ghost pb-btn-sm">
+                    <X className="w-3.5 h-3.5" /> Cancel
+                  </button>
+                  <button onClick={confirmCsvImport} disabled={csvUploading} className="pb-btn pb-btn-success pb-btn-sm">
+                    {csvUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle2 className="w-3.5 h-3.5" />}
+                    Add Products
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div className="max-h-80 overflow-y-auto">
+              <table className="pb-table min-w-[680px]">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>SKU</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Stock</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pendingCsvItems.map((item) => {
+                    const isUpdate = products.some(p => p.sku.toLowerCase() === item.sku.toLowerCase());
+                    return (
+                      <tr key={`${item.sku}-${item.externalId}`}>
+                        <td>
+                          <div className="flex items-center gap-2">
+                            <img src={item.imageUrl} alt="" className="w-8 h-8 rounded object-cover bg-[var(--pb-charcoal-2)]" />
+                            <span className="font-semibold text-white truncate max-w-xs">{item.title}</span>
+                          </div>
+                        </td>
+                        <td className="font-mono text-xs">{item.sku}</td>
+                        <td className="text-xs text-[var(--pb-silver-3)]">{item.category}</td>
+                        <td className="font-mono">${Number(item.csvPrice || item.price || 0).toFixed(2)}</td>
+                        <td className="font-mono">{item.stock}</td>
+                        <td><span className={`pb-badge ${isUpdate ? 'pb-badge-blue' : 'pb-badge-green'}`}>{isUpdate ? 'Update' : 'Add'}</span></td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
           <span className="pb-eyebrow">
             <Package className="w-3 h-3" />
             Catalog Management
