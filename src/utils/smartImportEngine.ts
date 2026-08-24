@@ -7,6 +7,7 @@ export interface RawImportItem {
   title: string;
   description?: string;
   category?: string;
+  price?: number;
   costPrice: number;
   stock?: number;
   sku?: string;
@@ -108,7 +109,9 @@ export function processSmartProductImport(
       existingSlugs.add(baseSlug);
 
       const costPrice = item.costPrice || 5.0;
-      const sellingPrice = calculateSellingPrice(costPrice, options.markupType, options.markupValue);
+      const sellingPrice = item.price && item.price > 0
+        ? item.price
+        : calculateSellingPrice(costPrice, options.markupType, options.markupValue);
       const comparePrice = Math.round(sellingPrice * 1.25 * 100) / 100;
       const discountPercent = Math.max(5, Math.round(((comparePrice - sellingPrice) / comparePrice) * 100));
 

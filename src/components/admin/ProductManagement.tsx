@@ -111,16 +111,28 @@ export const ProductManagement: React.FC = () => {
         return 'gaming';
       };
 
-      // Parse each product row
-      const items = rows.slice(1).map((cols, idx) => {
+      // Normalize rows first so WooCommerce exports can be grouped by their
+      // parent SKU instead of importing every variation as a new product.
+      const records = rows.slice(1).map((cols) => {
         const row: Record<string, string> = {};
         headers.forEach((h, i) => { row[h] = (cols[i] || '').trim(); });
+        return row;
+      });
+
+      const parentRows = records.filter((row) => (row['type'] || '').toLowerCase() !== 'variation' || !row['parent']);
+
+      // Parse each parent product and attach its WooCommerce variations.
+      const items = parentRows.map((row, idx) => {
 
         const name = row['name'] || row['title'] || 'Untitled Product';
         const sku = row['sku'] || `PB-${row['id'] || Date.now()}-${idx}`;
         const shortDesc = row['short description'] || row['shortdescription'] || '';
         const desc = (row['description'] || shortDesc).replace(/<[^>]+>/g, '').substring(0, 500);
-        const price = parseFloat(row['regular price'] || row['sale price'] || row['price'] || row['costprice'] || '29.99') || 29.99;
+        const childRows = records.filter((candidate) => candidate['parent'].toLowerCase() === sku.toLowerCase());
+        const firstChildPrice = childRows
+          .map((child) => parseFloat(child['sale price'] || child['regular price'] || child['price'] || ''))
+          .find((value) => Number.isFinite(value) && value > 0);
+        const price = firstChildPrice || parseFloat(row['sale price'] || row['regular price'] || row['price'] || row['costprice'] || '29.99') || 29.99;
         const category = mapCategory(row['categories'] || row['category'] || row['categoryid'] || '');
         const parsedStock = parseInt(row['stock'] || row['stock quantity'] || '', 10);
         const stock = Number.isFinite(parsedStock)
@@ -132,18 +144,25 @@ export const ProductManagement: React.FC = () => {
 
         // Parse variations from attribute values like "$10 | $25 | $50 | $100"
         let variations: { type: string; value: string; costPrice: number; stock: number }[] | undefined;
-        if (attrValues) {
-          const parts = attrValues.split('|').map(v => v.trim()).filter(Boolean);
-          if (parts.length > 0) {
-            const baseStock = Math.floor(stock / parts.length);
-            const remainder = stock % parts.length;
-            variations = parts.map((val, variationIndex) => ({
-              type: row['attribute 1 name'] || 'Denomination',
-              value: val,
-              costPrice: price * 0.8,
-              stock: baseStock + (variationIndex < remainder ? 1 : 0),
+        const variationSourceRows = childRows.length > 0 ? childRows : (attrValues ? [{
+          'attribute 1 name': row['attribute 1 name'] || 'Denomination',
+          'attribute 1 value(s)': attrValues,
+          stock: String(stock),
+          'regular price': String(price),
+        }] : []);
+        if (variationSourceRows.length > 0) {
+          variations = variationSourceRows.flatMap((variationRow) => {
+            const values = (variationRow['attribute 1 value(s)'] || '').split(/[|,]/).map(v => v.trim()).filter(Boolean);
+            const variationPrice = parseFloat(variationRow['sale price'] || variationRow['regular price'] || variationRow['price'] || String(price)) || price;
+            const variationStock = Math.max(0, parseInt(variationRow.stock || variationRow['stock quantity'] || String(stock), 10) || 0);
+            return values.map((value) => ({
+              type: variationRow['attribute 1 name'] || row['attribute 1 name'] || 'Option',
+              value,
+              costPrice: variationPrice * 0.8,
+              price: variationPrice,
+              stock: variationStock,
             }));
-          }
+          });
         }
 
         return {
@@ -152,6 +171,7 @@ export const ProductManagement: React.FC = () => {
           description: desc,
           category: category,
           costPrice: price * 0.8,
+          price,
           stock: stock,
           sku: sku,
           imageUrl: imageUrl,
@@ -195,6 +215,7 @@ export const ProductManagement: React.FC = () => {
               costPrice: item.costPrice,
               stock: item.stock,
               categoryId: item.category,
+              variations: item.variations,
               images: item.imageUrl ? [item.imageUrl] : existing.images,
               status: 'published',
             }),
